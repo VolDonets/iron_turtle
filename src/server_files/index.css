@@ -1,0 +1,14 @@
+.col-one-one, .col-one-two, .col-one-three, .col-one-four {
+    width: 10%;
+    float: left;
+}
+
+.main:after, .row-one:after, .col-one-one:after, .col-one-two:after, .col-one-three:after, .col-one-four:after {
+    content: "";
+    display: inline-table;
+    clear: both;
+}
+
+.row-one {
+    margin-bottom: 40px;
+}
