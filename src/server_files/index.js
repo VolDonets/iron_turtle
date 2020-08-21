@@ -1,5 +1,71 @@
 var ws;
 
+var html5VideoElement;
+var webrtcPeerConnection;
+var webrtcConfiguration;
+var reportError;
+
+function onLocalDescription(desc) {
+    console.log("Local description: " + JSON.stringify(desc));
+    webrtcPeerConnection.setLocalDescription(desc).then(function() {
+        ws.send(JSON.stringify({ type: "sdp", "data": webrtcPeerConnection.localDescription }));
+    }).catch(reportError);
+}
+
+function onIncomingSDP(sdp) {
+    console.log("Incoming SDP: " + JSON.stringify(sdp));
+    webrtcPeerConnection.setRemoteDescription(sdp).catch(reportError);
+    webrtcPeerConnection.createAnswer().then(onLocalDescription).catch(reportError);
+}
+
+function onIncomingICE(ice) {
+    var candidate = new RTCIceCandidate(ice);
+    console.log("Incoming ICE: " + JSON.stringify(ice));
+    webrtcPeerConnection.addIceCandidate(candidate).catch(reportError);
+}
+
+function onAddRemoteStream(event) {
+    html5VideoElement.srcObject = event.streams[0];
+}
+
+function onIceCandidate(event) {
+    if (event.candidate == null)
+        return;
+
+    console.log("Sending ICE candidate out: " + JSON.stringify(event.candidate));
+    ws.send(JSON.stringify({ "type": "ice", "data": event.candidate }));
+}
+
+function onServerMessage(event) {
+    var msg;
+
+    try {
+        msg = JSON.parse(event.data);
+    } catch (e) {
+        return;
+    }
+
+    if (!webrtcPeerConnection) {
+        webrtcPeerConnection = new RTCPeerConnection(webrtcConfiguration);
+        webrtcPeerConnection.ontrack = onAddRemoteStream;
+        webrtcPeerConnection.onicecandidate = onIceCandidate;
+    }
+
+    switch (msg.type) {
+        case "sdp": onIncomingSDP(msg.data); break;
+        case "ice": onIncomingICE(msg.data); break;
+        default: break;
+    }
+}
+
+function playStream(videoElement, configuration, reportErrorCB) {
+    html5VideoElement = videoElement;
+    webrtcConfiguration = configuration;
+    reportError = (reportErrorCB != undefined) ? reportErrorCB : function(text) {};
+
+    ws.addEventListener("message", onServerMessage);
+}
+
 function button_handler(key_code) {
     if (key_code === 'ArrowUp') {
         ws.send("mvT_UP");
@@ -46,6 +112,9 @@ $(function begin() {
     });
 
     ws = new WebSocket('ws://' + document.location.host + '/chart', ['string', 'foo']);
+    let vidstream = document.getElementById("stream");
+    let config = { 'iceServers': [{ 'urls': 'stun:stun.l.google.com:19302' }] };
+
     ws.onopen = function () {
         console.log('onopen');
         //ws.send("GIVE_MQTT_STATUS")
@@ -55,87 +124,13 @@ $(function begin() {
         console.log('onclose');
     };
 
-    ws.onmessage = function (message) {
-        /*var message_data = message.data;
-        if (message_data === "MQTT_STATUS_ENABLE") {
-            isEnabledMQTT = true;
-            buttonStatusMQTT.value = "DISABLE MQTT (actually ENABLED)"
-        } if(message_data === "MQTT_STATUS_DISABLE"){
-            isEnabledMQTT = false;
-            buttonStatusMQTT.value = "ENABLE MQTT (actually DISABLED)"
-        }else {
-
-            var json_obj = JSON.parse(message_data);
-
-            let valueAccelX = json_obj.accelX;
-            let valueAccelY = json_obj.accelY;
-            let valueAccelZ = json_obj.accelZ;
-            if (Number.isFinite(valueAccelX) && Number.isFinite(valueAccelY) && Number.isFinite(valueAccelZ)) {
-                dataAccelX.unshift(valueAccelX);
-                dataAccelY.unshift(valueAccelY);
-                dataAccelZ.unshift(valueAccelZ);
-                if (dataAccelX > 20) {
-                    dataAccelX.pop();
-                    dataAccelY.pop();
-                    dataAccelZ.pop();
-                }
-                chartAccel.update();
-            }
-
-            let valueGyroX = json_obj.gyroX;
-            let valueGyroY = json_obj.gyroY;
-            let valueGyroZ = json_obj.gyroZ;
-            if (Number.isFinite(valueGyroX) && Number.isFinite(valueGyroY) && Number.isFinite(valueGyroZ)) {
-                dataGyroX.unshift(valueGyroX);
-                dataGyroY.unshift(valueGyroY);
-                dataGyroZ.unshift(valueGyroZ);
-                if (dataGyroX > 20) {
-                    dataGyroX.pop();
-                    dataGyroY.pop();
-                    dataGyroZ.pop();
-                }
-                chartGyro.update();
-            }
-
-            let valueT = json_obj.temperature;
-            if (Number.isFinite(valueT)) {
-                dataTemperature.unshift(valueT);
-                if (dataTemperature.length > 20) {
-                    dataTemperature.pop();
-                }
-                chartTemperature.update();
-            }
-
-            let valueP = json_obj.pressure;
-            if (Number.isFinite(valueP)) {
-                dataPressure.unshift(valueP);
-                if (dataPressure.length > 20) {
-                    dataPressure.pop();
-                }
-                chartPressure.update();
-            }
-
-            let valueH = json_obj.humidity;
-            if (Number.isFinite(valueH)) {
-                dataHumidity.unshift(valueH);
-                if (dataPressure.length > 20) {
-                    dataHumidity.pop();
-                }
-                chartHumidity.update();
-            }
-
-            let valueA = json_obj.altitude;
-            if (Number.isFinite(valueA)) {
-                dataAltitude.unshift(valueA);
-                if (dataAltitude.length > 20) {
-                    dataAltitude.pop();
-                }
-                chartAltitude.update();
-            }
-        }*/
-    };
+    //ws.onmessage = function (message) {
+    //
+    //};
 
     ws.onerror = function (error) {
         //  add("ERROR: " + error);
     };
+
+    playStream(vidstream, config, function (errmsg) { console.error(errmsg); });
 });
