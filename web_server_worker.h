@@ -16,12 +16,16 @@
 #include <cstring>
 #include <ctime>
 
-#include "web_server.h"
+#include "web_server/web_server.h"
+#include "web_server/lib_my_event_handler/handler_ws.h"
+#include "turtle_manager/ascii_com_manager/ascii_com_lim.h"
+#include "turtle_manager/turtle_manager.h"
 
-class WebServerWorker {
+class WebServerWorker : public HandlerWS{
 public:
     WebServerWorker();
     void joinServerTread();
+    void handleEventWS(std::shared_ptr<EventWS> event) override;
 
 private:
     void startServer();
@@ -31,6 +35,8 @@ private:
     shared_ptr<PrintfLogger> logger;
     shared_ptr<MyServer> ws_server;
     shared_ptr<MyHandler> handler;
+
+    shared_ptr<TurtleManager> turtle_manager;
 };
 
 
