@@ -37,6 +37,20 @@
 #define COMMAND_MOVE_RIGHTER        "mvT_RIGHT"
 #define COMMAND_MOVE_LEFTER         "mvT_LEFT"
 
+#define EVENT_CAM_ZP                5
+#define EVENT_CAM_ZM                6
+#define EVENT_CAM_UP                7
+#define EVENT_CAM_DOWN              8
+#define EVENT_CAM_RIGHT             9
+#define EVENT_CAM_LEFT              10
+
+#define COMMAND_CAM_ZP              "zmC_PLUS"
+#define COMMAND_CAM_ZM              "zmC_MINUS"
+#define COMMAND_CAM_UP              "mvC_UP"
+#define COMMAND_CAM_DOWN            "mvC_DOWN"
+#define COMMAND_CAM_RIGHT           "mvC_RIGHT"
+#define COMMAND_CAM_LEFT            "mvC_LEFT"
+
 using namespace std::chrono;
 using namespace seasocks;
 using namespace std;
@@ -71,6 +85,13 @@ private:
     std::shared_ptr<EventWS> eventMoveBack;
     std::shared_ptr<EventWS> eventMoveRighter;
     std::shared_ptr<EventWS> eventMoveLefter;
+
+    std::shared_ptr<EventWS> eventCamZP;
+    std::shared_ptr<EventWS> eventCamZM;
+    std::shared_ptr<EventWS> eventCamUp;
+    std::shared_ptr<EventWS> eventCamDown;
+    std::shared_ptr<EventWS> eventCamLeft;
+    std::shared_ptr<EventWS> eventCamRight;
 };
 
 struct MyAuthHandler : PageHandler {

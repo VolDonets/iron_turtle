@@ -10,6 +10,14 @@ MyHandler::MyHandler(MyServer* server) : _server(server){
     this->eventMoveBack = std::make_shared<EventWS>(EVENT_MOVE_BACK);
     this->eventMoveRighter = std::make_shared<EventWS>(EVENT_MOVE_RIGHTER);
     this->eventMoveLefter = std::make_shared<EventWS>(EVENT_MOVE_LEFTER);
+
+    this->eventCamZM = std::make_shared<EventWS>(EVENT_CAM_ZM);
+    this->eventCamZP = std::make_shared<EventWS>(EVENT_CAM_ZP);
+
+    this->eventCamUp = std::make_shared<EventWS>(EVENT_CAM_UP);
+    this->eventCamDown = std::make_shared<EventWS>(EVENT_CAM_DOWN);
+    this->eventCamRight = std::make_shared<EventWS>(EVENT_CAM_RIGHT);
+    this->eventCamLeft = std::make_shared<EventWS>(EVENT_CAM_LEFT);
 }
 
 void MyHandler::onConnect(WebSocket* connection) {
@@ -35,6 +43,32 @@ void MyHandler::onData(WebSocket* connection, const char* data) {
     }
     if (strcmp(data, COMMAND_MOVE_LEFTER) == 0) {
         _delegate->doEvent(eventMoveLefter);
+        return;
+    }
+
+    if (strcmp(data, COMMAND_CAM_ZM) == 0) {
+        _delegate->doEvent(eventCamZM);
+        return;
+    }
+    if (strcmp(data, COMMAND_CAM_ZP) == 0) {
+        _delegate->doEvent(eventCamZP);
+        return;
+    }
+
+    if (strcmp(data, COMMAND_CAM_UP) == 0) {
+        _delegate->doEvent(eventCamUp);
+        return;
+    }
+    if (strcmp(data, COMMAND_CAM_DOWN) == 0) {
+        _delegate->doEvent(eventCamDown);
+        return;
+    }
+    if (strcmp(data, COMMAND_CAM_RIGHT) == 0) {
+        _delegate->doEvent(eventCamRight);
+        return;
+    }
+    if (strcmp(data, COMMAND_CAM_LEFT) == 0) {
+        _delegate->doEvent(eventCamLeft);
         return;
     }
 }
