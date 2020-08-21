@@ -27,6 +27,16 @@
 #include <thread>
 #include <mutex>
 
+#define EVENT_MOVE_FORWARD          1
+#define EVENT_MOVE_BACK             2
+#define EVENT_MOVE_RIGHTER          3
+#define EVENT_MOVE_LEFTER           4
+
+#define COMMAND_MOVE_FORWARD        "mvT_UP"
+#define COMMAND_MOVE_BACK           "mvT_DOWN"
+#define COMMAND_MOVE_RIGHTER        "mvT_RIGHT"
+#define COMMAND_MOVE_LEFTER         "mvT_LEFT"
+
 using namespace std::chrono;
 using namespace seasocks;
 using namespace std;
@@ -51,19 +61,16 @@ public:
     virtual void onDisconnect(WebSocket* connection);
 
     void sendValuesJSON(std::string values);
-    //int getCountConnections();
-
 
 private:
     set<WebSocket*> _connections;   //set of WebSocket connections
     Server* _server;                //pointer on object of this server
-    std::mutex _mutex;              //still useless variable
     DelegateWS* _delegate;          //instance of event delegator
 
-    //EventWS* _eventChangeMQTT;      //instances of possible event - event of enabling or disabling MQTT
-    //EventWS* _eventGetMQTT;         //instances of possible event - event of getting MQTT status
-    //EventWS* _eventNewClient;       //instances of possible event - adding a new client
-    //EventWS* _eventLoseClient;      //instances of possible event - losing an old client
+    std::shared_ptr<EventWS> eventMoveForward;
+    std::shared_ptr<EventWS> eventMoveBack;
+    std::shared_ptr<EventWS> eventMoveRighter;
+    std::shared_ptr<EventWS> eventMoveLefter;
 };
 
 struct MyAuthHandler : PageHandler {
