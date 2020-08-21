@@ -14,7 +14,7 @@ public:
     /*function for handling events, it get a param Event
      * and to do smt when event happens
      * ~> public function*/
-    virtual void handleEventWS(EventWS& event) {};
+    virtual void handleEventWS(std::shared_ptr<EventWS> event) {};
 
 protected:
     HandlerWS() {}

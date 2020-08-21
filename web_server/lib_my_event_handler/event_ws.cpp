@@ -4,8 +4,6 @@
 
 #include "event_ws.h"
 
-#include "event_ws.h"
-
 EventWS::EventWS(int idEvent) {
     this->idEvent = idEvent;
 }

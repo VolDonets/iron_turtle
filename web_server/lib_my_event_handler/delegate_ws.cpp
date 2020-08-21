@@ -12,11 +12,11 @@ DelegateWS* DelegateWS::getInstance() {
     return p_instance;
 }
 
-void DelegateWS::doEvent(EventWS& event) {
+void DelegateWS::doEvent(std::shared_ptr<EventWS> event) {
     for (HandlerWS* handlerWs: m_handlers)
         handlerWs->handleEventWS(event);
 }
 
-void DelegateWS::addHandler(HandlerWS& handler) {
-    m_handlers.push_back(&handler);
+void DelegateWS::addHandler(HandlerWS* handler) {
+    m_handlers.push_back(handler);
 }
