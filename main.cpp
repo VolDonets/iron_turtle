@@ -1,9 +1,13 @@
 #include <iostream>
+#include <zconf.h>
 
-#include "web_server/web_server_worker.h"
+#include "web_server_worker.h"
+
 
 int main() {
-    std::shared_ptr<WebServerWorker> server_worker = std::make_shared<WebServerWorker>();
-    server_worker->joinServerTread();
+    DelegateWS* delegate = DelegateWS::getInstance();
+    WebServerWorker* worker = new WebServerWorker();
+    delegate->addHandler(worker);
+    worker->joinServerTread();
     return 0;
 }
