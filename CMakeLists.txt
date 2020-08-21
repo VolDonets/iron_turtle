@@ -19,7 +19,9 @@ add_executable(iron_turtle main.cpp
         turtle_manager/ascii_com_manager/ascii_native_driver.h
         turtle_manager/ascii_com_manager/ascii_native_driver.cpp
         turtle_manager/turtle_manager.h
-        turtle_manager/turtle_manager.cpp)
+        turtle_manager/turtle_manager.cpp
+        turtle_manager/ascii_com_manager/ascii_native_driver_posn_save.cpp
+        turtle_manager/ascii_com_manager/ascii_native_driver_posn_save.h turtle_manager/ascii_com_manager/serial_manager.cpp turtle_manager/ascii_com_manager/serial_manager.h)
 
 target_link_libraries(iron_turtle seasocks "${ZLIB_LIBRARIES}")
 target_link_libraries(iron_turtle pthread z)
