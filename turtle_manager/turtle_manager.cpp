@@ -7,13 +7,15 @@
 TurtleManager::TurtleManager() {
     speedMod = MOVING_STEP_5;
     rotationMod = MOVING_STEP_5;
-    nativeDriver = std::make_shared<ASCII_NativeDriver>();
+    //nativeDriver = std::make_shared<ASCII_NativeDriver>();
+    nativeDriver = std::make_shared<ASCII_NativeDriverCordSave>();
 }
 
 TurtleManager::TurtleManager(int speedMod, int rotationMod) {
     this->speedMod = speedMod;
     this->rotationMod = rotationMod;
-    nativeDriver = std::make_shared<ASCII_NativeDriver>();
+    //nativeDriver = std::make_shared<ASCII_NativeDriver>();
+    nativeDriver = std::make_shared<ASCII_NativeDriverCordSave>();
 }
 
 int TurtleManager::move_forward() {

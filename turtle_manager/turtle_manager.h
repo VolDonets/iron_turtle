@@ -9,10 +9,12 @@
 
 #include "ascii_com_manager/ascii_com_lim.h"
 #include "ascii_com_manager/ascii_native_driver.h"
+#include "ascii_com_manager/ascii_native_driver_posn_save.h"
 
 class TurtleManager {
 private:
-    std::shared_ptr<ASCII_NativeDriver> nativeDriver;
+    //std::shared_ptr<ASCII_NativeDriver> nativeDriver;
+    std::shared_ptr<ASCII_NativeDriverCordSave> nativeDriver;
     int rotationMod;
     int speedMod;
 
