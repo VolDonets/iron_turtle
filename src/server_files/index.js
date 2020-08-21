@@ -2,16 +2,16 @@ var ws;
 
 $(function begin() {
     $('#id_form_button_left').click(function onClick(e) {
-        ws.send("COMMAND_MOVE_LEFT");
+        ws.send("mvT_LEFT");
     });
     $('#id_form_button_right').click(function onClick(e) {
-        ws.send("COMMAND_MOVE_RIGHT");
+        ws.send("mvT_RIGHT");
     });
     $('#id_form_button_up').click(function onClick(e) {
-        ws.send("COMMAND_MOVE_UP");
+        ws.send("mvT_UP");
     });
     $('#id_form_button_down').click(function onClick(e) {
-        ws.send("COMMAND_MOVE_DOWN");
+        ws.send("mvT_DOWN");
     });
 
     ws = new WebSocket('ws://' + document.location.host + '/chart', ['string', 'foo']);
