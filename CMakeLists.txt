@@ -6,8 +6,8 @@ set(CMAKE_CXX_STANDARD 20)
 add_executable(iron_turtle main.cpp
         web_server/web_server.h
         web_server/web_server.cpp
-        web_server/web_server_worker.h
-        web_server/web_server_worker.cpp
+        web_server_worker.h
+        web_server_worker.cpp
         web_server/lib_my_event_handler/delegate_ws.h
         web_server/lib_my_event_handler/delegate_ws.cpp
         web_server/lib_my_event_handler/event_ws.h
