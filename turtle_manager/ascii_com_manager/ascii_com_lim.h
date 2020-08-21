@@ -5,6 +5,8 @@
 #ifndef IRON_TURTLE_ASCII_COM_LIM_H
 #define IRON_TURTLE_ASCII_COM_LIM_H
 
+#include <string>
+
 const std::string DRIVE_FILE_PATH =               "/dev/serial/by-id/usb-Silicon_Labs_CP2102_USB_to_UART_Bridge_Controller_0001-if00-port0";
 
 #define MOVING_STEP_1                             1
