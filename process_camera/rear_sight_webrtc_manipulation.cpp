@@ -4,15 +4,6 @@
 
 #include "rear_sight_webrtc_manipulation.h"
 
-struct _ReceiverEntry
-{
-    //SoupWebsocketConnection *connection;
-
-    GstElement *ocvvideosrc;
-    GstElement *pipeline;
-    GstElement *webrtcbin;
-};
-
 /// a GstPad callback function, it is used for modification a pipeline stream
 static GstPadProbeReturn cb_have_data (GstPad *pad, GstPadProbeInfo *info, gpointer user_data) {
     GstMapInfo map;
@@ -65,16 +56,20 @@ static GstPadProbeReturn cb_have_data (GstPad *pad, GstPadProbeInfo *info, gpoin
 
 //a function fro filling a ReceiverEntry structure
 //Here creates a pipeline, and addes a callback function for stream modifications
-ReceiverEntry* create_receiver_entry () {
+ReceiverEntry* create_receiver_entry (seasocks::WebSocket * connection) {
     GError *error;
     ReceiverEntry *receiver_entry;
     GstWebRTCRTPTransceiver *trans;
     GArray *transceivers;
 
     receiver_entry = static_cast<ReceiverEntry *>(g_slice_alloc0(sizeof(ReceiverEntry)));
+    receiver_entry->connection = connection;
 
-    error = NULL;
-    /**/receiver_entry->pipeline =
+    g_object_ref (G_OBJECT (connection));
+
+
+    /*error = NULL;
+    receiver_entry->pipeline =
                 gst_parse_launch ("webrtcbin name=webrtcbin  stun-server=stun://" STUN_SERVER " "
                                   "v4l2src device=/dev/video0 "
                                   "! video/x-raw,width=" STR_WIDTH ",height=" STR_HEIGHT ",framerate=" STR_FRAMERATE " "
@@ -86,6 +81,24 @@ ReceiverEntry* create_receiver_entry () {
                                   "! queue max-size-time=100000000 "
                                   "! rtph264pay config-interval=10 name=payloader pt=96 "
                                   "! capssetter caps=\"application/x-rtp,profile-level-id=(string)42c01f,media=(string)video,encoding-name=(string)H264,payload=(int)96\" "
+                                  "! webrtcbin. ", &error);
+    */
+
+    error = NULL;
+    /**/receiver_entry->pipeline =
+                gst_parse_launch ("webrtcbin name=webrtcbin  stun-server=stun://" STUN_SERVER " "
+                                  "v4l2src device=/dev/video0 "
+                                  "! video/x-raw,width=" STR_WIDTH ",height=" STR_HEIGHT ",framerate=" STR_FRAMERATE " "
+                                  "! videoconvert name=ocvvideosrc "
+                                  "! video/x-raw,format=BGRA "
+                                  "! videoconvert "
+                                  "! queue max-size-buffers=1 "
+                                  "! x264enc speed-preset=ultrafast tune=zerolatency key-int-max=15 "
+                                  "! video/x-h264,profile=constrained-baseline "
+                                  "! queue max-size-time=0 "
+                                  "! h264parse "
+                                  "! rtph264pay config-interval=-1 name=payloader "
+                                  "! application/x-rtp,media=video,encoding-name=H264,payload=" RTP_PAYLOAD_TYPE " "
                                   "! webrtcbin. ", &error);
 
 
@@ -128,7 +141,6 @@ ReceiverEntry* create_receiver_entry () {
     return NULL;
 }
 
-
 void destroy_receiver_entry (gpointer receiver_entry_ptr) {
     ReceiverEntry *receiver_entry = (ReceiverEntry *) receiver_entry_ptr;
 
@@ -142,13 +154,14 @@ void destroy_receiver_entry (gpointer receiver_entry_ptr) {
         gst_object_unref (GST_OBJECT (receiver_entry->pipeline));
     }
 
-    //if (receiver_entry->connection != NULL)
-    //    g_object_unref (G_OBJECT (receiver_entry->connection));
+    if (receiver_entry->connection != NULL)
+        g_object_unref (G_OBJECT (receiver_entry->connection));
     if (receiver_entry->ocvvideosrc != NULL)
         g_object_unref(G_OBJECT((receiver_entry->ocvvideosrc)));
 
     g_slice_free1 (sizeof (ReceiverEntry), receiver_entry);
 }
+
 
 void on_offer_created_cb (GstPromise * promise, gpointer user_data) {
     gchar *sdp_string;
@@ -185,12 +198,13 @@ void on_offer_created_cb (GstPromise * promise, gpointer user_data) {
     json_string = get_string_from_json_object (sdp_json);
     json_object_unref (sdp_json);
 
-    soup_websocket_connection_send_text (receiver_entry->connection, json_string);
+    receiver_entry->connection->send(json_string);
     g_free (json_string);
     g_free (sdp_string);
 
     gst_webrtc_session_description_free (offer);
 }
+
 
 void on_negotiation_needed_cb (GstElement * webrtcbin, gpointer user_data) {
     GstPromise *promise;
@@ -198,7 +212,8 @@ void on_negotiation_needed_cb (GstElement * webrtcbin, gpointer user_data) {
 
     g_print ("Creating negotiation offer\n");
 
-    promise = gst_promise_new_with_change_func (on_offer_created_cb, (gpointer) receiver_entry, NULL);
+    promise = gst_promise_new_with_change_func (on_offer_created_cb,
+                                                (gpointer) receiver_entry, NULL);
     g_signal_emit_by_name (G_OBJECT (webrtcbin), "create-offer", NULL, promise);
 }
 
@@ -220,10 +235,160 @@ void on_ice_candidate_cb (G_GNUC_UNUSED GstElement * webrtcbin, guint mline_inde
     json_string = get_string_from_json_object (ice_json);
     json_object_unref (ice_json);
 
-    //!!!! how should my server send this message
-    //soup_websocket_connection_send_text (receiver_entry->connection, json_string);
+    receiver_entry->connection->send(json_string);
     g_free (json_string);
 }
+
+
+void soup_websocket_message_cb ( const char * data) {
+    gsize size;
+    gchar *data_string;
+    const gchar *type_string;
+    JsonNode *root_json;
+    JsonObject *root_json_object;
+    JsonObject *data_json_object;
+    JsonParser *json_parser = NULL;
+    ReceiverEntry *receiver_entry = my_receiver_entry;
+
+
+            /* Convert to NULL-terminated string */
+            data_string = g_strndup (data, size);
+            //g_free (data);
+            if(strstr(data_string, "COMMAND")) {
+                std::cout << "Client message: " << data_string << "\n";
+                if (strstr(data_string, "COMMAND_MOVE_LEFT")) {
+                    rear_sight_processor->on_move_left_processor();
+                    rear_sight_processor->set_new_frame_param();
+                } else if (strstr(data_string, "COMMAND_MOVE_RIGHT")) {
+                    rear_sight_processor->on_move_right_processor();
+                    rear_sight_processor->set_new_frame_param();
+                } else if (strstr(data_string, "COMMAND_MOVE_UP")) {
+                    rear_sight_processor->on_move_up_processor();
+                    rear_sight_processor->set_new_frame_param();
+                } else if (strstr(data_string, "COMMAND_MOVE_DOWN")) {
+                    rear_sight_processor->on_move_down_processor();
+                    rear_sight_processor->set_new_frame_param();
+                } else if (strstr(data_string, "COMMAND_ZOOM_MINUS")) {
+                    rear_sight_processor->on_zoom_minus_processor();
+                    rear_sight_processor->set_new_frame_param();
+                } else if (strstr(data_string, "COMMAND_ZOOM_PLUS")) {
+                    rear_sight_processor->on_zoom_plus_processor();
+                    rear_sight_processor->set_new_frame_param();
+                    std::cout << "Old frame size: w:" << frame_param->CROPPED_WIDTH
+                              << "  h:" << frame_param->CROPPED_HEIGHT << "\n >>>>>>>>>>>>>>>>>>>>>>\n\n";
+                    std::cout
+                            << "New frame size: w:" << frame_param->CROPPED_WIDTH << "  h:" << frame_param->CROPPED_HEIGHT << "\n >>>>>>>>>>>>>>>>>>>>>>\n\n";
+                }
+                return;
+            }
+
+    json_parser = json_parser_new ();
+    if (!json_parser_load_from_data (json_parser, data_string, -1, NULL))
+        goto unknown_message;
+
+    root_json = json_parser_get_root (json_parser);
+    if (!JSON_NODE_HOLDS_OBJECT (root_json))
+        goto unknown_message;
+
+    root_json_object = json_node_get_object (root_json);
+
+    if (!json_object_has_member (root_json_object, "type")) {
+        g_error ("Received message without type field\n");
+        goto cleanup;
+    }
+    type_string = json_object_get_string_member (root_json_object, "type");
+    if (!json_object_has_member (root_json_object, "data")) {
+        g_error ("Received message without data field\n");
+        goto cleanup;
+    }
+    data_json_object = json_object_get_object_member (root_json_object, "data");
+
+    if (g_strcmp0 (type_string, "sdp") == 0) {
+        const gchar *sdp_type_string;
+        const gchar *sdp_string;
+        GstPromise *promise;
+        GstSDPMessage *sdp;
+        GstWebRTCSessionDescription *answer;
+        int ret;
+
+        if (!json_object_has_member (data_json_object, "type")) {
+            g_error ("Received SDP message without type field\n");
+            goto cleanup;
+        }
+        sdp_type_string = json_object_get_string_member (data_json_object, "type");
+
+        if (g_strcmp0 (sdp_type_string, "answer") != 0) {
+            g_error ("Expected SDP message type \"answer\", got \"%s\"\n",
+                     sdp_type_string);
+            goto cleanup;
+        }
+
+        if (!json_object_has_member (data_json_object, "sdp")) {
+            g_error ("Received SDP message without SDP string\n");
+            goto cleanup;
+        }
+        sdp_string = json_object_get_string_member (data_json_object, "sdp");
+
+        g_print ("Received SDP:\n%s\n", sdp_string);
+
+        ret = gst_sdp_message_new (&sdp);
+        g_assert_cmphex (ret, ==, GST_SDP_OK);
+
+        ret =
+                gst_sdp_message_parse_buffer ((guint8 *) sdp_string,
+                                              strlen (sdp_string), sdp);
+        if (ret != GST_SDP_OK) {
+            g_error ("Could not parse SDP string\n");
+            goto cleanup;
+        }
+
+        answer = gst_webrtc_session_description_new (GST_WEBRTC_SDP_TYPE_ANSWER,
+                                                     sdp);
+        g_assert_nonnull (answer);
+
+        promise = gst_promise_new ();
+        g_signal_emit_by_name (receiver_entry->webrtcbin, "set-remote-description",
+                               answer, promise);
+        gst_promise_interrupt (promise);
+        gst_promise_unref (promise);
+        gst_webrtc_session_description_free (answer);
+    } else if (g_strcmp0 (type_string, "ice") == 0) {
+        guint mline_index;
+        const gchar *candidate_string;
+
+        if (!json_object_has_member (data_json_object, "sdpMLineIndex")) {
+            g_error ("Received ICE message without mline index\n");
+            goto cleanup;
+        }
+        mline_index =
+                json_object_get_int_member (data_json_object, "sdpMLineIndex");
+
+        if (!json_object_has_member (data_json_object, "candidate")) {
+            g_error ("Received ICE message without ICE candidate string\n");
+            goto cleanup;
+        }
+        candidate_string = json_object_get_string_member (data_json_object,
+                                                          "candidate");
+
+        g_print ("Received ICE candidate with mline index %u; candidate: %s\n",
+                 mline_index, candidate_string);
+
+        g_signal_emit_by_name (receiver_entry->webrtcbin, "add-ice-candidate",
+                               mline_index, candidate_string);
+    } else
+        goto unknown_message;
+
+    cleanup:
+    if (json_parser != NULL)
+        g_object_unref (G_OBJECT (json_parser));
+    g_free (data_string);
+    return;
+
+    unknown_message:
+    g_error ("Unknown message \"%s\", ignoring", data_string);
+    goto cleanup;
+}
+
 
 static gchar * get_string_from_json_object (JsonObject * object) {
     JsonNode *root;
@@ -240,4 +405,50 @@ static gchar * get_string_from_json_object (JsonObject * object) {
     g_object_unref (generator);
     json_node_free (root);
     return text;
+}
+
+#ifdef G_OS_UNIX
+gboolean
+exit_sighandler (gpointer user_data)
+{
+    g_print ("Caught signal, stopping mainloop\n");
+    GMainLoop *mainloop = (GMainLoop *) user_data;
+    g_main_loop_quit (mainloop);
+    return TRUE;
+}
+#endif
+
+int main_loop(seasocks::WebSocket *connection) {
+    my_connection = connection;
+    GMainLoop *mainloop;
+    GHashTable *receiver_entry_table;
+
+    setlocale(LC_ALL, "");
+    gst_init(nullptr, nullptr);
+
+    receiver_entry_table =
+            g_hash_table_new_full(g_direct_hash, g_direct_equal, NULL,
+                                  destroy_receiver_entry);
+
+    mainloop = g_main_loop_new(NULL, FALSE);
+    g_assert (mainloop != NULL);
+
+#ifdef G_OS_UNIX
+    g_unix_signal_add(SIGINT, exit_sighandler, mainloop);
+    g_unix_signal_add(SIGTERM, exit_sighandler, mainloop);
+#endif
+
+    ReceiverEntry *entry = create_receiver_entry(my_connection);
+    g_hash_table_replace (receiver_entry_table, connection, entry);
+    g_print("WebRTC page link: http://127.0.0.1:%d/\n", (gint) SOUP_HTTP_PORT);
+
+    g_main_loop_run(mainloop);
+
+    g_object_unref(G_OBJECT (my_connection));
+    g_hash_table_destroy(receiver_entry_table);
+    g_main_loop_unref(mainloop);
+
+    gst_deinit();
+
+    return 0;
 }
