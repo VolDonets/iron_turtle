@@ -26,12 +26,7 @@ void WebServerWorker::startServer() {
 }
 
 void WebServerWorker::processServer() {
-    //main_loop(handler->getCurrentConnection());
-    while(true) {
-        if (handler->getCurrentConnection())
-            main_loop(handler->getCurrentConnection());
-        sleep(1);
-    }
+
 }
 
 void WebServerWorker::joinServerTread() {
@@ -52,6 +47,18 @@ void WebServerWorker::handleEventWS(std::shared_ptr<EventWS> event) {
             break;
         case EVENT_MOVE_RIGHTER:
             turtle_manager->move_righter();
+            break;
+        case EVENT_CAM_ZM:
+            break;
+        case EVENT_CAM_ZP:
+            break;
+        case EVENT_CAM_UP:
+            break;
+        case EVENT_CAM_DOWN:
+            break;
+        case EVENT_CAM_LEFT:
+            break;
+        case EVENT_CAM_RIGHT:
             break;
     }
 }
