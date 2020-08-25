@@ -65,7 +65,7 @@ ReceiverEntry* create_receiver_entry (seasocks::WebSocket * connection) {
     receiver_entry = static_cast<ReceiverEntry *>(g_slice_alloc0(sizeof(ReceiverEntry)));
     receiver_entry->connection = connection;
 
-    g_object_ref (G_OBJECT (connection));
+    //g_object_ref (G_OBJECT (connection));
 
 
     /*error = NULL;
@@ -154,8 +154,8 @@ void destroy_receiver_entry (gpointer receiver_entry_ptr) {
         gst_object_unref (GST_OBJECT (receiver_entry->pipeline));
     }
 
-    if (receiver_entry->connection != NULL)
-        g_object_unref (G_OBJECT (receiver_entry->connection));
+    // if (receiver_entry->connection != NULL)
+    //    g_object_unref (G_OBJECT (receiver_entry->connection));
     if (receiver_entry->ocvvideosrc != NULL)
         g_object_unref(G_OBJECT((receiver_entry->ocvvideosrc)));
 
@@ -240,47 +240,13 @@ void on_ice_candidate_cb (G_GNUC_UNUSED GstElement * webrtcbin, guint mline_inde
 }
 
 
-void soup_websocket_message_cb ( const char * data) {
-    gsize size;
-    gchar *data_string;
+bool webrtc_session_handle ( const char * data_string) {
     const gchar *type_string;
     JsonNode *root_json;
     JsonObject *root_json_object;
     JsonObject *data_json_object;
     JsonParser *json_parser = NULL;
     ReceiverEntry *receiver_entry = my_receiver_entry;
-
-
-            /* Convert to NULL-terminated string */
-            data_string = g_strndup (data, size);
-            //g_free (data);
-            if(strstr(data_string, "COMMAND")) {
-                std::cout << "Client message: " << data_string << "\n";
-                if (strstr(data_string, "COMMAND_MOVE_LEFT")) {
-                    rear_sight_processor->on_move_left_processor();
-                    rear_sight_processor->set_new_frame_param();
-                } else if (strstr(data_string, "COMMAND_MOVE_RIGHT")) {
-                    rear_sight_processor->on_move_right_processor();
-                    rear_sight_processor->set_new_frame_param();
-                } else if (strstr(data_string, "COMMAND_MOVE_UP")) {
-                    rear_sight_processor->on_move_up_processor();
-                    rear_sight_processor->set_new_frame_param();
-                } else if (strstr(data_string, "COMMAND_MOVE_DOWN")) {
-                    rear_sight_processor->on_move_down_processor();
-                    rear_sight_processor->set_new_frame_param();
-                } else if (strstr(data_string, "COMMAND_ZOOM_MINUS")) {
-                    rear_sight_processor->on_zoom_minus_processor();
-                    rear_sight_processor->set_new_frame_param();
-                } else if (strstr(data_string, "COMMAND_ZOOM_PLUS")) {
-                    rear_sight_processor->on_zoom_plus_processor();
-                    rear_sight_processor->set_new_frame_param();
-                    std::cout << "Old frame size: w:" << frame_param->CROPPED_WIDTH
-                              << "  h:" << frame_param->CROPPED_HEIGHT << "\n >>>>>>>>>>>>>>>>>>>>>>\n\n";
-                    std::cout
-                            << "New frame size: w:" << frame_param->CROPPED_WIDTH << "  h:" << frame_param->CROPPED_HEIGHT << "\n >>>>>>>>>>>>>>>>>>>>>>\n\n";
-                }
-                return;
-            }
 
     json_parser = json_parser_new ();
     if (!json_parser_load_from_data (json_parser, data_string, -1, NULL))
@@ -381,8 +347,7 @@ void soup_websocket_message_cb ( const char * data) {
     cleanup:
     if (json_parser != NULL)
         g_object_unref (G_OBJECT (json_parser));
-    g_free (data_string);
-    return;
+    return false;
 
     unknown_message:
     g_error ("Unknown message \"%s\", ignoring", data_string);
@@ -408,9 +373,7 @@ static gchar * get_string_from_json_object (JsonObject * object) {
 }
 
 #ifdef G_OS_UNIX
-gboolean
-exit_sighandler (gpointer user_data)
-{
+gboolean exit_sighandler (gpointer user_data) {
     g_print ("Caught signal, stopping mainloop\n");
     GMainLoop *mainloop = (GMainLoop *) user_data;
     g_main_loop_quit (mainloop);
@@ -418,17 +381,15 @@ exit_sighandler (gpointer user_data)
 }
 #endif
 
-int main_loop(seasocks::WebSocket *connection) {
-    my_connection = connection;
-    GMainLoop *mainloop;
-    GHashTable *receiver_entry_table;
+int webrtc_gst_loop(seasocks::WebSocket *connection) {
+    //GHashTable *receiver_entry_table;
 
     setlocale(LC_ALL, "");
     gst_init(nullptr, nullptr);
 
-    receiver_entry_table =
-            g_hash_table_new_full(g_direct_hash, g_direct_equal, NULL,
-                                  destroy_receiver_entry);
+    //receiver_entry_table =
+    //        g_hash_table_new_full(g_direct_hash, g_direct_equal, NULL,
+    //                              destroy_receiver_entry);
 
     mainloop = g_main_loop_new(NULL, FALSE);
     g_assert (mainloop != NULL);
@@ -438,17 +399,25 @@ int main_loop(seasocks::WebSocket *connection) {
     g_unix_signal_add(SIGTERM, exit_sighandler, mainloop);
 #endif
 
-    ReceiverEntry *entry = create_receiver_entry(my_connection);
-    g_hash_table_replace (receiver_entry_table, connection, entry);
-    g_print("WebRTC page link: http://127.0.0.1:%d/\n", (gint) SOUP_HTTP_PORT);
+    my_receiver_entry = create_receiver_entry(connection);
+    //g_hash_table_replace (receiver_entry_table, connection, my_receiver_entry);
 
     g_main_loop_run(mainloop);
 
-    g_object_unref(G_OBJECT (my_connection));
-    g_hash_table_destroy(receiver_entry_table);
+
+    //g_object_unref(G_OBJECT (connection));
+    //g_hash_table_destroy(receiver_entry_table);
+    std::cout << "OK_1_______________________________________________________________________________________\n";
     g_main_loop_unref(mainloop);
-
+    std::cout << "OK_2_______________________________________________________________________________________\n";
     gst_deinit();
-
+    std::cout << "OK_3_______________________________________________________________________________________\n";
     return 0;
+}
+
+void webrtc_session_quit() {
+    if (mainloop) {
+        gst_element_set_state (my_receiver_entry->pipeline, GST_STATE_NULL);
+        g_main_loop_quit(mainloop);
+    }
 }

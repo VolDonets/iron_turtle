@@ -47,9 +47,11 @@ void on_negotiation_needed_cb (GstElement * webrtcbin, gpointer user_data);
 void on_ice_candidate_cb (GstElement * webrtcbin, guint mline_index,
                           gchar * candidate, gpointer user_data);
 
-void soup_websocket_message_cb (const char * message);
+bool webrtc_session_handle (const char * message);
 
-int main_loop(seasocks::WebSocket *connection);
+void webrtc_session_quit();
+
+int webrtc_gst_loop(seasocks::WebSocket *connection);
 
 static gchar *get_string_from_json_object (JsonObject * object);
 
@@ -65,6 +67,6 @@ struct _ReceiverEntry
 static std::shared_ptr<FrameParameters> frame_param = std::make_shared<FrameParameters>();
 static std::shared_ptr<RearSightProcessor> rear_sight_processor = std::make_shared<RearSightProcessor>(frame_param);
 static ReceiverEntry *my_receiver_entry;
-static bool isWorks = false;
+static GMainLoop *mainloop;
 
 #endif //IRON_TURTLE_REAR_SIGHT_WEBRTC_MANIPULATION_H
