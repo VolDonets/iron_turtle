@@ -2,6 +2,8 @@
 // Created by biba_bo on 2020-08-18.
 //
 
+#include "../process_camera/rear_sight_webrtc_manipulation.h"
+
 #include "web_server.h"
 MyHandler::MyHandler(MyServer* server) : _server(server){
     this->_delegate = DelegateWS::getInstance();
@@ -21,14 +23,21 @@ MyHandler::MyHandler(MyServer* server) : _server(server){
 }
 
 void MyHandler::onConnect(WebSocket* connection) {
-    if(_connections.size() == 0)
+    if(_connections.size() == 0) {
+        _currentConnection = connection;
         _connections.insert(connection);
-    else
+        _isCameraStreamEnabled = false;
+    } else {
+        connection->send(MESSAGE_FOR_EXCESS_CLIENT);
         connection->close();
+    }
 }
 
 void MyHandler::onData(WebSocket* connection, const char* data) {
     cout << "onData: " << data << endl;
+    if (!_isCameraStreamEnabled) {
+
+    }
     if (strcmp(data, COMMAND_MOVE_FORWARD) == 0) {
         _delegate->doEvent(eventMoveForward);
         return;
@@ -81,4 +90,8 @@ void MyHandler::sendValuesJSON(std::string values) {
     for (auto c : _connections) {
         c->send(values);
     }
+}
+
+WebSocket *MyHandler::getCurrentConnection() {
+    return _currentConnection;
 }
