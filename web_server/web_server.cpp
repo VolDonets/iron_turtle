@@ -24,9 +24,13 @@ MyHandler::MyHandler(MyServer* server) : _server(server){
 
 void MyHandler::onConnect(WebSocket* connection) {
     if(_connections.size() == 0) {
-        _currentConnection = connection;
         _connections.insert(connection);
         _isCameraStreamEnabled = false;
+        _rearSightThread = std::thread([this, connection](){
+            std::cout << "OK_4_______________________________________________________________________________________\n";
+            webrtc_gst_loop(connection);
+            std::cout << "OK_5_______________________________________________________________________________________\n";
+        });
     } else {
         connection->send(MESSAGE_FOR_EXCESS_CLIENT);
         connection->close();
@@ -36,7 +40,7 @@ void MyHandler::onConnect(WebSocket* connection) {
 void MyHandler::onData(WebSocket* connection, const char* data) {
     cout << "onData: " << data << endl;
     if (!_isCameraStreamEnabled) {
-
+        _isCameraStreamEnabled = webrtc_session_handle(data);
     }
     if (strcmp(data, COMMAND_MOVE_FORWARD) == 0) {
         _delegate->doEvent(eventMoveForward);
@@ -83,6 +87,7 @@ void MyHandler::onData(WebSocket* connection, const char* data) {
 }
 
 void MyHandler::onDisconnect(WebSocket* connection) {
+    webrtc_session_quit();
     _connections.erase(connection);
 }
 
@@ -90,8 +95,4 @@ void MyHandler::sendValuesJSON(std::string values) {
     for (auto c : _connections) {
         c->send(values);
     }
-}
-
-WebSocket *MyHandler::getCurrentConnection() {
-    return _currentConnection;
 }

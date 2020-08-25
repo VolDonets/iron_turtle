@@ -77,14 +77,14 @@ public:
     virtual void onDisconnect(WebSocket* connection);
 
     void sendValuesJSON(std::string values);
-    WebSocket* getCurrentConnection();  // !!!BAD SOLUTION
+
 
 private:
     set<WebSocket*> _connections;   //set of WebSocket connections
     Server* _server;                //pointer on object of this server
     DelegateWS* _delegate;          //instance of event delegator
+    std::thread _rearSightThread;   //thread for new connection
 
-    WebSocket* _currentConnection;
     bool _isCameraStreamEnabled;
 
     std::shared_ptr<EventWS> eventMoveForward;
