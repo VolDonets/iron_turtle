@@ -20,6 +20,7 @@
 #include "web_server/lib_my_event_handler/handler_ws.h"
 #include "turtle_manager/ascii_com_manager/ascii_com_lim.h"
 #include "turtle_manager/turtle_manager.h"
+#include "process_camera/rear_sight_webrtc_manipulation.h"
 
 class WebServerWorker : public HandlerWS{
 public:

@@ -26,7 +26,12 @@ void WebServerWorker::startServer() {
 }
 
 void WebServerWorker::processServer() {
-
+    //main_loop(handler->getCurrentConnection());
+    while(true) {
+        if (handler->getCurrentConnection())
+            main_loop(handler->getCurrentConnection());
+        sleep(1);
+    }
 }
 
 void WebServerWorker::joinServerTread() {
