@@ -49,28 +49,22 @@ void WebServerWorker::handleEventWS(std::shared_ptr<EventWS> event) {
             turtle_manager->move_righter();
             break;
         case EVENT_CAM_ZM:
-            rear_sight_processor->on_zoom_minus_processor();
-            rear_sight_processor->set_new_frame_param();
+            on_zoom_minus_processor();
             break;
         case EVENT_CAM_ZP:
-            rear_sight_processor->on_zoom_plus_processor();
-            rear_sight_processor->set_new_frame_param();
+            on_zoom_plus_processor();
             break;
         case EVENT_CAM_UP:
-            rear_sight_processor->on_move_up_processor();
-            rear_sight_processor->set_new_frame_param();
+            on_move_up_processor();
             break;
         case EVENT_CAM_DOWN:
-            rear_sight_processor->on_move_down_processor();
-            rear_sight_processor->set_new_frame_param();
+            on_move_down_processor();
             break;
         case EVENT_CAM_LEFT:
-            rear_sight_processor->on_move_left_processor();
-            rear_sight_processor->set_new_frame_param();
+            on_move_left_processor();
             break;
         case EVENT_CAM_RIGHT:
-            rear_sight_processor->on_move_right_processor();
-            rear_sight_processor->set_new_frame_param();
+            on_move_right_processor();
             break;
     }
 }

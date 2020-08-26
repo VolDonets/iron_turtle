@@ -41,6 +41,7 @@ typedef struct _ReceiverEntry ReceiverEntry;
 ReceiverEntry *create_receiver_entry (seasocks::WebSocket * connection);
 void destroy_receiver_entry (gpointer receiver_entry_ptr);
 
+void init_rear_sight_processor();
 
 void on_offer_created_cb (GstPromise * promise, gpointer user_data);
 void on_negotiation_needed_cb (GstElement * webrtcbin, gpointer user_data);
@@ -56,6 +57,14 @@ int webrtc_gst_loop(seasocks::WebSocket *connection);
 
 static gchar *get_string_from_json_object (JsonObject * object);
 
+void on_zoom_plus_processor();
+void on_zoom_minus_processor();
+
+void on_move_left_processor();
+void on_move_right_processor();
+void on_move_up_processor();
+void on_move_down_processor();
+
 struct _ReceiverEntry
 {
     seasocks::WebSocket *connection;
@@ -65,8 +74,8 @@ struct _ReceiverEntry
     GstElement *webrtcbin;
 };
 
-static std::shared_ptr<FrameParameters> frame_param = std::make_shared<FrameParameters>();
-static std::shared_ptr<RearSightProcessor> rear_sight_processor = std::make_shared<RearSightProcessor>(frame_param);
+static std::shared_ptr<FrameParameters> frame_param;
+static std::shared_ptr<RearSightProcessor> rear_sight_processor;
 static ReceiverEntry *my_receiver_entry;
 static GMainLoop *mainloop;
 

@@ -29,6 +29,7 @@ void MyHandler::onConnect(WebSocket* connection) {
         _connections.insert(connection);
         if (_isFirstWebRTC_Connection) {
             _rearSightThread = std::thread([this, connection]() {
+                init_rear_sight_processor();
                 webrtc_gst_loop(connection);
             });
             _isFirstWebRTC_Connection = false;
@@ -61,8 +62,6 @@ void MyHandler::onData(WebSocket* connection, const char* data) {
     }
 
     if (strcmp(data, COMMAND_CAM_ZM) == 0) {
-        rear_sight_processor->on_zoom_minus_processor();
-        rear_sight_processor->set_new_frame_param();
         _delegate->doEvent(eventCamZM);
         return;
     }

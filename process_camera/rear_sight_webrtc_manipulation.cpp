@@ -4,6 +4,11 @@
 
 #include "rear_sight_webrtc_manipulation.h"
 
+void init_rear_sight_processor() {
+    frame_param = std::make_shared<FrameParameters>();
+    rear_sight_processor = std::make_shared<RearSightProcessor>(frame_param);
+}
+
 /// a GstPad callback function, it is used for modification a pipeline stream
 static GstPadProbeReturn cb_have_data (GstPad *pad, GstPadProbeInfo *info, gpointer user_data) {
     GstMapInfo map;
@@ -413,4 +418,34 @@ void webrtc_pipeline_deactivate(seasocks::WebSocket *connection) {
         return;
     gst_element_set_state(my_receiver_entry->pipeline, GST_STATE_NULL);
     destroy_receiver_entry(my_receiver_entry);
+}
+
+void on_zoom_plus_processor() {
+    rear_sight_processor->on_zoom_plus_processor();
+    rear_sight_processor->set_new_frame_param();
+}
+
+void on_zoom_minus_processor() {
+    rear_sight_processor->on_zoom_minus_processor();
+    rear_sight_processor->set_new_frame_param();
+}
+
+void on_move_left_processor() {
+    rear_sight_processor->on_move_left_processor();
+    rear_sight_processor->set_new_frame_param();
+}
+
+void on_move_right_processor() {
+    rear_sight_processor->on_move_right_processor();
+    rear_sight_processor->set_new_frame_param();
+}
+
+void on_move_up_processor() {
+    rear_sight_processor->on_move_up_processor();
+    rear_sight_processor->set_new_frame_param();
+}
+
+void on_move_down_processor() {
+    rear_sight_processor->on_move_down_processor();
+    rear_sight_processor->set_new_frame_param();
 }

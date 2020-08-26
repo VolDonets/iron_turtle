@@ -2,7 +2,6 @@
 // Created by biba_bo on 2020-08-17.
 //
 
-#include <iostream>
 #include "rear_sight_processor.h"
 
 RearSightProcessor::RearSightProcessor(std::shared_ptr<FrameParameters> frame_param) {
