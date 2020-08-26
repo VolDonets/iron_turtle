@@ -20,17 +20,21 @@ MyHandler::MyHandler(MyServer* server) : _server(server){
     this->eventCamDown = std::make_shared<EventWS>(EVENT_CAM_DOWN);
     this->eventCamRight = std::make_shared<EventWS>(EVENT_CAM_RIGHT);
     this->eventCamLeft = std::make_shared<EventWS>(EVENT_CAM_LEFT);
+
+    _isFirstWebRTC_Connection = true;
 }
 
 void MyHandler::onConnect(WebSocket* connection) {
     if(_connections.size() == 0) {
         _connections.insert(connection);
-        _isCameraStreamEnabled = false;
-        _rearSightThread = std::thread([this, connection](){
-            std::cout << "OK_4_______________________________________________________________________________________\n";
-            webrtc_gst_loop(connection);
-            std::cout << "OK_5_______________________________________________________________________________________\n";
-        });
+        if (_isFirstWebRTC_Connection) {
+            _rearSightThread = std::thread([this, connection]() {
+                webrtc_gst_loop(connection);
+            });
+            _isFirstWebRTC_Connection = false;
+        } else {
+            webrtc_pipeline_restart(connection);
+        }
     } else {
         connection->send(MESSAGE_FOR_EXCESS_CLIENT);
         connection->close();
@@ -38,10 +42,7 @@ void MyHandler::onConnect(WebSocket* connection) {
 }
 
 void MyHandler::onData(WebSocket* connection, const char* data) {
-    cout << "onData: " << data << endl;
-    if (!_isCameraStreamEnabled) {
-        _isCameraStreamEnabled = webrtc_session_handle(data);
-    }
+
     if (strcmp(data, COMMAND_MOVE_FORWARD) == 0) {
         _delegate->doEvent(eventMoveForward);
         return;
@@ -60,6 +61,8 @@ void MyHandler::onData(WebSocket* connection, const char* data) {
     }
 
     if (strcmp(data, COMMAND_CAM_ZM) == 0) {
+        rear_sight_processor->on_zoom_minus_processor();
+        rear_sight_processor->set_new_frame_param();
         _delegate->doEvent(eventCamZM);
         return;
     }
@@ -84,10 +87,11 @@ void MyHandler::onData(WebSocket* connection, const char* data) {
         _delegate->doEvent(eventCamLeft);
         return;
     }
+    webrtc_session_handle(data);
 }
 
 void MyHandler::onDisconnect(WebSocket* connection) {
-    webrtc_session_quit();
+    webrtc_pipeline_deactivate(connection);
     _connections.erase(connection);
 }
 

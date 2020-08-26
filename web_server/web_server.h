@@ -85,7 +85,7 @@ private:
     DelegateWS* _delegate;          //instance of event delegator
     std::thread _rearSightThread;   //thread for new connection
 
-    bool _isCameraStreamEnabled;
+    bool _isFirstWebRTC_Connection;
 
     std::shared_ptr<EventWS> eventMoveForward;
     std::shared_ptr<EventWS> eventMoveBack;
