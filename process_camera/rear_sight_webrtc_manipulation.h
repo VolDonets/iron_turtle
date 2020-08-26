@@ -47,9 +47,10 @@ void on_negotiation_needed_cb (GstElement * webrtcbin, gpointer user_data);
 void on_ice_candidate_cb (GstElement * webrtcbin, guint mline_index,
                           gchar * candidate, gpointer user_data);
 
-bool webrtc_session_handle (const char * message);
+void webrtc_session_handle (const char * message);
 
-void webrtc_session_quit();
+void webrtc_pipeline_restart(seasocks::WebSocket *connection);
+void webrtc_pipeline_deactivate(seasocks::WebSocket *connection);
 
 int webrtc_gst_loop(seasocks::WebSocket *connection);
 

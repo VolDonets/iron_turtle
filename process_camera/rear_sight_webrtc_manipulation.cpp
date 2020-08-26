@@ -240,7 +240,8 @@ void on_ice_candidate_cb (G_GNUC_UNUSED GstElement * webrtcbin, guint mline_inde
 }
 
 
-bool webrtc_session_handle ( const char * data_string) {
+void webrtc_session_handle ( const char * data_string) {
+
     const gchar *type_string;
     JsonNode *root_json;
     JsonObject *root_json_object;
@@ -345,12 +346,13 @@ bool webrtc_session_handle ( const char * data_string) {
         goto unknown_message;
 
     cleanup:
-    if (json_parser != NULL)
+   if (json_parser != NULL)
         g_object_unref (G_OBJECT (json_parser));
-    return false;
+
+   return ;
 
     unknown_message:
-    g_error ("Unknown message \"%s\", ignoring", data_string);
+    std::cerr << "Unknown message " << data_string << ", ignoring\n";
     goto cleanup;
 }
 
@@ -382,14 +384,8 @@ gboolean exit_sighandler (gpointer user_data) {
 #endif
 
 int webrtc_gst_loop(seasocks::WebSocket *connection) {
-    //GHashTable *receiver_entry_table;
-
     setlocale(LC_ALL, "");
     gst_init(nullptr, nullptr);
-
-    //receiver_entry_table =
-    //        g_hash_table_new_full(g_direct_hash, g_direct_equal, NULL,
-    //                              destroy_receiver_entry);
 
     mainloop = g_main_loop_new(NULL, FALSE);
     g_assert (mainloop != NULL);
@@ -400,24 +396,21 @@ int webrtc_gst_loop(seasocks::WebSocket *connection) {
 #endif
 
     my_receiver_entry = create_receiver_entry(connection);
-    //g_hash_table_replace (receiver_entry_table, connection, my_receiver_entry);
 
     g_main_loop_run(mainloop);
 
-
-    //g_object_unref(G_OBJECT (connection));
-    //g_hash_table_destroy(receiver_entry_table);
-    std::cout << "OK_1_______________________________________________________________________________________\n";
     g_main_loop_unref(mainloop);
-    std::cout << "OK_2_______________________________________________________________________________________\n";
     gst_deinit();
-    std::cout << "OK_3_______________________________________________________________________________________\n";
     return 0;
 }
 
-void webrtc_session_quit() {
-    if (mainloop) {
-        gst_element_set_state (my_receiver_entry->pipeline, GST_STATE_NULL);
-        g_main_loop_quit(mainloop);
-    }
+void webrtc_pipeline_restart(seasocks::WebSocket *connection) {
+    my_receiver_entry = create_receiver_entry(connection);
+}
+
+void webrtc_pipeline_deactivate(seasocks::WebSocket *connection) {
+    if (my_receiver_entry->connection != connection)
+        return;
+    gst_element_set_state(my_receiver_entry->pipeline, GST_STATE_NULL);
+    destroy_receiver_entry(my_receiver_entry);
 }
