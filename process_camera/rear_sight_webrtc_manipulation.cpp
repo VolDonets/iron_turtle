@@ -246,7 +246,6 @@ void on_ice_candidate_cb (G_GNUC_UNUSED GstElement * webrtcbin, guint mline_inde
 
 
 void webrtc_session_handle ( const char * data_string) {
-
     const gchar *type_string;
     JsonNode *root_json;
     JsonObject *root_json_object;
