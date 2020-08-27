@@ -148,12 +148,10 @@ function send_control_message(){
         let isFirst = true;
 
         if(isQ_ButtonPushed) {
-            ws.send("zmC_PLUS");
             json_str += "\"ZCP\"";
             isFirst = false;
         }
         if(isE_ButtonPushed) {
-            ws.send("zmC_MINUS");
             if (isFirst) {
                 json_str += "\"ZCM\"";
                 isFirst = false;
@@ -161,7 +159,6 @@ function send_control_message(){
                 json_str += ",\"ZCM\"";
         }
         if(isW_ButtonPushed) {
-            ws.send("mvC_UP");
             if (isFirst) {
                 json_str += "\"MCU\"";
                 isFirst = false;
@@ -169,7 +166,6 @@ function send_control_message(){
                 json_str += ",\"MCU\"";
         }
         if(isS_ButtonPushed) {
-            ws.send("mvC_DOWN");
             if (isFirst) {
                 json_str += "\"MCD\"";
                 isFirst = false;
@@ -178,7 +174,6 @@ function send_control_message(){
 
         }
         if(isA_ButtonPushed) {
-            ws.send("mvC_LEFT");
             if (isFirst) {
                 json_str += "\"MCL\"";
                 isFirst = false;
@@ -186,7 +181,6 @@ function send_control_message(){
                 json_str += ",\"MCL\"";
         }
         if(isD_ButtonPushed) {
-            ws.send("mvC_RIGHT");
             if (isFirst) {
                 json_str += "\"MCR\"";
                 isFirst = false;
@@ -195,7 +189,6 @@ function send_control_message(){
         }
 
         if(isUP_ButtonPushed) {
-            ws.send("mvT_UP");
             if (isFirst) {
                 json_str += "\"MTU\"";
                 isFirst = false;
@@ -203,7 +196,6 @@ function send_control_message(){
                 json_str += ",\"MTU\"";
         }
         if(isDOWN_ButtonPushed) {
-            ws.send("mvT_DOWN");
             if (isFirst) {
                 json_str += "\"MTD\"";
                 isFirst = false;
@@ -211,7 +203,6 @@ function send_control_message(){
                 json_str += ",\"MTD\"";
         }
         if(isRIGHT_ButtonPushed) {
-            ws.send("mvT_RIGHT");
             if (isFirst) {
                 json_str += "\"MTR\"";
                 isFirst = false;
@@ -219,14 +210,13 @@ function send_control_message(){
                 json_str += ",\"MTR\"";
         }
         if(isLEFT_ButtonPushed) {
-            ws.send("mvT_LEFT");
             if (isFirst)
                 json_str += "\"MTL\"";
             else
                 json_str += ",\"MTL\"";
         }
         json_str += "]}";
-        console.log(json_str);
+        ws.send(json_str);
     }
 }
 
