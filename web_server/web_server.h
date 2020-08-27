@@ -5,14 +5,17 @@
 #ifndef IRON_TURTLE_WEB_SERVER_H
 #define IRON_TURTLE_WEB_SERVER_H
 
-#include "seasocks/PrintfLogger.h"
-#include "seasocks/Server.h"
-#include "seasocks/StringUtil.h"
-#include "seasocks/WebSocket.h"
-#include "seasocks/util/Json.h"
-#include "seasocks/PageHandler.h"
+#include <seasocks/PrintfLogger.h>
+#include <seasocks/Server.h>
+#include <seasocks/StringUtil.h>
+#include <seasocks/WebSocket.h>
+#include <seasocks/util/Json.h>
+#include <seasocks/PageHandler.h>
+#include <json-glib/json-glib.h>
+
 #include "lib_my_event_handler/event_ws.h"
 #include "lib_my_event_handler/delegate_ws.h"
+#include "../process_camera/rear_sight_webrtc_manipulation.h"
 
 #include <iostream>
 #include <cstdio>
@@ -32,10 +35,10 @@
 #define EVENT_MOVE_RIGHTER          3
 #define EVENT_MOVE_LEFTER           4
 
-#define COMMAND_MOVE_FORWARD        "mvT_UP"
-#define COMMAND_MOVE_BACK           "mvT_DOWN"
-#define COMMAND_MOVE_RIGHTER        "mvT_RIGHT"
-#define COMMAND_MOVE_LEFTER         "mvT_LEFT"
+#define COMMAND_MOVE_FORWARD        "MTU"
+#define COMMAND_MOVE_BACK           "MTD"
+#define COMMAND_MOVE_RIGHTER        "MTR"
+#define COMMAND_MOVE_LEFTER         "MTL"
 
 #define EVENT_CAM_ZP                5
 #define EVENT_CAM_ZM                6
@@ -44,12 +47,12 @@
 #define EVENT_CAM_RIGHT             9
 #define EVENT_CAM_LEFT              10
 
-#define COMMAND_CAM_ZP              "zmC_PLUS"
-#define COMMAND_CAM_ZM              "zmC_MINUS"
-#define COMMAND_CAM_UP              "mvC_UP"
-#define COMMAND_CAM_DOWN            "mvC_DOWN"
-#define COMMAND_CAM_RIGHT           "mvC_RIGHT"
-#define COMMAND_CAM_LEFT            "mvC_LEFT"
+#define COMMAND_CAM_ZP              "ZCP"
+#define COMMAND_CAM_ZM              "ZCM"
+#define COMMAND_CAM_UP              "MCU"
+#define COMMAND_CAM_DOWN            "MCD"
+#define COMMAND_CAM_RIGHT           "MCR"
+#define COMMAND_CAM_LEFT            "MCL"
 
 #define MESSAGE_FOR_EXCESS_CLIENT   "YOU_ARE_EXCESS"
 
@@ -80,11 +83,17 @@ public:
 
 
 private:
-    set<WebSocket*> _connections;   //set of WebSocket connections
-    Server* _server;                //pointer on object of this server
-    DelegateWS* _delegate;          //instance of event delegator
-    std::thread _rearSightThread;   //thread for new connection
+    ///set of WebSocket connections
+    set<WebSocket*> _connections;
+    ///pointer on object of this server
+    Server* _server;
+    ///instance of event delegator
+    DelegateWS* _delegate;
+    ///thread for new connection
+    std::thread _rearSightThread;
 
+    /** this variable answers on the question "Had it WebRTC connection/gst loop?"
+      also by this variable we decide to create a new thread for gst loop or not*/
     bool _isFirstWebRTC_Connection;
 
     std::shared_ptr<EventWS> eventMoveForward;
@@ -98,6 +107,8 @@ private:
     std::shared_ptr<EventWS> eventCamDown;
     std::shared_ptr<EventWS> eventCamLeft;
     std::shared_ptr<EventWS> eventCamRight;
+
+    void doEventHandling(const char *command);
 };
 
 struct MyAuthHandler : PageHandler {

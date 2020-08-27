@@ -2,9 +2,9 @@
 // Created by biba_bo on 2020-08-18.
 //
 
-#include "../process_camera/rear_sight_webrtc_manipulation.h"
 
 #include "web_server.h"
+
 MyHandler::MyHandler(MyServer* server) : _server(server){
     this->_delegate = DelegateWS::getInstance();
 
@@ -43,7 +43,40 @@ void MyHandler::onConnect(WebSocket* connection) {
 }
 
 void MyHandler::onData(WebSocket* connection, const char* data) {
+    if (strstr(data, "comm")) {
+        JsonParser *jsonParser = json_parser_new();
+        JsonNode *jsonRoot;
+        JsonObject *jsonRootObject;
+        JsonArray *jsonCommArray;
+        if (json_parser_load_from_data(jsonParser, data, -1, NULL)) {
+            jsonRoot = json_parser_get_root(jsonParser);
+            if (JSON_NODE_HOLDS_OBJECT(jsonRoot)) {
+                jsonRootObject = json_node_get_object(jsonRoot);
+                jsonCommArray = json_object_get_array_member(jsonRootObject, "comm");
+                for (int inx = 0; inx < json_array_get_length(jsonCommArray); inx++) {
+                    doEventHandling(json_array_get_string_element(jsonCommArray, inx));
+                }
+            }
+        }
+        g_object_unref(jsonParser);
+        return;
+    }
 
+    webrtc_session_handle(data);
+}
+
+void MyHandler::onDisconnect(WebSocket* connection) {
+    webrtc_pipeline_deactivate(connection);
+    _connections.erase(connection);
+}
+
+void MyHandler::sendValuesJSON(std::string values) {
+    for (auto c : _connections) {
+        c->send(values);
+    }
+}
+
+void MyHandler::doEventHandling(const char *data) {
     if (strcmp(data, COMMAND_MOVE_FORWARD) == 0) {
         _delegate->doEvent(eventMoveForward);
         return;
@@ -85,17 +118,5 @@ void MyHandler::onData(WebSocket* connection, const char* data) {
     if (strcmp(data, COMMAND_CAM_LEFT) == 0) {
         _delegate->doEvent(eventCamLeft);
         return;
-    }
-    webrtc_session_handle(data);
-}
-
-void MyHandler::onDisconnect(WebSocket* connection) {
-    webrtc_pipeline_deactivate(connection);
-    _connections.erase(connection);
-}
-
-void MyHandler::sendValuesJSON(std::string values) {
-    for (auto c : _connections) {
-        c->send(values);
     }
 }
