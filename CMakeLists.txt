@@ -35,8 +35,8 @@ add_executable(iron_turtle main.cpp
         process_camera/rear_sight_webrtc_manipulation.cpp
         process_camera/rear_sight_webrtc_manipulation.h
 
-        process_camera/face_detector_ocv/face_detection_processor.cpp
-        process_camera/face_detector_ocv/face_detection_processor.h)
+        process_camera/form_detector_ocv/form_detection_processor.cpp
+        process_camera/form_detector_ocv/form_detection_processor.h)
 
 target_link_libraries(iron_turtle seasocks "${ZLIB_LIBRARIES}")
 target_link_libraries(iron_turtle pthread z)

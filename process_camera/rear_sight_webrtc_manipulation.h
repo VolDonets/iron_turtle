@@ -7,7 +7,7 @@
 
 #include "rear_sight_processor/image_processing.h"
 #include "rear_sight_processor/rear_sight_processor.h"
-#include "face_detector_ocv/face_detection_processor.h"
+#include "form_detector_ocv/form_detection_processor.h"
 
 #include <locale.h>
 #include <glib.h>
@@ -80,7 +80,7 @@ static std::shared_ptr<RearSightProcessor> rear_sight_processor;
 static ReceiverEntry *my_receiver_entry;
 static GMainLoop *mainloop;
 static int count_frames;
-static std::shared_ptr<FaceDetectionProcessor> face_detection_processor;
+static std::shared_ptr<FormDetectionProcessor> form_detection_processor;
 static cv::Rect old_rectangle(0, 0, 0, 0);
 
 #endif //IRON_TURTLE_REAR_SIGHT_WEBRTC_MANIPULATION_H

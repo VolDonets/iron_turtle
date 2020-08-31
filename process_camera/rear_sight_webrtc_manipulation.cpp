@@ -8,7 +8,7 @@ void init_rear_sight_processor() {
     frame_param = std::make_shared<FrameParameters>();
     rear_sight_processor = std::make_shared<RearSightProcessor>(frame_param);
     count_frames = 0;
-    face_detection_processor = std::make_shared<FaceDetectionProcessor>();
+    form_detection_processor = std::make_shared<FormDetectionProcessor>();
 }
 
 /// a GstPad callback function, it is used for modification a pipeline stream
@@ -34,11 +34,11 @@ static GstPadProbeReturn cb_have_data (GstPad *pad, GstPadProbeInfo *info, gpoin
 
         if (count_frames == CHECK_PER_FRAMES) {
             cv::Mat checking_mat = main_image.clone();
-            face_detection_processor->add_frame(checking_mat);
+            form_detection_processor->add_frame(checking_mat);
             count_frames = 0;
         }
         count_frames++;
-        std::vector<cv::Rect> *faces_coord = face_detection_processor->getLastDetectedFaces();
+        std::vector<cv::Rect> *faces_coord = form_detection_processor->getLastDetectedFaces();
         if (faces_coord != nullptr) {
             std::cout << "Size::: " << faces_coord->size() << "\n";
             if (faces_coord->size() != 0) {

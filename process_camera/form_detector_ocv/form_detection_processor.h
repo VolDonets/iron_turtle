@@ -2,8 +2,8 @@
 // Created by biba_bo on 2020-08-27.
 //
 
-#ifndef REAR_SIGHT_CLONE_PROJECT_FACE_DETECTION_PROCESSOR_H
-#define REAR_SIGHT_CLONE_PROJECT_FACE_DETECTION_PROCESSOR_H
+#ifndef REAR_SIGHT_CLONE_PROJECT_FORM_DETECTION_PROCESSOR_H
+#define REAR_SIGHT_CLONE_PROJECT_FORM_DETECTION_PROCESSOR_H
 
 #define CHECK_PER_FRAMES                    5
 #define MAX_MATS_LIST_SIZE                  3
@@ -14,10 +14,10 @@
 #include <opencv2/opencv.hpp>
 #include <thread>
 
-class FaceDetectionProcessor {
+class FormDetectionProcessor {
 private:
     std::list<cv::Mat> queueFrames;
-    std::vector<cv::Rect> *facesCoords = nullptr;
+    std::vector<cv::Rect> *formsCoords = nullptr;
     cv::CascadeClassifier cascadeClassifier;
     std::thread recognitionProcessThread;
 
@@ -25,8 +25,8 @@ private:
     std::mutex mutexProc;
 
 public:
-    FaceDetectionProcessor();
-    ~FaceDetectionProcessor();
+    FormDetectionProcessor();
+    ~FormDetectionProcessor();
 
     void add_frame(cv::Mat frame);
     void processRecognition();
@@ -34,4 +34,4 @@ public:
 };
 
 
-#endif //REAR_SIGHT_CLONE_PROJECT_FACE_DETECTION_PROCESSOR_H
+#endif //REAR_SIGHT_CLONE_PROJECT_FORM_DETECTION_PROCESSOR_H
