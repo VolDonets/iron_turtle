@@ -5,8 +5,6 @@
 #ifndef IRON_TURTLE_WEB_SERVER_WORKER_H
 #define IRON_TURTLE_WEB_SERVER_WORKER_H
 
-#define MAX_JSON_LIST_SIZE 20                //set a max list's size with data from sensors
-
 #include <random>
 #include <string>
 #include <thread>
@@ -22,21 +20,37 @@
 #include "turtle_manager/turtle_manager.h"
 #include "process_camera/rear_sight_webrtc_manipulation.h"
 
+/** This is the class WebServerWorker, which extends the abstract class HandlerWS (which are a part of my own handling system)
+ * it used for handling interrupts from the WebServer, and works width hardware drivers*/
 class WebServerWorker : public HandlerWS{
 public:
+    /** Main constructor here starts a new thread for the webserver*/
     WebServerWorker();
+    /** Destructor*/
+    ~WebServerWorker();
+    /** The function for joining a webserver's thread */
     void joinServerTread();
+    /** The overriding a function from the class HandlerWS */
     void handleEventWS(std::shared_ptr<EventWS> event) override;
 
 private:
+    /** The private method for starting web-server thread */
     void startServer();
+    /** Method for processing a "hard" request from webserver in the another thread */
     void processServer();
 
+    /** The field with the web-server thread */
     std::thread server_thread;
+    /** The field with the loggering system for web-server */
     shared_ptr<PrintfLogger> logger;
+    /** The field with MySever - this is my web-server, which process connection with web clients */
     shared_ptr<MyServer> ws_server;
+    /** The field with MyHandler - this is my hander for events from web-clients, but it handle only events:
+     * onConnection, onDisconnecting, onMessage, and only in the web-server thread*/
     shared_ptr<MyHandler> handler;
 
+    /** The field with TurtleManager. This one are manager of the iron turtle driver. It just gets commands from this class
+     * and them process it if possible*/
     shared_ptr<TurtleManager> turtle_manager;
 };
 

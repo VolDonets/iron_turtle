@@ -75,10 +75,14 @@ class MyHandler : public WebSocket::Handler {
 public:
     explicit MyHandler(MyServer* server);
 
+    /// overloading a handling function onConnect
     virtual void onConnect(WebSocket* connection);
+    /// overloading a handling function onMessage or onData
     virtual void onData(WebSocket* connection, const char* data);
+    /// overloading a handlilg function onDisconnect
     virtual void onDisconnect(WebSocket* connection);
 
+    /// a function for sending messages for clients (in this version of the server for one client)
     void sendValuesJSON(std::string values);
 
 
@@ -108,6 +112,7 @@ private:
     std::shared_ptr<EventWS> eventCamLeft;
     std::shared_ptr<EventWS> eventCamRight;
 
+    /// a private function for handling a vector commands from a client
     void doEventHandling(const char *command);
 };
 
