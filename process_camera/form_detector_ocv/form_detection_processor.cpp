@@ -7,7 +7,10 @@
 FormDetectionProcessor::FormDetectionProcessor() {
     mutexProc.lock();
     processRecognition();
-    cascadeClassifier.load("src/haarcascade/haarcascade_frontalface_alt_tree.xml");
+    //cascadeClassifier.load("src/haarcascade/haarcascade_frontalface_alt_tree.xml");
+    //cascadeClassifier.load("src/haarcascade/hands_haarcascades/another_hand.xml");
+    //cascadeClassifier.load("src/haarcascade/hands_haarcascades/fist.xml");
+    cascadeClassifier.load("src/haarcascade/hands_haarcascades/rpalm.xml");
 }
 
 FormDetectionProcessor::~FormDetectionProcessor() {
