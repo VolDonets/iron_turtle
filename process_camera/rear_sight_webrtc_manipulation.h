@@ -7,6 +7,7 @@
 
 #include "rear_sight_processor/image_processing.h"
 #include "rear_sight_processor/rear_sight_processor.h"
+#include "face_detector_ocv/face_detection_processor.h"
 
 #include <locale.h>
 #include <glib.h>
@@ -29,10 +30,10 @@
 
 /*This ia a payload server for possibility to establish client-server connection
  * I tried to use a local payload server, but I had difficulties with configuring it.*/
-#define RTP_PAYLOAD_TYPE "96"
-#define SOUP_HTTP_PORT 57778
-#define STUN_SERVER "stun.l.google.com:19302"
-//#define STUN_SERVER "127.0.0.1:3478"
+#define RTP_PAYLOAD_TYPE                "96"
+#define STUN_SERVER                     "stun.l.google.com:19302"
+#define INTERPOLATION_COEFFICIENT       0.05
+//#define STUN_SERVER                     "127.0.0.1:3478"
 
 //Struct which contains pipeline and other GstElements, for comfortable work with connection.
 typedef struct _ReceiverEntry ReceiverEntry;
@@ -78,5 +79,8 @@ static std::shared_ptr<FrameParameters> frame_param;
 static std::shared_ptr<RearSightProcessor> rear_sight_processor;
 static ReceiverEntry *my_receiver_entry;
 static GMainLoop *mainloop;
+static int count_frames;
+static std::shared_ptr<FaceDetectionProcessor> face_detection_processor;
+static cv::Rect old_rectangle(0, 0, 0, 0);
 
 #endif //IRON_TURTLE_REAR_SIGHT_WEBRTC_MANIPULATION_H
