@@ -7,6 +7,8 @@
 void init_rear_sight_processor() {
     frame_param = std::make_shared<FrameParameters>();
     rear_sight_processor = std::make_shared<RearSightProcessor>(frame_param);
+    count_frames = 0;
+    face_detection_processor = std::make_shared<FaceDetectionProcessor>();
 }
 
 /// a GstPad callback function, it is used for modification a pipeline stream
@@ -25,17 +27,41 @@ static GstPadProbeReturn cb_have_data (GstPad *pad, GstPadProbeInfo *info, gpoin
         return GST_PAD_PROBE_OK;
 
     if (gst_buffer_map (buffer, &map, GST_MAP_WRITE)) {
-        cv::Mat main_image, copy_main_image, done_main_image, done_mini_image, cropped_img;
+        cv::Mat done_main_image, done_mini_image;
         cv::Size frame_size(WIDTH, HEIGHT);
 
-        main_image = cv::Mat(frame_size, CV_8UC4, (char*)(map.data), cv::Mat::AUTO_STEP);
-        copy_main_image = main_image.clone();
+        cv::Mat main_image = cv::Mat(frame_size, CV_8UC4, (char*)(map.data), cv::Mat::AUTO_STEP);
+
+        if (count_frames == CHECK_PER_FRAMES) {
+            cv::Mat checking_mat = main_image.clone();
+            face_detection_processor->add_frame(checking_mat);
+            count_frames = 0;
+        }
+        count_frames++;
+        std::vector<cv::Rect> *faces_coord = face_detection_processor->getLastDetectedFaces();
+        if (faces_coord != nullptr) {
+            std::cout << "Size::: " << faces_coord->size() << "\n";
+            if (faces_coord->size() != 0) {
+                if (old_rectangle.width == 0)
+                    old_rectangle = faces_coord->operator[](0);
+                old_rectangle = cv::Rect(faces_coord->operator[](0).x * INTERPOLATION_COEFFICIENT + old_rectangle.x * (1 - INTERPOLATION_COEFFICIENT),
+                                          faces_coord->operator[](0).y * INTERPOLATION_COEFFICIENT + old_rectangle.y * (1 - INTERPOLATION_COEFFICIENT),
+                                          faces_coord->operator[](0).width * INTERPOLATION_COEFFICIENT + old_rectangle.width * (1 - INTERPOLATION_COEFFICIENT),
+                                          faces_coord->operator[](0).height * INTERPOLATION_COEFFICIENT + old_rectangle.height * (1 - INTERPOLATION_COEFFICIENT));
+
+                cv::rectangle(main_image, old_rectangle, cv::Scalar(0, 255, 0), 2, 0, 0);
+            } else
+                old_rectangle.width = 0;
+        }
+
+
+        cv::Mat copy_main_image = main_image.clone();
 
         cv::Rect my_interest_region(frame_param->CROPPED_X, frame_param->CROPPED_Y,
                                     frame_param->CROPPED_WIDTH, frame_param->CROPPED_HEIGHT);
         cv::rectangle(copy_main_image, my_interest_region, cv::Scalar(0, 0,255), 2, 0, 0);
 
-        cropped_img = main_image(my_interest_region);
+        cv::Mat cropped_img = main_image(my_interest_region);
         cv::resize(cropped_img, done_main_image, cv::Size(WIDTH, HEIGHT));
         cv::resize(copy_main_image, done_mini_image, cv::Size(RESIZE_WIDTH, RESIZE_HEIGHT));
 
