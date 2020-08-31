@@ -33,7 +33,10 @@ add_executable(iron_turtle main.cpp
         process_camera/rear_sight_processor/rear_sight_processor.h
         process_camera/rear_sight_processor/rear_sight_processor_keep_frame_proportionality.cpp
         process_camera/rear_sight_webrtc_manipulation.cpp
-        process_camera/rear_sight_webrtc_manipulation.h)
+        process_camera/rear_sight_webrtc_manipulation.h
+
+        process_camera/face_detector_ocv/face_detection_processor.cpp
+        process_camera/face_detector_ocv/face_detection_processor.h)
 
 target_link_libraries(iron_turtle seasocks "${ZLIB_LIBRARIES}")
 target_link_libraries(iron_turtle pthread z)
@@ -98,4 +101,4 @@ endif()
 
 add_custom_command(TARGET iron_turtle POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_directory
-        ${PROJECT_SOURCE_DIR}/src/server_files $<TARGET_FILE_DIR:iron_turtle>/src/server_files)
+        ${PROJECT_SOURCE_DIR}/src $<TARGET_FILE_DIR:iron_turtle>/src)
