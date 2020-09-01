@@ -16,7 +16,6 @@ add_executable(iron_turtle main.cpp
         web_server/lib_my_event_handler/event_ws.cpp
         web_server/lib_my_event_handler/handler_ws.h
 
-#add_executable(iron_turtle main_ascii_test.cpp
         turtle_manager/ascii_com_manager/ascii_com_lim.h
         turtle_manager/ascii_com_manager/ascii_native_driver.h
         turtle_manager/ascii_com_manager/ascii_native_driver.cpp
@@ -36,7 +35,10 @@ add_executable(iron_turtle main.cpp
         process_camera/rear_sight_webrtc_manipulation.h
 
         process_camera/form_detector_ocv/form_detection_processor.cpp
-        process_camera/form_detector_ocv/form_detection_processor.h)
+        process_camera/form_detector_ocv/form_detection_processor.h
+
+        process_camera/form_detector_ocv/form_detection_processor_dnn_caffe.cpp
+        process_camera/form_detector_ocv/form_detection_processor_dnn_caffe.h)
 
 target_link_libraries(iron_turtle seasocks "${ZLIB_LIBRARIES}")
 target_link_libraries(iron_turtle pthread z)
