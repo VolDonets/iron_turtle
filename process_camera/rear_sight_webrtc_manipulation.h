@@ -33,7 +33,7 @@
  * I tried to use a local payload server, but I had difficulties with configuring it.*/
 #define RTP_PAYLOAD_TYPE                "96"
 #define STUN_SERVER                     "stun.l.google.com:19302"
-#define INTERPOLATION_COEFFICIENT       0.05
+#define INTERPOLATION_COEFFICIENT       0.2
 //#define STUN_SERVER                     "127.0.0.1:3478"
 
 //Struct which contains pipeline and other GstElements, for comfortable work with connection.
