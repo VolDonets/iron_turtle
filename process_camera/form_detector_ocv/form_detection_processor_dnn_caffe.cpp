@@ -37,10 +37,11 @@ void FormDetectionProcessorDNN::processRecognition() {
             queueFrames.pop_front();
             mutexRes.unlock();
 
-            formsCoords = new std::vector<cv::Rect>();
+            std::vector<cv::Rect> *tmpFormsCoords = new std::vector<cv::Rect>();
 
             cv::Mat resizedFrame;
             cv::resize(currentFrame, resizedFrame, cv::Size(300, 300));
+            cv::cvtColor(resizedFrame, resizedFrame, cv::COLOR_BGRA2BGR);
             cv::Mat inputBlob = cv::dnn::blobFromImage(resizedFrame, 1, cv::Size(300, 300), cv::Scalar(104, 177, 123), false);
             dnn_model.setInput(inputBlob, "data");
             cv::Mat detection = dnn_model.forward("detection_out");
@@ -58,14 +59,15 @@ void FormDetectionProcessorDNN::processRecognition() {
                     cv::Rect object((int)xLeftBottom, (int)yLeftBottom,
                                 (int)(xRightTop - xLeftBottom),
                                 (int)(yRightTop - yLeftBottom));
-                    formsCoords->push_back(object);
+                    tmpFormsCoords->push_back(object);
                 }
             }
 
+            formsCoords = tmpFormsCoords;
             if (!queueFrames.empty())
                 mutexProc.unlock();
-            if (queueFrames.size() == -100)
-                return;
+            if (queueFrames.size() == -100)   // stupid lines of code for CLion
+                return;                       //
         }
     });
 }
