@@ -44,7 +44,8 @@ void FormDetectionProcessorDNN::processRecognition() {
             cv::cvtColor(resizedFrame, resizedFrame, cv::COLOR_BGRA2BGR);
             cv::Mat inputBlob = cv::dnn::blobFromImage(resizedFrame, 1, cv::Size(300, 300), cv::Scalar(104, 177, 123), false);
             dnn_model.setInput(inputBlob, "data");
-            cv::Mat detection = dnn_model.forward("detection_out");
+            //cv::Mat detection = dnn_model.forward("detection_out");
+            cv::Mat detection = dnn_model.forward("conv8");
             cv::Mat detectionMat(detection.size[2], detection.size[3], CV_32F, detection.ptr<float>());
             float confidenceThreshold = 0.2;
             for (int i = 0; i < detectionMat.rows; i++) {
@@ -59,6 +60,7 @@ void FormDetectionProcessorDNN::processRecognition() {
                     cv::Rect object((int)xLeftBottom, (int)yLeftBottom,
                                 (int)(xRightTop - xLeftBottom),
                                 (int)(yRightTop - yLeftBottom));
+                    std::cout << "x: " << object.x << ", y: " << object.y << ", weight: " << object.width << ", height: " << object.height << "\n";
                     tmpFormsCoords->push_back(object);
                 }
             }

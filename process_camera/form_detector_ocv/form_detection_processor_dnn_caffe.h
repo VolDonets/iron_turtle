@@ -5,8 +5,11 @@
 #ifndef IRON_TURTLE_FORM_DETECTION_PROCESSOR_DNN_CAFFE_H
 #define IRON_TURTLE_FORM_DETECTION_PROCESSOR_DNN_CAFFE_H
 
-#define PROTOTXT_PATH                       "src/dnn/dnn_caffe/deploy.prototxt.txt"
-#define CAFFE_MODEL_PATH                    "src/dnn/dnn_caffe/res10_300x300_ssd_iter_140000.caffemodel"
+//#define PROTOTXT_PATH                       "src/dnn/dnn_caffe/deploy.prototxt.txt"
+//#define CAFFE_MODEL_PATH                    "src/dnn/dnn_caffe/res10_300x300_ssd_iter_140000.caffemodel"
+
+#define PROTOTXT_PATH                       "src/dnn/yolo_caffe/yolo_darknet_deploy.prototxt"
+#define CAFFE_MODEL_PATH                    "src/dnn/yolo_caffe/yolo_darknet.caffemodel"
 
 #define CHECK_PER_FRAMES                    5
 #define MAX_MATS_LIST_SIZE                  3
