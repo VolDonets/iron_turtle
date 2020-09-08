@@ -41,7 +41,12 @@ static GstPadProbeReturn cb_have_data (GstPad *pad, GstPadProbeInfo *info, gpoin
         count_frames++;
         std::vector<cv::Rect> *faces_coord = form_detection_processor->getLastDetectedFaces();
         if (faces_coord != nullptr) {
-            std::cout << "Size::: " << faces_coord->size() << "\n";
+            // this line draw all detected ROIs, WITHOUT interpolation
+            for(int i = 0; i < faces_coord->size(); i++)
+                cv::rectangle(main_image, faces_coord->operator[](i), cv::Scalar(0, 255, 0), 2, 0, 0);
+
+            // this lines draw only one ROI with detected object, but with interpolation.
+            /* std::cout << "Size::: " << faces_coord->size() << "\n";
             if (faces_coord->size() != 0) {
                 if (old_rectangle.width == 0)
                     old_rectangle = faces_coord->operator[](0);
@@ -53,6 +58,7 @@ static GstPadProbeReturn cb_have_data (GstPad *pad, GstPadProbeInfo *info, gpoin
                 cv::rectangle(main_image, old_rectangle, cv::Scalar(0, 255, 0), 2, 0, 0);
             } else
                 old_rectangle.width = 0;
+                */
         }
 
 
