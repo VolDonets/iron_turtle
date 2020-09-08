@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.13)
+cmake_minimum_required(VERSION 3.17)
 project(iron_turtle)
 
 set(CMAKE_CXX_STANDARD 20)
@@ -34,11 +34,14 @@ add_executable(iron_turtle main.cpp
         process_camera/rear_sight_webrtc_manipulation.cpp
         process_camera/rear_sight_webrtc_manipulation.h
 
-        process_camera/form_detector_ocv/form_detection_processor.cpp
-        process_camera/form_detector_ocv/form_detection_processor.h
+#        process_camera/form_detector_ocv/form_detection_processor.cpp
+#        process_camera/form_detector_ocv/form_detection_processor.h
 
-        process_camera/form_detector_ocv/form_detection_processor_dnn_caffe.cpp
-        process_camera/form_detector_ocv/form_detection_processor_dnn_caffe.h)
+#        process_camera/form_detector_ocv/form_detection_processor_dnn_caffe.cpp
+#        process_camera/form_detector_ocv/form_detection_processor_dnn_caffe.h
+
+        process_camera/form_detector_ocv/form_detection_processor_yolov3_tiny.cpp
+        process_camera/form_detector_ocv/form_detection_processor_yolov3_tiny.h)
 
 target_link_libraries(iron_turtle seasocks "${ZLIB_LIBRARIES}")
 target_link_libraries(iron_turtle pthread z)
