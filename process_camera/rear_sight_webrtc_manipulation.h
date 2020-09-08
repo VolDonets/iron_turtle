@@ -8,7 +8,8 @@
 #include "rear_sight_processor/image_processing.h"
 #include "rear_sight_processor/rear_sight_processor.h"
 //#include "form_detector_ocv/form_detection_processor.h"
-#include "form_detector_ocv/form_detection_processor_dnn_caffe.h"
+//#include "form_detector_ocv/form_detection_processor_dnn_caffe.h"
+#include "form_detector_ocv/form_detection_processor_yolov3_tiny.h"
 
 #include <locale.h>
 #include <glib.h>
