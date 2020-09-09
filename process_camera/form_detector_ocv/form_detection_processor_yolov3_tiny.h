@@ -5,9 +5,15 @@
 #ifndef IRON_TURTLE_FORM_DETECTION_PROCESSOR_YOLOV3_TINY_H
 #define IRON_TURTLE_FORM_DETECTION_PROCESSOR_YOLOV3_TINY_H
 
-#define MODEL_PATH                          "src/dnn/yolov3_tiny/yolov3-tiny.cfg"
-#define WIDTH_PATH                          "src/dnn/yolov3_tiny/yolov3-tiny.weights"
-#define COCO_NAMES_PATH                     "src/dnn/yolov3_tiny/coco.names"
+//#define MODEL_PATH                          "src/dnn/yolov3_tiny/yolov3-tiny.cfg"
+//#define WIDTH_PATH                          "src/dnn/yolov3_tiny/yolov3-tiny.weights"
+//#define COCO_NAMES_PATH                     "src/dnn/yolov3_tiny/coco.names"
+
+//#define MODEL_PATH                          "src/dnn/yolov3_tiny_cross_hands/cross-hands-tiny.cfg"
+//#define WIDTH_PATH                          "src/dnn/yolov3_tiny_cross_hands/cross-hands-tiny.weights"
+
+#define MODEL_PATH                          "src/dnn/yolov3_tiny_cross_hands_prn/cross-hands-tiny-prn.cfg"
+#define WIDTH_PATH                          "src/dnn/yolov3_tiny_cross_hands_prn/cross-hands-tiny-prn.weights"
 
 #define CHECK_PER_FRAMES                    5
 #define MAX_MATS_LIST_SIZE                  3

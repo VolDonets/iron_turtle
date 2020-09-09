@@ -39,7 +39,7 @@ void FormDetectionProcessorDNN::processRecognition() {
         cv::Mat resizedFrame;
         cv::Mat inputBlob;
 
-        double confThreshold = 0.5;
+        double confThreshold = 0.01;
         double nmsThreshold = 0.4;
         double scale = 1.0 / 255.0;
         cv::Scalar mean = cv::Scalar(0, 0, 0);
