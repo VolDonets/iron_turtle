@@ -34,14 +34,11 @@ add_executable(iron_turtle main.cpp
         process_camera/rear_sight_webrtc_manipulation.cpp
         process_camera/rear_sight_webrtc_manipulation.h
 
-#        process_camera/form_detector_ocv/form_detection_processor.cpp
-#        process_camera/form_detector_ocv/form_detection_processor.h
-
+#        process_camera/form_detector_ocv/form_detection_processor_haarcascade.cpp
 #        process_camera/form_detector_ocv/form_detection_processor_dnn_caffe.cpp
-#        process_camera/form_detector_ocv/form_detection_processor_dnn_caffe.h
-
-        process_camera/form_detector_ocv/form_detection_processor_yolov3_tiny.cpp
-        process_camera/form_detector_ocv/form_detection_processor_yolov3_tiny.h)
+#        process_camera/form_detector_ocv/form_detection_processor_yolov3_tiny.cpp
+        process_camera/form_detector_ocv/form_det_track_svm.cpp
+        process_camera/form_detector_ocv/form_detection_processor.h)
 
 target_link_libraries(iron_turtle seasocks "${ZLIB_LIBRARIES}")
 target_link_libraries(iron_turtle pthread z)
@@ -49,6 +46,15 @@ target_link_libraries(iron_turtle pthread z)
 find_package(OpenCV REQUIRED)
 include_directories(${OpenCV_INCLUDE_DIRS})
 target_link_libraries(iron_turtle ${OpenCV_LIBS})
+
+find_package(PkgConfig)
+if (PKG_CONFIG_FOUND)
+    pkg_check_modules(DLIB "dlib-1")
+    if (DLIB_FOUND)
+        target_link_libraries(iron_turtle ${DLIB_LIBRARIES})
+        add_definitions(${DLIB_CFLAGS} ${DLIB_CFLAGS_OTHER})
+    endif()
+endif()
 
 find_package(PkgConfig)
 if (PKG_CONFIG_FOUND)
