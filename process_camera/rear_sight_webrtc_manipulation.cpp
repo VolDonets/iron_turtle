@@ -8,8 +8,7 @@ void init_rear_sight_processor() {
     frame_param = std::make_shared<FrameParameters>();
     rear_sight_processor = std::make_shared<RearSightProcessor>(frame_param);
     count_frames = 0;
-    //form_detection_processor = std::make_shared<FormDetectionProcessor>();
-    form_detection_processor = std::make_shared<FormDetectionProcessorDNN>();
+    form_detection_processor = std::make_shared<FormDetectionProcessor>();
 }
 
 /// a GstPad callback function, it is used for modification a pipeline stream
