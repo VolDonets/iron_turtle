@@ -2,23 +2,19 @@
 // Created by biba_bo on 2020-09-08.
 //
 
-#include "form_detection_processor_yolov3_tiny.h"
+#include "form_detection_processor.h"
 
 
-FormDetectionProcessorDNN::FormDetectionProcessorDNN() {
+FormDetectionProcessor::FormDetectionProcessor() {
     mutexProc.lock();
-    dnn_model = cv::dnn::readNetFromDarknet(MODEL_PATH, WIDTH_PATH);
-    if (dnn_model.empty())
-        std::cerr << "Can't load network by using this files \n";
-    else
-        processRecognition();
+    processRecognition();
 }
 
-FormDetectionProcessorDNN::~FormDetectionProcessorDNN() {
+FormDetectionProcessor::~FormDetectionProcessor() {
 
 }
 
-void FormDetectionProcessorDNN::add_frame(cv::Mat frame) {
+void FormDetectionProcessor::add_frame(cv::Mat frame) {
     mutexRes.lock();
     if (queueFrames.size() > MAX_MATS_LIST_SIZE) {
         queueFrames.pop_front();
@@ -29,11 +25,17 @@ void FormDetectionProcessorDNN::add_frame(cv::Mat frame) {
     mutexRes.unlock();
 }
 
-void FormDetectionProcessorDNN::processRecognition() {
-    dnn_model.setPreferableBackend(cv::dnn::DNN_BACKEND_OPENCV);
-    dnn_model.setPreferableTarget(cv::dnn::DNN_TARGET_CPU);
+void FormDetectionProcessor::processRecognition() {
+
 
     recognitionProcessThread = std::thread([this]() {
+        cv::dnn::Net dnn_model = cv::dnn::readNetFromDarknet(MODEL_PATH, WIDTH_PATH);
+        if (dnn_model.empty()) {
+            std::cerr << "Can't load network by using this files \n";
+            return ;
+        }
+        dnn_model.setPreferableBackend(cv::dnn::DNN_BACKEND_OPENCV);
+        dnn_model.setPreferableTarget(cv::dnn::DNN_TARGET_CPU);
         cv::Mat currentFrame;
         std::vector<cv::Rect> *tmpFormsCoords;
         cv::Mat resizedFrame;
@@ -103,6 +105,6 @@ void FormDetectionProcessorDNN::processRecognition() {
     });
 }
 
-std::vector<cv::Rect> *FormDetectionProcessorDNN::getLastDetectedFaces() {
+std::vector<cv::Rect> *FormDetectionProcessor::getLastDetectedFaces() {
     return formsCoords;
 }

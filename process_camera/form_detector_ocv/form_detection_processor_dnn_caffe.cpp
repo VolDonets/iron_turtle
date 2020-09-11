@@ -2,22 +2,18 @@
 // Created by biba_bo on 2020-09-01.
 //
 
-#include "form_detection_processor_dnn_caffe.h"
+#include "form_detection_processor.h"
 
-FormDetectionProcessorDNN::FormDetectionProcessorDNN() {
+FormDetectionProcessor::FormDetectionProcessor() {
     mutexProc.lock();
-    dnn_model = cv::dnn::readNetFromCaffe(PROTOTXT_PATH, CAFFE_MODEL_PATH);
-    if (dnn_model.empty())
-        std::cerr << "Can't load network by using this files \n";
-    else
-        processRecognition();
+    processRecognition();
 }
 
-FormDetectionProcessorDNN::~FormDetectionProcessorDNN() {
+FormDetectionProcessor::~FormDetectionProcessor() {
 
 }
 
-void FormDetectionProcessorDNN::add_frame(cv::Mat frame) {
+void FormDetectionProcessor::add_frame(cv::Mat frame) {
     mutexRes.lock();
     if (queueFrames.size() > MAX_MATS_LIST_SIZE) {
         queueFrames.pop_front();
@@ -29,8 +25,9 @@ void FormDetectionProcessorDNN::add_frame(cv::Mat frame) {
 }
 
 /*
-void FormDetectionProcessorDNN::processRecognition() {
+void FormDetectionProcessor::processRecognition() {
     recognitionProcessThread = std::thread([this]() {
+        cv::dnn::Net dnn_model = cv::dnn::readNetFromCaffe(PROTOTXT_PATH, CAFFE_MODEL_PATH);
         while (true) {
             mutexProc.lock();
             mutexRes.lock();
@@ -75,8 +72,13 @@ void FormDetectionProcessorDNN::processRecognition() {
 }
 */
 ///*
-void FormDetectionProcessorDNN::processRecognition() {
+void FormDetectionProcessor::processRecognition() {
     recognitionProcessThread = std::thread([this]() {
+        cv::dnn::Net dnn_model = cv::dnn::readNetFromCaffe(PROTOTXT_PATH, CAFFE_MODEL_PATH);
+        if (dnn_model.empty()) {
+            std::cerr << "Can't load network by using this files \n";
+            return ;
+        }
         while (true) {
             mutexProc.lock();
             mutexRes.lock();
@@ -121,6 +123,6 @@ void FormDetectionProcessorDNN::processRecognition() {
 }
 // */
 
-std::vector<cv::Rect> *FormDetectionProcessorDNN::getLastDetectedFaces() {
+std::vector<cv::Rect> *FormDetectionProcessor::getLastDetectedFaces() {
     return formsCoords;
 }
