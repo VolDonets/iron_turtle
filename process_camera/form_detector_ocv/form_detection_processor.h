@@ -22,7 +22,9 @@
 //#define PROTOTXT_PATH                       "src/dnn/yolo_caffe/yolo_darknet_deploy.prototxt"
 //#define CAFFE_MODEL_PATH                    "src/dnn/yolo_caffe/yolo_darknet.caffemodel"
 
-#define SVM_MODEL_PATH                      "src/svm/Hand_Detector_v8_c8.svm"
+//#define SVM_MODEL_PATH                      "src/svm/Hand_Detector_v8_c8.svm"
+//#define SVM_MODEL_PATH                      "src/svm/Hand_Detector_v6_c20.svm"
+#define SVM_MODEL_PATH                      "src/svm/Hand_Detector_v10_c10.svm"
 
 #define CHECK_PER_FRAMES                    5
 #define MAX_MATS_LIST_SIZE                  3
