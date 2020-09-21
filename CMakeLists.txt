@@ -40,6 +40,10 @@ add_executable(iron_turtle main.cpp
         process_camera/form_detector_ocv/form_det_track_svm.cpp
         process_camera/form_detector_ocv/form_detection_processor.h)
 
+target_link_libraries(iron_turtle /lib/x86_64-linux-gnu/libgsl.so.23)
+target_link_libraries(iron_turtle /lib/x86_64-linux-gnu/libgslcblas.so.0)
+target_link_libraries(iron_turtle /lib/x86_64-linux-gnu/liblapack.so)
+
 target_link_libraries(iron_turtle seasocks "${ZLIB_LIBRARIES}")
 target_link_libraries(iron_turtle pthread z)
 
