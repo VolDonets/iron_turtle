@@ -5,26 +5,61 @@
 #ifndef REAR_SIGHT_CLONE_PROJECT_FORM_DETECTION_PROCESSOR_H
 #define REAR_SIGHT_CLONE_PROJECT_FORM_DETECTION_PROCESSOR_H
 
-//just pathes
-//#define MODEL_PATH                          "src/dnn/yolov3_tiny/yolov3-tiny.cfg"
-//#define WIDTH_PATH                          "src/dnn/yolov3_tiny/yolov3-tiny.weights"
-//#define COCO_NAMES_PATH                     "src/dnn/yolov3_tiny/coco.names"
+#ifdef HAARCASCADES
+    #ifdef FRONTAL_FACE
+        #define HAARCASCADE_PATH            "src/haarcascade/haarcascade_frontalface_alt_tree.xml"
+    #endif //FRONTAL_FACE
+    #ifdef ANOTHER_HAND
+        #define HAARCASCADE_PATH            "src/haarcascade/hands_haarcascades/another_hand.xml"
+    #endif //ANOTHER_HAND
+    #ifdef FIST
+        #define HAARCASCADE_PATH            "src/haarcascade/hands_haarcascades/fist.xml"
+    #endif //FIST
+    #ifdef RPALM
+        #define HAARCASCADE_PATH            "src/haarcascade/hands_haarcascades/rpalm.xml"
+    #endif //RPALM
+#endif //HAARCASCADES
 
-//#define MODEL_PATH                          "src/dnn/yolov3_tiny_cross_hands/cross-hands-tiny.cfg"
-//#define WIDTH_PATH                          "src/dnn/yolov3_tiny_cross_hands/cross-hands-tiny.weights"
+#ifdef YOLO3_TINY
+    #ifdef YOLO3_TINY_COCO
+        #define MODEL_PATH                 "src/dnn/yolov3_tiny/yolov3-tiny.cfg"
+        #define WIDTH_PATH                 "src/dnn/yolov3_tiny/yolov3-tiny.weights"
+        #define COCO_NAMES_PATH            "src/dnn/yolov3_tiny/coco.names"
+    #endif //YOLO3_TINY_COCO
+    #ifdef CROSS_HANDS
+        #define MODEL_PATH                 "src/dnn/yolov3_tiny_cross_hands/cross-hands-tiny.cfg"
+        #define WIDTH_PATH                 "src/dnn/yolov3_tiny_cross_hands/cross-hands-tiny.weights"
+        #define COCO_NAMES_PATH            "src/dnn/yolov3_tiny/coco.names"
+    #endif //CROSS_HANDS
+    #ifdef CROSS_HANDS_PRN
+        #define MODEL_PATH                 "src/dnn/yolov3_tiny_cross_hands_prn/cross-hands-tiny-prn.cfg"
+        #define WIDTH_PATH                 "src/dnn/yolov3_tiny_cross_hands_prn/cross-hands-tiny-prn.weights"
+        #define COCO_NAMES_PATH            "src/dnn/yolov3_tiny/coco.names"
+    #endif //CROSS_HANDS_PRN
+#endif //YOLO3_TINY
 
-//#define MODEL_PATH                          "src/dnn/yolov3_tiny_cross_hands_prn/cross-hands-tiny-prn.cfg"
-//#define WIDTH_PATH                          "src/dnn/yolov3_tiny_cross_hands_prn/cross-hands-tiny-prn.weights"
+#ifdef DNN_CAFFE
+    #ifdef BY_BALD_GUY
+        #define PROTOTXT_PATH               "src/dnn/dnn_caffe/deploy.prototxt.txt"
+        #define CAFFE_MODEL_PATH            "src/dnn/dnn_caffe/res10_300x300_ssd_iter_140000.caffemodel"
+    #endif //BY_BALD_GUY
+    #ifdef FROM_YOLO
+        #define PROTOTXT_PATH               "src/dnn/yolo_caffe/yolo_darknet_deploy.prototxt"
+        #define CAFFE_MODEL_PATH            "src/dnn/yolo_caffe/yolo_darknet.caffemodel"
+    #endif //FROM_YOLO
+#endif //DNN_CAFFE
 
-//#define PROTOTXT_PATH                       "src/dnn/dnn_caffe/deploy.prototxt.txt"
-//#define CAFFE_MODEL_PATH                    "src/dnn/dnn_caffe/res10_300x300_ssd_iter_140000.caffemodel"
-
-//#define PROTOTXT_PATH                       "src/dnn/yolo_caffe/yolo_darknet_deploy.prototxt"
-//#define CAFFE_MODEL_PATH                    "src/dnn/yolo_caffe/yolo_darknet.caffemodel"
-
-//#define SVM_MODEL_PATH                      "src/svm/Hand_Detector_v8_c8.svm"
-//#define SVM_MODEL_PATH                      "src/svm/Hand_Detector_v6_c20.svm"
-#define SVM_MODEL_PATH                      "src/svm/Hand_Detector_v10_c10.svm"
+#ifdef SVM_HOG
+    #ifdef V8_C8
+        #define SVM_MODEL_PATH              "src/svm/Hand_Detector_v8_c8.svm"
+    #endif //v6_C20
+    #ifdef V6_C20
+        #define SVM_MODEL_PATH              "src/svm/Hand_Detector_v6_c20.svm"
+    #endif //V6_C20
+    #ifdef V10_C10
+        #define SVM_MODEL_PATH               "src/svm/Hand_Detector_v10_c10.svm"
+    #endif //V10_C10
+#endif //SVM_HOG
 
 #define CHECK_PER_FRAMES                    2
 #define MAX_MATS_LIST_SIZE                  3
