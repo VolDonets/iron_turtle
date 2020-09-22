@@ -4,13 +4,6 @@
 
 #include "form_detection_processor.h"
 
-#include <dlib/image_processing.h>
-#include <dlib/image_keypoint.h>
-#include <dlib/svm_threaded.h>
-#include <dlib/opencv.h>
-
-#include <opencv2/tracking.hpp>
-
 FormDetectionProcessor::FormDetectionProcessor() {
     mutexProc.lock();
     processRecognition();
