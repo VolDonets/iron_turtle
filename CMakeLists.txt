@@ -40,6 +40,22 @@ add_executable(iron_turtle main.cpp
         process_camera/form_detector_ocv/form_det_track_svm.cpp
         process_camera/form_detector_ocv/form_detection_processor.h)
 
+#target_compile_definitions(iron_turtle PRIVATE HAARCASCADE FRONTAL_FACE)
+#target_compile_definitions(iron_turtle PRIVATE HAARCASCADE ANOTHER_HAND)
+#target_compile_definitions(iron_turtle PRIVATE HAARCASCADE FIST)
+#target_compile_definitions(iron_turtle PRIVATE HAARCASCADE RPALM)
+
+#target_compile_definitions(iron_turtle PRIVATE YOLO3_TINY YOLO3_TINY_COCO)
+#target_compile_definitions(iron_turtle PRIVATE YOLO3_TINY CROSS_HANDS)
+#target_compile_definitions(iron_turtle PRIVATE YOLO3_TINY CROSS_HANDS_PRN)
+
+#target_compile_definitions(iron_turtle PRIVATE DNN_CAFFE BY_BALD_GUY)
+#target_compile_definitions(iron_turtle PRIVATE DNN_CAFFE FROM_YOLO)
+
+#target_compile_definitions(iron_turtle PRIVATE SVM_HOG V8_C8)
+#target_compile_definitions(iron_turtle PRIVATE SVM_HOG V6_C20)
+target_compile_definitions(iron_turtle PRIVATE SVM_HOG V10_C10)
+
 target_link_libraries(iron_turtle /lib/x86_64-linux-gnu/libgsl.so.23)
 target_link_libraries(iron_turtle /lib/x86_64-linux-gnu/libgslcblas.so.0)
 target_link_libraries(iron_turtle /lib/x86_64-linux-gnu/liblapack.so)
