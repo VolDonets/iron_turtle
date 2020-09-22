@@ -9,6 +9,8 @@
 #include <dlib/svm_threaded.h>
 #include <dlib/opencv.h>
 
+#include <opencv2/tracking.hpp>
+
 FormDetectionProcessor::FormDetectionProcessor() {
     mutexProc.lock();
     processRecognition();
@@ -31,6 +33,9 @@ void FormDetectionProcessor::add_frame(cv::Mat frame) {
 
 void FormDetectionProcessor::processRecognition() {
     recognitionProcessThread = std::thread([this]() {
+        cv::Ptr<cv::Tracker> tracker = cv::TrackerKCF::create();
+        bool isNotDetectedImage = true;
+
         typedef dlib::scan_fhog_pyramid<dlib::pyramid_down<4>> image_scanner_type;
         dlib::object_detector<image_scanner_type> detector;
         dlib::deserialize(SVM_MODEL_PATH) >> detector;
@@ -41,12 +46,14 @@ void FormDetectionProcessor::processRecognition() {
         int newWidth = 320, newHeight = 240;
         double scaleCoefficient;
         int middle;
+
         mutexProc.lock();
         mutexRes.lock();
         scaleCoefficient = queueFrames.front().rows / newHeight;
         middle = queueFrames.front().cols / 2;
         mutexRes.unlock();
         mutexProc.unlock();
+
         while (true) {
             mutexProc.lock();
             mutexRes.lock();
@@ -58,46 +65,66 @@ void FormDetectionProcessor::processRecognition() {
             cv::resize(currentFrame, resizedFrame, cv::Size(newWidth, newHeight));
             cv::cvtColor(resizedFrame, resizedFrame, cv::COLOR_BGRA2GRAY);
 
-            cv::flip(resizedFrame, resizedFrame, 1);
+            if (isNotDetectedImage) {
+                cv::flip(resizedFrame, resizedFrame, 1);
+                dlib::assign_image(dlibFormattedFrame, dlib::cv_image<unsigned char>(resizedFrame));
+                std::vector<dlib::rectangle> dlibDetRectLst = detector(dlibFormattedFrame);
+                for (int inx = 0; inx < dlibDetRectLst.size(); inx++) {
+                    //with mirror effect
+                    if (dlibDetRectLst[inx].left() * scaleCoefficient < middle) {
+                        int new_x = middle + (middle - (dlibDetRectLst[inx].left() * scaleCoefficient +
+                                                        ((dlibDetRectLst[inx].right() - dlibDetRectLst[inx].left()) *
+                                                         scaleCoefficient)));
+                        tmpFormsCoords->push_back(cv::Rect(new_x,
+                                                           dlibDetRectLst[inx].top() * scaleCoefficient,
+                                                           (dlibDetRectLst[inx].right() - dlibDetRectLst[inx].left()) *
+                                                           scaleCoefficient,
+                                                           (dlibDetRectLst[inx].bottom() - dlibDetRectLst[inx].top()) *
+                                                           scaleCoefficient));
+                    } else {
+                        int new_x = middle + (middle - (dlibDetRectLst[inx].left() * scaleCoefficient)) -
+                                    ((dlibDetRectLst[inx].right() - dlibDetRectLst[inx].left()) * scaleCoefficient);
+                        tmpFormsCoords->push_back(cv::Rect(new_x,
+                                                           dlibDetRectLst[inx].top() * scaleCoefficient,
+                                                           (dlibDetRectLst[inx].right() - dlibDetRectLst[inx].left()) *
+                                                           scaleCoefficient,
+                                                           (dlibDetRectLst[inx].bottom() - dlibDetRectLst[inx].top()) *
+                                                           scaleCoefficient));
+                    }
 
-            dlib::assign_image(dlibFormattedFrame, dlib::cv_image<unsigned char>(resizedFrame));
-            std::vector<dlib::rectangle> dlibDetRectLst = detector(dlibFormattedFrame);
-            for (int inx = 0; inx < dlibDetRectLst.size(); inx++) {
-                //with mirror effect
-                if (dlibDetRectLst[inx].left() * scaleCoefficient < middle) {
-                    int new_x = middle + (middle - (dlibDetRectLst[inx].left() * scaleCoefficient +
-                                                    ((dlibDetRectLst[inx].right() - dlibDetRectLst[inx].left()) *
-                                                     scaleCoefficient)));
-                    tmpFormsCoords->push_back(cv::Rect(new_x,
+                    //without mirror effect
+                    /*tmpFormsCoords->push_back(cv::Rect(dlibDetRectLst[inx].left() * scaleCoefficient,
                                                        dlibDetRectLst[inx].top() * scaleCoefficient,
                                                        (dlibDetRectLst[inx].right() - dlibDetRectLst[inx].left()) *
                                                        scaleCoefficient,
                                                        (dlibDetRectLst[inx].bottom() - dlibDetRectLst[inx].top()) *
                                                        scaleCoefficient));
-                } else {
-                    int new_x = middle + (middle - (dlibDetRectLst[inx].left() * scaleCoefficient)) -
-                                ((dlibDetRectLst[inx].right() - dlibDetRectLst[inx].left()) * scaleCoefficient);
-                    tmpFormsCoords->push_back(cv::Rect(new_x,
-                                                       dlibDetRectLst[inx].top() * scaleCoefficient,
-                                                       (dlibDetRectLst[inx].right() - dlibDetRectLst[inx].left()) *
-                                                       scaleCoefficient,
-                                                       (dlibDetRectLst[inx].bottom() - dlibDetRectLst[inx].top()) *
-                                                       scaleCoefficient));
+                                                       */
+                    //just for testing
+                    /*std::cout << "Rect: x=" << tmpFormsCoords->operator[](inx).x
+                              << ", y=" << tmpFormsCoords->operator[](inx).y
+                              << ", width=" << tmpFormsCoords->operator[](inx).width
+                              << ", height=" << tmpFormsCoords->operator[](inx).height << "\n";
+                              */
                 }
-
-                //without mirror effect
-                /*tmpFormsCoords->push_back(cv::Rect(dlibDetRectLst[inx].left() * scaleCoefficient,
-                                                   dlibDetRectLst[inx].top() * scaleCoefficient,
-                                                   (dlibDetRectLst[inx].right() - dlibDetRectLst[inx].left()) *
-                                                   scaleCoefficient,
-                                                   (dlibDetRectLst[inx].bottom() - dlibDetRectLst[inx].top()) *
-                                                   scaleCoefficient));
-                                                   */
-                std::cout << "Rect: x=" << tmpFormsCoords->operator[](inx).x
-                          << ", y=" << tmpFormsCoords->operator[](inx).y
-                          << ", width=" << tmpFormsCoords->operator[](inx).width
-                          << ", height=" << tmpFormsCoords->operator[](inx).height << "\n";
+                if (tmpFormsCoords->size() > 0) {
+                    isNotDetectedImage = false;
+                    cv::cvtColor(currentFrame, currentFrame, cv::COLOR_BGRA2BGR);
+                    tracker->init(currentFrame, cv::Rect2d(tmpFormsCoords->operator[](0).x, tmpFormsCoords->operator[](0).y,
+                                                           tmpFormsCoords->operator[](0).width, tmpFormsCoords->operator[](0).height));
+                }
+            } else {
+                cv::Rect2d trackedRect;
+                cv::cvtColor(currentFrame, currentFrame, cv::COLOR_BGRA2BGR);
+                isNotDetectedImage = !tracker->update(currentFrame, trackedRect);
+                if (!isNotDetectedImage) {
+                    tmpFormsCoords->push_back(cv::Rect(trackedRect.x, trackedRect.y,
+                                                       trackedRect.width, trackedRect.height));
+                    std::cout << "tracked coords: " << trackedRect.x << " " << trackedRect.y << " " << trackedRect.width << " " << trackedRect.height << "\n";
+                } else
+                    std::cout << "cannot to track\n";
             }
+
             formsCoords = tmpFormsCoords;
             tmpFormsCoords = nullptr;
             if (!queueFrames.empty())
