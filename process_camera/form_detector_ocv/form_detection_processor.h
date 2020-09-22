@@ -26,7 +26,7 @@
 //#define SVM_MODEL_PATH                      "src/svm/Hand_Detector_v6_c20.svm"
 #define SVM_MODEL_PATH                      "src/svm/Hand_Detector_v10_c10.svm"
 
-#define CHECK_PER_FRAMES                    5
+#define CHECK_PER_FRAMES                    2
 #define MAX_MATS_LIST_SIZE                  3
 #define SCALING_IMG                         1
 
