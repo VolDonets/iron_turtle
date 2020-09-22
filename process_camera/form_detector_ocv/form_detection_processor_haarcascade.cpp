@@ -27,10 +27,7 @@ void FormDetectionProcessor::add_frame(cv::Mat frame) {
 void FormDetectionProcessor::processRecognition() {
     recognitionProcessThread = std::thread([this](){
         cv::CascadeClassifier cascadeClassifier;
-        //cascadeClassifier.load("src/haarcascade/haarcascade_frontalface_alt_tree.xml");
-        //cascadeClassifier.load("src/haarcascade/hands_haarcascades/another_hand.xml");
-        //cascadeClassifier.load("src/haarcascade/hands_haarcascades/fist.xml");
-        cascadeClassifier.load("src/haarcascade/hands_haarcascades/rpalm.xml");
+        cascadeClassifier.load(HAARCASCADE_PATH);
         while (true) {
             mutexProc.lock();
             mutexRes.lock();
