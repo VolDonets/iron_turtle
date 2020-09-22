@@ -26,7 +26,7 @@ void FormDetectionProcessor::add_frame(cv::Mat frame) {
 
 void FormDetectionProcessor::processRecognition() {
     recognitionProcessThread = std::thread([this]() {
-        cv::Ptr<cv::Tracker> tracker = cv::TrackerKCF::create();
+        cv::Ptr<cv::Tracker> tracker;
         bool isNotDetectedImage = true;
 
         typedef dlib::scan_fhog_pyramid<dlib::pyramid_down<4>> image_scanner_type;
@@ -103,6 +103,7 @@ void FormDetectionProcessor::processRecognition() {
                 if (tmpFormsCoords->size() > 0) {
                     isNotDetectedImage = false;
                     cv::cvtColor(currentFrame, currentFrame, cv::COLOR_BGRA2BGR);
+                    tracker = cv::TrackerKCF::create();
                     tracker->init(currentFrame, cv::Rect2d(tmpFormsCoords->operator[](0).x, tmpFormsCoords->operator[](0).y,
                                                            tmpFormsCoords->operator[](0).width, tmpFormsCoords->operator[](0).height));
                 }
