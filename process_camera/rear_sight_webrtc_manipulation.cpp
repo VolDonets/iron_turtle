@@ -94,6 +94,7 @@ static GstPadProbeReturn cb_have_data (GstPad *pad, GstPadProbeInfo *info, gpoin
 //a function fro filling a ReceiverEntry structure
 //Here creates a pipeline, and addes a callback function for stream modifications
 ReceiverEntry* create_receiver_entry (seasocks::WebSocket * connection) {
+    std::cout << "receiver entry created" << "\n";
     GError *error;
     ReceiverEntry *receiver_entry;
     GstWebRTCRTPTransceiver *trans;
@@ -119,10 +120,10 @@ ReceiverEntry* create_receiver_entry (seasocks::WebSocket * connection) {
                                   "! rtph264pay config-interval=10 name=payloader pt=96 "
                                   "! capssetter caps=\"application/x-rtp,profile-level-id=(string)42c01f,media=(string)video,encoding-name=(string)H264,payload=(int)96\" "
                                   "! webrtcbin. ", &error);
-    */
+    //*/
 
-    error = NULL;
-    /**/receiver_entry->pipeline =
+    /**/error = NULL;
+    receiver_entry->pipeline =
                 gst_parse_launch ("webrtcbin name=webrtcbin  stun-server=stun://" STUN_SERVER " "
                                   "v4l2src device=/dev/video0 "
                                   "! video/x-raw,width=" STR_WIDTH ",height=" STR_HEIGHT ",framerate=" STR_FRAMERATE " "
@@ -138,7 +139,7 @@ ReceiverEntry* create_receiver_entry (seasocks::WebSocket * connection) {
                                   "! rtph264pay config-interval=-1 name=payloader "
                                   "! application/x-rtp,media=video,encoding-name=H264,payload=" RTP_PAYLOAD_TYPE " "
                                   "! webrtcbin. ", &error);
-
+    //*/
 
 
     if (error != NULL) {
