@@ -54,7 +54,10 @@ add_executable(iron_turtle main.cpp
 
 #target_compile_definitions(iron_turtle PRIVATE SVM_HOG V8_C8)
 #target_compile_definitions(iron_turtle PRIVATE SVM_HOG V6_C20)
-target_compile_definitions(iron_turtle PRIVATE SVM_HOG V10_C10)
+#target_compile_definitions(iron_turtle PRIVATE SVM_HOG V10_C10)
+#target_compile_definitions(iron_turtle PRIVATE SVM_HOG V11_C15_SUPER)
+#target_compile_definitions(iron_turtle PRIVATE SVM_HOG V12_C15_SUPER)
+target_compile_definitions(iron_turtle PRIVATE SVM_HOG V14_C15_SUPER)
 
 target_link_libraries(iron_turtle /lib/x86_64-linux-gnu/libgsl.so.23)
 target_link_libraries(iron_turtle /lib/x86_64-linux-gnu/libgslcblas.so.0)

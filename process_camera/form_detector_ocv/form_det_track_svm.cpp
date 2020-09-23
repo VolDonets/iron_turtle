@@ -29,7 +29,7 @@ void FormDetectionProcessor::processRecognition() {
         cv::Ptr<cv::Tracker> tracker;
         bool isNotDetectedImage = true;
 
-        typedef dlib::scan_fhog_pyramid<dlib::pyramid_down<4>> image_scanner_type;
+        typedef dlib::scan_fhog_pyramid<dlib::pyramid_down<6>> image_scanner_type;
         dlib::object_detector<image_scanner_type> detector;
         dlib::deserialize(SVM_MODEL_PATH) >> detector;
 
@@ -114,9 +114,7 @@ void FormDetectionProcessor::processRecognition() {
                 if (!isNotDetectedImage) {
                     tmpFormsCoords->push_back(cv::Rect(trackedRect.x, trackedRect.y,
                                                        trackedRect.width, trackedRect.height));
-                    std::cout << "tracked coords: " << trackedRect.x << " " << trackedRect.y << " " << trackedRect.width << " " << trackedRect.height << "\n";
-                } else
-                    std::cout << "cannot to track\n";
+                }
             }
 
             formsCoords = tmpFormsCoords;

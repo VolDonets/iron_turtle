@@ -57,11 +57,20 @@
         #define SVM_MODEL_PATH              "src/svm/Hand_Detector_v6_c20.svm"
     #endif //V6_C20
     #ifdef V10_C10
-        #define SVM_MODEL_PATH               "src/svm/Hand_Detector_v10_c10.svm"
+        #define SVM_MODEL_PATH              "src/svm/Hand_Detector_v10_c10.svm"
     #endif //V10_C10
+    #ifdef V11_C15_SUPER
+        #define  SVM_MODEL_PATH             "src/svm/Hand_Detector_v11_c15_super.svm"
+    #endif //V11_C15_SUPER
+    #ifdef V12_C15_SUPER
+        #define SVM_MODEL_PATH             "src/svm/Hand_Detector_v12_c15_super.svm"
+    #endif //V12_C15_SUPER
+    #ifdef V14_C15_SUPER
+        #define SVM_MODEL_PATH             "src/svm/Hand_Detector_v14_c15_super.svm"
+    #endif //V14_C15_SUPER
 #endif //SVM_HOG
 
-#define CHECK_PER_FRAMES                    2
+#define CHECK_PER_FRAMES                    1
 #define MAX_MATS_LIST_SIZE                  3
 #define SCALING_IMG                         1
 
