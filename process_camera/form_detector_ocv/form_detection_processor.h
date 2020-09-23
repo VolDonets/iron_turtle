@@ -71,7 +71,7 @@
 #endif //SVM_HOG
 
 #define CHECK_PER_FRAMES                    1
-#define MAX_MATS_LIST_SIZE                  3
+#define MAX_MATS_LIST_SIZE                  1
 #define SCALING_IMG                         1
 
 #include <list>
