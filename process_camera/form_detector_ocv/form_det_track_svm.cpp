@@ -3,6 +3,7 @@
 //
 
 #include "form_detection_processor.h"
+#include <chrono>
 
 FormDetectionProcessor::FormDetectionProcessor() {
     mutexProc.lock();
@@ -47,7 +48,12 @@ void FormDetectionProcessor::processRecognition() {
         mutexRes.unlock();
         mutexProc.unlock();
 
+        std::chrono::steady_clock::time_point begin;
+        std::chrono::steady_clock::time_point end;
+        unsigned int duration;
+        const unsigned int framerate = 1000000 / 15;
         while (true) {
+            begin = std::chrono::steady_clock::now();
             mutexProc.lock();
             mutexRes.lock();
             currentFrame = queueFrames.front();
@@ -59,7 +65,7 @@ void FormDetectionProcessor::processRecognition() {
             cv::cvtColor(resizedFrame, resizedFrame, cv::COLOR_BGRA2GRAY);
 
             if (isNotDetectedImage) {
-                cv::flip(resizedFrame, resizedFrame, 1);
+                cv::flip(resizedFrame, resizedFrame, 1);//shold rm
                 dlib::assign_image(dlibFormattedFrame, dlib::cv_image<unsigned char>(resizedFrame));
                 std::vector<dlib::rectangle> dlibDetRectLst = detector(dlibFormattedFrame);
                 for (int inx = 0; inx < dlibDetRectLst.size(); inx++) {
@@ -104,8 +110,10 @@ void FormDetectionProcessor::processRecognition() {
                     isNotDetectedImage = false;
                     cv::cvtColor(currentFrame, currentFrame, cv::COLOR_BGRA2BGR);
                     tracker = cv::TrackerKCF::create();
-                    tracker->init(currentFrame, cv::Rect2d(tmpFormsCoords->operator[](0).x, tmpFormsCoords->operator[](0).y,
-                                                           tmpFormsCoords->operator[](0).width, tmpFormsCoords->operator[](0).height));
+                    tracker->init(currentFrame,
+                                  cv::Rect2d(tmpFormsCoords->operator[](0).x, tmpFormsCoords->operator[](0).y,
+                                             tmpFormsCoords->operator[](0).width,
+                                             tmpFormsCoords->operator[](0).height));
                 }
             } else {
                 cv::Rect2d trackedRect;
@@ -119,6 +127,13 @@ void FormDetectionProcessor::processRecognition() {
 
             formsCoords = tmpFormsCoords;
             tmpFormsCoords = nullptr;
+            end = std::chrono::steady_clock::now();
+            duration = std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count();
+            if (duration < framerate) {
+                std::this_thread::sleep_for(std::chrono::microseconds(framerate - duration));
+            } else {
+                std::this_thread::sleep_for(std::chrono::milliseconds(2));
+            }
             if (!queueFrames.empty())
                 mutexProc.unlock();
             if (queueFrames.size() == -100)   // stupid lines of code for CLion
