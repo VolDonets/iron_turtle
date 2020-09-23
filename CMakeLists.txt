@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.17)
+cmake_minimum_required(VERSION 3.13)
 project(iron_turtle)
 
 set(CMAKE_CXX_STANDARD 20)
@@ -58,6 +58,10 @@ add_executable(iron_turtle main.cpp
 #target_compile_definitions(iron_turtle PRIVATE SVM_HOG V11_C15_SUPER)
 #target_compile_definitions(iron_turtle PRIVATE SVM_HOG V12_C15_SUPER)
 target_compile_definitions(iron_turtle PRIVATE SVM_HOG V14_C15_SUPER)
+
+#target_link_libraries(iron_turtle /usr/lib/arm-linux-gnueabihf/libgsl.so.23)
+#target_link_libraries(iron_turtle /usr/lib/arm-linux-gnueabihf/libgslcblas.so.0)
+#target_link_libraries(iron_turtle /usr/lib/arm-linux-gnueabihf/liblapack.so)
 
 target_link_libraries(iron_turtle /lib/x86_64-linux-gnu/libgsl.so.23)
 target_link_libraries(iron_turtle /lib/x86_64-linux-gnu/libgslcblas.so.0)
