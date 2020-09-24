@@ -65,46 +65,15 @@ void FormDetectionProcessor::processRecognition() {
             cv::cvtColor(resizedFrame, resizedFrame, cv::COLOR_BGRA2GRAY);
 
             if (isNotDetectedImage) {
-                cv::flip(resizedFrame, resizedFrame, 1);//shold rm
                 dlib::assign_image(dlibFormattedFrame, dlib::cv_image<unsigned char>(resizedFrame));
                 std::vector<dlib::rectangle> dlibDetRectLst = detector(dlibFormattedFrame);
                 for (int inx = 0; inx < dlibDetRectLst.size(); inx++) {
-                    //with mirror effect
-                    if (dlibDetRectLst[inx].left() * scaleCoefficient < middle) {
-                        int new_x = middle + (middle - (dlibDetRectLst[inx].left() * scaleCoefficient +
-                                                        ((dlibDetRectLst[inx].right() - dlibDetRectLst[inx].left()) *
-                                                         scaleCoefficient)));
-                        tmpFormsCoords->push_back(cv::Rect(new_x,
-                                                           dlibDetRectLst[inx].top() * scaleCoefficient,
-                                                           (dlibDetRectLst[inx].right() - dlibDetRectLst[inx].left()) *
-                                                           scaleCoefficient,
-                                                           (dlibDetRectLst[inx].bottom() - dlibDetRectLst[inx].top()) *
-                                                           scaleCoefficient));
-                    } else {
-                        int new_x = middle + (middle - (dlibDetRectLst[inx].left() * scaleCoefficient)) -
-                                    ((dlibDetRectLst[inx].right() - dlibDetRectLst[inx].left()) * scaleCoefficient);
-                        tmpFormsCoords->push_back(cv::Rect(new_x,
-                                                           dlibDetRectLst[inx].top() * scaleCoefficient,
-                                                           (dlibDetRectLst[inx].right() - dlibDetRectLst[inx].left()) *
-                                                           scaleCoefficient,
-                                                           (dlibDetRectLst[inx].bottom() - dlibDetRectLst[inx].top()) *
-                                                           scaleCoefficient));
-                    }
-
-                    //without mirror effect
-                    /*tmpFormsCoords->push_back(cv::Rect(dlibDetRectLst[inx].left() * scaleCoefficient,
+                    tmpFormsCoords->push_back(cv::Rect(dlibDetRectLst[inx].left() * scaleCoefficient,
                                                        dlibDetRectLst[inx].top() * scaleCoefficient,
                                                        (dlibDetRectLst[inx].right() - dlibDetRectLst[inx].left()) *
                                                        scaleCoefficient,
                                                        (dlibDetRectLst[inx].bottom() - dlibDetRectLst[inx].top()) *
                                                        scaleCoefficient));
-                                                       */
-                    //just for testing
-                    /*std::cout << "Rect: x=" << tmpFormsCoords->operator[](inx).x
-                              << ", y=" << tmpFormsCoords->operator[](inx).y
-                              << ", width=" << tmpFormsCoords->operator[](inx).width
-                              << ", height=" << tmpFormsCoords->operator[](inx).height << "\n";
-                              */
                 }
                 if (tmpFormsCoords->size() > 0) {
                     isNotDetectedImage = false;
