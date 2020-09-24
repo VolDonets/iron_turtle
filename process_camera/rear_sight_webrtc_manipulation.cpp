@@ -105,8 +105,8 @@ ReceiverEntry* create_receiver_entry (seasocks::WebSocket * connection) {
 
     //g_object_ref (G_OBJECT (connection));
 
-
-    /*error = NULL;
+    #ifdef RASPBERRY_PI
+    error = NULL;
     receiver_entry->pipeline =
                 gst_parse_launch ("webrtcbin name=webrtcbin  stun-server=stun://" STUN_SERVER " "
                                   "v4l2src device=/dev/video0 "
@@ -120,14 +120,14 @@ ReceiverEntry* create_receiver_entry (seasocks::WebSocket * connection) {
                                   "! rtph264pay config-interval=10 name=payloader pt=96 "
                                   "! capssetter caps=\"application/x-rtp,profile-level-id=(string)42c01f,media=(string)video,encoding-name=(string)H264,payload=(int)96\" "
                                   "! webrtcbin. ", &error);
-    //*/
+    #endif //RASPBERRY_PI
 
-    /**/error = NULL;
+    #ifdef UBUNTU_PC
+    error = NULL;
     receiver_entry->pipeline =
                 gst_parse_launch ("webrtcbin name=webrtcbin  stun-server=stun://" STUN_SERVER " "
                                   "v4l2src device=/dev/video0 "
                                   "! video/x-raw,width=" STR_WIDTH ",height=" STR_HEIGHT ",framerate=" STR_FRAMERATE " "
-                //                  "! videoflip method=horizontal-flip "
                                   "! videoconvert name=ocvvideosrc "
                                   "! video/x-raw,format=BGRA "
                                   "! videoconvert "
@@ -139,7 +139,7 @@ ReceiverEntry* create_receiver_entry (seasocks::WebSocket * connection) {
                                   "! rtph264pay config-interval=-1 name=payloader "
                                   "! application/x-rtp,media=video,encoding-name=H264,payload=" RTP_PAYLOAD_TYPE " "
                                   "! webrtcbin. ", &error);
-    //*/
+    #endif //UBUNTU_PC
 
 
     if (error != NULL) {
