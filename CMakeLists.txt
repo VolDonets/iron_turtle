@@ -40,6 +40,9 @@ add_executable(iron_turtle main.cpp
         process_camera/form_detector_ocv/form_det_track_svm.cpp
         process_camera/form_detector_ocv/form_detection_processor.h)
 
+target_compile_definitions(iron_turtle PRIVATE UBUNTU_PC)
+#target_compile_definitions(iron_turtle PRIVATE RASPBERRY_PI)
+
 #target_compile_definitions(iron_turtle PRIVATE HAARCASCADE FRONTAL_FACE)
 #target_compile_definitions(iron_turtle PRIVATE HAARCASCADE ANOTHER_HAND)
 #target_compile_definitions(iron_turtle PRIVATE HAARCASCADE FIST)
