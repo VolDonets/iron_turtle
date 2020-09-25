@@ -19,19 +19,55 @@ ASCII_NativeDriverCordSave::~ASCII_NativeDriverCordSave() {
 }
 
 int ASCII_NativeDriverCordSave::move_forward(int movingMode) {
-    return serialDev->writeSerial(MOVE_FORWARD);
+    switch (movingMode) {
+        case MOVING_STEP_1:
+            return serialDev->writeSerial(MOVE_FORWARD);
+        case MOVING_STEP_5:
+            return serialDev->writeSerial(MOVE_FORWARD_5);
+        case MOVING_STEP_10:
+            return serialDev->writeSerial(MOVE_FORWARD_10);
+        default:
+            return UNSUCCESSFUL_OP;
+    }
 }
 
 int ASCII_NativeDriverCordSave::move_back(int movingMode) {
-    return serialDev->writeSerial(MOVE_BACK);
+    switch (movingMode) {
+        case MOVING_STEP_1:
+            return serialDev->writeSerial(MOVE_BACK);
+        case MOVING_STEP_5:
+            return serialDev->writeSerial(MOVE_BACK_5);
+        case MOVING_STEP_10:
+            return serialDev->writeSerial(MOVE_BACK_10);
+        default:
+            return UNSUCCESSFUL_OP;
+    }
 }
 
 int ASCII_NativeDriverCordSave::move_righter(int movingMode) {
-    return serialDev->writeSerial(MOVE_RIGHT);
+    switch (movingMode) {
+        case MOVING_STEP_1:
+            return serialDev->writeSerial(MOVE_RIGHT);
+        case MOVING_STEP_5:
+            return serialDev->writeSerial(MOVE_RIGHT_5);
+        case MOVING_STEP_10:
+            return serialDev->writeSerial(MOVE_RIGHT_10);
+        default:
+            return UNSUCCESSFUL_OP;
+    }
 }
 
 int ASCII_NativeDriverCordSave::move_lefter(int movingMode) {
-    return serialDev->writeSerial(MOVE_LEFT);
+    switch (movingMode) {
+        case MOVING_STEP_1:
+            return serialDev->writeSerial(MOVE_LEFT);
+        case MOVING_STEP_5:
+            return serialDev->writeSerial(MOVE_LEFT_5);
+        case MOVING_STEP_10:
+            return serialDev->writeSerial(MOVE_LEFT_10);
+        default:
+            return UNSUCCESSFUL_OP;
+    }
 }
 
 int ASCII_NativeDriverCordSave::stop_moving() {

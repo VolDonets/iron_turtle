@@ -5,8 +5,8 @@
 #include "turtle_manager.h"
 
 TurtleManager::TurtleManager() {
-    speedMod = MOVING_STEP_5;
-    rotationMod = MOVING_STEP_5;
+    speedMod = MOVING_STEP_1;
+    rotationMod = MOVING_STEP_1;
     //nativeDriver = std::make_shared<ASCII_NativeDriver>();
     nativeDriver = std::make_shared<ASCII_NativeDriverCordSave>();
 }
