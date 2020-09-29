@@ -3,19 +3,26 @@ project(iron_turtle)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable(iron_turtle main.cpp
+add_executable(iron_turtle
+###      source file with the project begin function
+        main.cpp
+
+###      web server
         web_server/web_server.h
         web_server/web_server.cpp
 
+###      class for the handling process in other thread for the WebServer events
         web_server_worker.h
         web_server_worker.cpp
 
+###      my own handling sub system
         web_server/lib_my_event_handler/delegate_ws.h
         web_server/lib_my_event_handler/delegate_ws.cpp
         web_server/lib_my_event_handler/event_ws.h
         web_server/lib_my_event_handler/event_ws.cpp
         web_server/lib_my_event_handler/handler_ws.h
 
+###      ascii protocol wrapper
         turtle_manager/ascii_com_manager/ascii_com_lim.h
         turtle_manager/ascii_com_manager/ascii_native_driver.h
         turtle_manager/ascii_com_manager/ascii_native_driver.cpp
@@ -28,33 +35,59 @@ add_executable(iron_turtle main.cpp
         turtle_manager/ascii_com_manager/serial_manager.cpp
         turtle_manager/ascii_com_manager/serial_manager.h
 
+###      binary protocol wrapper
+        turtle_manager/binary_com_manager/bipropellant-api/hbprotocol/protocol.h
+        turtle_manager/binary_com_manager/bipropellant-api/hbprotocol/protocol_private.h
+        turtle_manager/binary_com_manager/bipropellant-api/hbprotocol/ascii_protocol.h
+
+        turtle_manager/binary_com_manager/bipropellant-api/hbprotocol/protocol.c
+        turtle_manager/binary_com_manager/bipropellant-api/hbprotocol/machine_protocol.c
+        turtle_manager/binary_com_manager/bipropellant-api/hbprotocol/ascii_protocol.c
+
+        turtle_manager/binary_com_manager/bipropellant-api/protocolFunctions.h
+        turtle_manager/binary_com_manager/bipropellant-api/protocolFunctions.c
+        turtle_manager/binary_com_manager/bipropellant-api/HoverboardAPI.h
+        turtle_manager/binary_com_manager/bipropellant-api/HoverboardAPI.cpp
+
+###      this is the source code for the image processing in the gst pipeline
         process_camera/rear_sight_processor/image_processing.h
         process_camera/rear_sight_processor/rear_sight_processor.h
         process_camera/rear_sight_processor/rear_sight_processor_keep_frame_proportionality.cpp
         process_camera/rear_sight_webrtc_manipulation.cpp
         process_camera/rear_sight_webrtc_manipulation.h
 
+###       this is the source code for the object detection in a frame and object tracking
 #        process_camera/form_detector_ocv/form_detection_processor_haarcascade.cpp
 #        process_camera/form_detector_ocv/form_detection_processor_dnn_caffe.cpp
 #        process_camera/form_detector_ocv/form_detection_processor_yolov3_tiny.cpp
         process_camera/form_detector_ocv/form_det_track_svm.cpp
         process_camera/form_detector_ocv/form_detection_processor.h)
 
+###       this is a target compile definitions for the different platfroms (both linux - the first one is my work PC under
+###       Ubutnu 20.04 and the second one is Raspberry Pi3 under Rasbian)
 target_compile_definitions(iron_turtle PRIVATE UBUNTU_PC)
 #target_compile_definitions(iron_turtle PRIVATE RASPBERRY_PI)
 
+###       This is compile definitions for the different haarcasades for the object detection
+###       !!!WARNING!!! it works only with 'process_camera/form_detector_ocv/form_detection_processor_haarcascade.cpp'
 #target_compile_definitions(iron_turtle PRIVATE HAARCASCADE FRONTAL_FACE)
 #target_compile_definitions(iron_turtle PRIVATE HAARCASCADE ANOTHER_HAND)
 #target_compile_definitions(iron_turtle PRIVATE HAARCASCADE FIST)
 #target_compile_definitions(iron_turtle PRIVATE HAARCASCADE RPALM)
 
+###       This is compile definitions for the different yolo pretrained models for the object detection
+###       !!!WARNING!!! it works only with 'process_camera/form_detector_ocv/form_detection_processor_yolov3_tiny.cpp'
 #target_compile_definitions(iron_turtle PRIVATE YOLO3_TINY YOLO3_TINY_COCO)
 #target_compile_definitions(iron_turtle PRIVATE YOLO3_TINY CROSS_HANDS)
 #target_compile_definitions(iron_turtle PRIVATE YOLO3_TINY CROSS_HANDS_PRN)
 
+###       This is compile definitions for the different caffe pretrained models for the object detection
+###       !!!WARNING!!! it works only with 'process_camera/form_detector_ocv/form_detection_processor_dnn_caffe.cpp'
 #target_compile_definitions(iron_turtle PRIVATE DNN_CAFFE BY_BALD_GUY)
 #target_compile_definitions(iron_turtle PRIVATE DNN_CAFFE FROM_YOLO)
 
+###       This is compile definitions for the different SVM HOG pretrained models for the object detection
+###       !!!WARNING!!! it works only with 'process_camera/form_detector_ocv/form_det_track_svm.cpp'
 #target_compile_definitions(iron_turtle PRIVATE SVM_HOG V8_C8)
 #target_compile_definitions(iron_turtle PRIVATE SVM_HOG V6_C20)
 #target_compile_definitions(iron_turtle PRIVATE SVM_HOG V10_C10)
@@ -62,21 +95,27 @@ target_compile_definitions(iron_turtle PRIVATE UBUNTU_PC)
 #target_compile_definitions(iron_turtle PRIVATE SVM_HOG V12_C15_SUPER)
 target_compile_definitions(iron_turtle PRIVATE SVM_HOG V14_C15_SUPER)
 
+###       This target libraries used under Raspberry Pi3
 #target_link_libraries(iron_turtle /usr/lib/arm-linux-gnueabihf/libgsl.so.23)
 #target_link_libraries(iron_turtle /usr/lib/arm-linux-gnueabihf/libgslcblas.so.0)
 #target_link_libraries(iron_turtle /usr/lib/arm-linux-gnueabihf/liblapack.so)
 
+###       This target libraries used under my Ubuntu PC
 target_link_libraries(iron_turtle /lib/x86_64-linux-gnu/libgsl.so.23)
 target_link_libraries(iron_turtle /lib/x86_64-linux-gnu/libgslcblas.so.0)
 target_link_libraries(iron_turtle /lib/x86_64-linux-gnu/liblapack.so)
 
+###       Adding to the project the 'seasocks' library for the WebServer which works as WebSocket server
 target_link_libraries(iron_turtle seasocks "${ZLIB_LIBRARIES}")
+###       Adding to the project
 target_link_libraries(iron_turtle pthread z)
 
+###       Adding to the project the 'opencv' library it used for the frame processing (and, +- as an object detector) and as an object tracker
 find_package(OpenCV REQUIRED)
 include_directories(${OpenCV_INCLUDE_DIRS})
 target_link_libraries(iron_turtle ${OpenCV_LIBS})
 
+###       Adding to the project the 'dlib' library it used as object detector (works with the SVM HOG)
 find_package(PkgConfig)
 if (PKG_CONFIG_FOUND)
     pkg_check_modules(DLIB "dlib-1")
@@ -140,6 +179,7 @@ if (PKG_CONFIG_FOUND)
     endif()
 endif()
 
+###       Copying the source files for the runnable file
 add_custom_command(TARGET iron_turtle POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_directory
         ${PROJECT_SOURCE_DIR}/src $<TARGET_FILE_DIR:iron_turtle>/src)
