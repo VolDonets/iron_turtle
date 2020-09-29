@@ -16,8 +16,7 @@
 
 #include "web_server/web_server.h"
 #include "web_server/lib_my_event_handler/handler_ws.h"
-#include "turtle_manager/ascii_com_manager/ascii_com_lim.h"
-#include "turtle_manager/turtle_manager.h"
+#include "turtle_manager/smooth_turtle_manager.h"
 #include "process_camera/rear_sight_webrtc_manipulation.h"
 
 /** This is the class WebServerWorker, which extends the abstract class HandlerWS (which are a part of my own handling system)
@@ -51,7 +50,7 @@ private:
 
     /** The field with TurtleManager. This one are manager of the iron turtle driver. It just gets commands from this class
      * and them process it if possible*/
-    shared_ptr<TurtleManager> turtle_manager;
+    shared_ptr<SmoothTurtleManager> turtle_manager;
 };
 
 

@@ -9,7 +9,7 @@
 
 WebServerWorker::WebServerWorker() {
     // creating an object of TurtleManager with connecting throw COM-port
-    turtle_manager = make_shared<TurtleManager>(MOVING_STEP_10, MOVING_STEP_5);
+    turtle_manager = make_shared<SmoothTurtleManager>();
     // starting web-server
     this->startServer();
     // this thread sleeps for 1 seconds for avoiding bugs and errors
