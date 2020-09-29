@@ -23,17 +23,17 @@ add_executable(iron_turtle
         web_server/lib_my_event_handler/handler_ws.h
 
 ###      ascii protocol wrapper
-        turtle_manager/ascii_com_manager/ascii_com_lim.h
-        turtle_manager/ascii_com_manager/ascii_native_driver.h
-        turtle_manager/ascii_com_manager/ascii_native_driver.cpp
-
-        turtle_manager/turtle_manager.h
-        turtle_manager/turtle_manager.cpp
-
-        turtle_manager/ascii_com_manager/ascii_native_driver_posn_save.cpp
-        turtle_manager/ascii_com_manager/ascii_native_driver_posn_save.h
-        turtle_manager/ascii_com_manager/serial_manager.cpp
-        turtle_manager/ascii_com_manager/serial_manager.h
+#        turtle_manager/ascii_com_manager/ascii_com_lim.h
+#        turtle_manager/ascii_com_manager/ascii_native_driver.h
+#        turtle_manager/ascii_com_manager/ascii_native_driver.cpp
+#
+#        turtle_manager/turtle_manager.h
+#        turtle_manager/turtle_manager.cpp
+#
+#        turtle_manager/ascii_com_manager/ascii_native_driver_posn_save.cpp
+#        turtle_manager/ascii_com_manager/ascii_native_driver_posn_save.h
+#        turtle_manager/ascii_com_manager/serial_manager.cpp
+#        turtle_manager/ascii_com_manager/serial_manager.h
 
 ###      binary protocol wrapper
         turtle_manager/binary_com_manager/bipropellant-api/hbprotocol/protocol.h
@@ -48,6 +48,10 @@ add_executable(iron_turtle
         turtle_manager/binary_com_manager/bipropellant-api/protocolFunctions.c
         turtle_manager/binary_com_manager/bipropellant-api/HoverboardAPI.h
         turtle_manager/binary_com_manager/bipropellant-api/HoverboardAPI.cpp
+
+        turtle_manager/binary_com_manager/binary_com_lim.h
+        turtle_manager/binary_com_manager/serial_manager.h
+        turtle_manager/binary_com_manager/serial_manager.cpp
 
 ###      this is the source code for the image processing in the gst pipeline
         process_camera/rear_sight_processor/image_processing.h
@@ -67,6 +71,9 @@ add_executable(iron_turtle
 ###       Ubutnu 20.04 and the second one is Raspberry Pi3 under Rasbian)
 target_compile_definitions(iron_turtle PRIVATE UBUNTU_PC)
 #target_compile_definitions(iron_turtle PRIVATE RASPBERRY_PI)
+
+###       this is a target compile definitions for the DEBUG development steps
+target_compile_definitions(iron_turtle PRIVATE MY_DEBUG)
 
 ###       This is compile definitions for the different haarcasades for the object detection
 ###       !!!WARNING!!! it works only with 'process_camera/form_detector_ocv/form_detection_processor_haarcascade.cpp'
