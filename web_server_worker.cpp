@@ -79,5 +79,11 @@ void WebServerWorker::handleEventWS(std::shared_ptr<EventWS> event) {
         case EVENT_CAM_RIGHT:
             on_move_right_processor();
             break;
+        case EVENT_CLIENT_CONNECTED:
+            turtle_manager->say_server_here();
+            break;
+        case EVENT_CLIENT_DISCONNECTED:
+            turtle_manager->say_server_leave();
+            break;
     }
 }
