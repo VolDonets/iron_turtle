@@ -10,12 +10,14 @@ SmoothTurtleManager::SmoothTurtleManager() {
     wantedRightWheelSpeed = 0.0;
     wantedLeftWheelSpeed = 0.0;
     //server_count = 0;
-    server_count = 5;
     skippingSteps = SPEED_CHANGE_TIME_OUT;
     serialManager = std::make_shared<SerialManager>();
     if (serialManager->isSerialOK()) {
         ironTurtleAPI = std::make_shared<HoverboardAPI>(write_serial_wrapper);
         process_turtle_engines();
+#ifdef MY_DEBUG
+        std::cout << "Activated serial port\n";
+#endif //MY_DEBUG
     }
 #ifdef MY_DEBUG
     else {
@@ -31,18 +33,16 @@ SmoothTurtleManager::~SmoothTurtleManager() {
 void SmoothTurtleManager::process_turtle_engines() {
     this->movingProcessingThread = std::thread([this]() {
         while (true) {
-            if (server_count > 0) {
+            if (isServerConnected) {
                 if (skippingSteps == 0) {
                     skippingSteps = SPEED_CHANGE_TIME_OUT;
                     update_current_speed_params();
-                    std::cout << "Speed: " << leftWheelSpeed << " " << wantedLeftWheelSpeed << "\n";
                 }
-                ironTurtleAPI->sendSpeedData(leftWheelSpeed, rightWheelSpeed, 300, 10, PROTOCOL_SOM_NOACK);
+                ironTurtleAPI->sendSpeedData(leftWheelSpeed, rightWheelSpeed, 300, 5, PROTOCOL_SOM_NOACK);
                 skippingSteps--;
-                //server_count--;
             }
             std::this_thread::sleep_for(std::chrono::microseconds(SLEEP_THREAD_TIME_MS));
-            if (server_count == -100) //stupid if for idea, newer achieve
+            if (leftWheelSpeed == -1000) //stupid if for idea, newer achieve
                 break;                //stupid if for idea
         }
     });
@@ -62,6 +62,8 @@ void SmoothTurtleManager::update_current_speed_params() {
     } else if (wantedRightWheelSpeed  < rightWheelSpeed) {
         rightWheelSpeed = rightWheelSpeed - SPEED_CHANGE_STEP_PERCENT;
     }
+
+   // std::cout << "Speed: " << leftWheelSpeed << " " << wantedLeftWheelSpeed << "\n";
 }
 
 void SmoothTurtleManager::move_faster_left_wheel() {
@@ -97,7 +99,12 @@ void SmoothTurtleManager::move_slower_right_wheel() {
 }
 
 void SmoothTurtleManager::say_server_here() {
-    server_count = SERVER_PERIODS;
+    isServerConnected = true;
+}
+
+void SmoothTurtleManager::say_server_leave() {
+    stop_moving();
+    isServerConnected = false;
 }
 
 
@@ -126,7 +133,6 @@ void SmoothTurtleManager::stop_moving() {
     wantedRightWheelSpeed = 0.0;
     leftWheelSpeed = 0.0;
     rightWheelSpeed = 0.0;
-    server_count = 2;
 }
 
 int SmoothTurtleManager::get_speed() {
