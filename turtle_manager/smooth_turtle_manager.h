@@ -12,15 +12,13 @@
 #include "binary_com_manager/serial_manager.h"
 #include "binary_com_manager/bipropellant-api/HoverboardAPI.h"
 
-#define SERVER_PERIODS              10
-
 class SmoothTurtleManager {
 private:
     std::atomic<double> wantedRightWheelSpeed;
     std::atomic<double> wantedLeftWheelSpeed;
     std::atomic<double> rightWheelSpeed;
     std::atomic<double> leftWheelSpeed;
-    std::atomic<int> server_count;
+    std::atomic<bool> isServerConnected;
     std::atomic<int> skippingSteps;
     std::thread movingProcessingThread;
     std::shared_ptr<SerialManager> serialManager;
@@ -38,6 +36,7 @@ public:
     ~SmoothTurtleManager();
 
     void say_server_here();
+    void say_server_leave();
 
     void move_forward();
     void move_backward();
