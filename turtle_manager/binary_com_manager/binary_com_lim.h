@@ -9,7 +9,7 @@
 #define DRIVE_FILE_PATH                            "/dev/ttyUSB0"
 
 /// how my time should wait a thread before send a next command
-#define SLEEP_THREAD_TIME_MS                       30000
+#define SLEEP_THREAD_TIME_MS                       40000
 
 /// Cause we use a speed control, and speed controls in percents so max speed defined as float value
 #define MAX_SPEED_PERCENT                          1.0
@@ -19,7 +19,7 @@
 /// Cause we want smoothly change a current speed, so we need in a small speed changing
 #define SPEED_CHANGE_STEP_PERCENT                0.05
 /// Speed will change each *?* steps
-#define SPEED_CHANGE_TIME_OUT                    1
+#define SPEED_CHANGE_TIME_OUT                    20
 /// Cause we want to stop immediately our iron turtle it's so huge
 #define SPEED_STOP_STEP_PERCENT                0.2
 /// Speed will stop each *?* steps
