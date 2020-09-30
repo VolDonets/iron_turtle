@@ -54,6 +54,9 @@
 #define COMMAND_CAM_RIGHT           "MCR"
 #define COMMAND_CAM_LEFT            "MCL"
 
+#define EVENT_CLIENT_CONNECTED      11
+#define EVENT_CLIENT_DISCONNECTED   12
+
 #define MESSAGE_FOR_EXCESS_CLIENT   "YOU_ARE_EXCESS"
 
 using namespace std::chrono;
@@ -111,6 +114,9 @@ private:
     std::shared_ptr<EventWS> eventCamDown;
     std::shared_ptr<EventWS> eventCamLeft;
     std::shared_ptr<EventWS> eventCamRight;
+
+    std::shared_ptr<EventWS> eventClientConnected;
+    std::shared_ptr<EventWS> eventClientDisconnected;
 
     /// a private function for handling a vector commands from a client
     void doEventHandling(const char *command);

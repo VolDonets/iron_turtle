@@ -21,6 +21,9 @@ MyHandler::MyHandler(MyServer* server) : _server(server){
     this->eventCamRight = std::make_shared<EventWS>(EVENT_CAM_RIGHT);
     this->eventCamLeft = std::make_shared<EventWS>(EVENT_CAM_LEFT);
 
+    this->eventClientConnected = std::make_shared<EventWS>(EVENT_CLIENT_CONNECTED);
+    this->eventClientDisconnected = std::make_shared<EventWS>(EVENT_CLIENT_DISCONNECTED);
+
     _isFirstWebRTC_Connection = true;
 }
 
@@ -36,6 +39,7 @@ void MyHandler::onConnect(WebSocket* connection) {
         } else {
             webrtc_pipeline_restart(connection);
         }
+        _delegate->doEvent(eventClientConnected);
     } else {
         connection->send(MESSAGE_FOR_EXCESS_CLIENT);
         connection->close();
@@ -66,6 +70,19 @@ void MyHandler::onData(WebSocket* connection, const char* data) {
 }
 
 void MyHandler::onDisconnect(WebSocket* connection) {
+#ifdef UBUNTU_PC
+    if (_connections.contains(connection)) {
+        _delegate->doEvent(eventClientDisconnected);
+    }
+#endif //UBUNTU_PC
+#ifdef RASPBERRY_PI
+    for (WebSocket* c: _connections) {
+        if (c == connection) {
+            _delegate->doEvent(eventClientDisconnect);
+        }
+    }
+#endif //RASPBERRY_PI
+
     webrtc_pipeline_deactivate(connection);
     _connections.erase(connection);
 }
