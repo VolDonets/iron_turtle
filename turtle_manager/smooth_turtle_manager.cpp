@@ -5,13 +5,25 @@
 #include "smooth_turtle_manager.h"
 
 SmoothTurtleManager::SmoothTurtleManager() {
+    // set current wheels speed
     rightWheelSpeed = 0.0;
     leftWheelSpeed = 0.0;
+
+    // set started wanted speed values
     wantedRightWheelSpeed = 0.0;
     wantedLeftWheelSpeed = 0.0;
-    //server_count = 0;
+
+    // set how much steps program should skip before update speed value
     skippingSteps = SPEED_CHANGE_TIME_OUT;
+
+    // activate the serial device wrapper and read/write wrapping functions
     serialManager = std::make_shared<SerialManager>();
+
+    // now we haven't connected clients, so we shouldn't send control commands
+    isServerConnected = false;
+
+    // if the serial wrapper are activated program can starts new thread and
+    // it makes sense to activate the bipropellant API wrapper
     if (serialManager->isSerialOK()) {
         ironTurtleAPI = std::make_shared<HoverboardAPI>(write_serial_wrapper);
         process_turtle_engines();
@@ -27,7 +39,7 @@ SmoothTurtleManager::SmoothTurtleManager() {
 }
 
 SmoothTurtleManager::~SmoothTurtleManager() {
-
+    // nothing to happens here
 }
 
 void SmoothTurtleManager::process_turtle_engines() {
@@ -55,15 +67,11 @@ void SmoothTurtleManager::update_current_speed_params() {
         leftWheelSpeed = leftWheelSpeed - SPEED_CHANGE_STEP_PERCENT;
     }
 
-
-
     if(wantedRightWheelSpeed > rightWheelSpeed) {
         rightWheelSpeed = rightWheelSpeed + SPEED_CHANGE_STEP_PERCENT;
     } else if (wantedRightWheelSpeed  < rightWheelSpeed) {
         rightWheelSpeed = rightWheelSpeed - SPEED_CHANGE_STEP_PERCENT;
     }
-
-   // std::cout << "Speed: " << leftWheelSpeed << " " << wantedLeftWheelSpeed << "\n";
 }
 
 void SmoothTurtleManager::move_faster_left_wheel() {
