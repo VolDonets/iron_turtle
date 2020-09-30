@@ -78,7 +78,7 @@ void MyHandler::onDisconnect(WebSocket* connection) {
 #ifdef RASPBERRY_PI
     for (WebSocket* c: _connections) {
         if (c == connection) {
-            _delegate->doEvent(eventClientDisconnect);
+            _delegate->doEvent(eventClientDisconnected);
         }
     }
 #endif //RASPBERRY_PI
