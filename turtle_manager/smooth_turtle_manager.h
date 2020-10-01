@@ -12,6 +12,8 @@
 #include "binary_com_manager/serial_manager.h"                  //this .h-file contains my wrapper for the serial device
 #include "binary_com_manager/bipropellant-api/HoverboardAPI.h"  //this .h-file contains C++ class - wrapper for the C bipropellant API
 
+constexpr int SERVER_WAIT_STEPS = 10;
+
 /** The class SmoothTurtleManager is controller for the turtle engines throw the turtle engine controller with using the binary protocol.
  * !!!WARNING!!! in your program please use only one object of this class, cause in constructor creates wrapper for the serial interface and
  * creates new thread for sending commands throw UART connection to the turtle engine controller.*/
@@ -26,8 +28,10 @@ private:
     /// this variable contains PERCENT CURRENT speed for the LEFT turtle wheel
     std::atomic<double> leftWheelSpeed;
     /** this variable contains a server connection status (connection with client), if we have a client which is able to
-     * manage the iron turtle, so we can to send commands to the iron turtle controller.*/
-    std::atomic<bool> isServerConnected;
+     * manage the iron turtle, so we can to send commands to the iron turtle controller.
+     * This variable decrease to 0, in the tread loop, and if a client says 'I'm here it will updates to SERVER_WAIT_STEPS,
+     * otherwise the processor won't able to send a control command and the iron turtle just stop moving.*/
+    std::atomic<int> serverCounter;
     /** this variable contains a current processing step, if it equals '0' program will process new rightWheelSpeed and
      * new leftWheelSpeed, as wanted to achieve wantedRightWheelSpeed and wantedLeftWheelSpeed*/
     std::atomic<int> skippingSteps;

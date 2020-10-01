@@ -20,7 +20,7 @@ SmoothTurtleManager::SmoothTurtleManager() {
     serialManager = std::make_shared<SerialManager>();
 
     // now we haven't connected clients, so we shouldn't send control commands
-    isServerConnected = false;
+    serverCounter = 0;
 
     // if the serial wrapper are activated program can starts new thread and
     // it makes sense to activate the bipropellant API wrapper
@@ -45,7 +45,7 @@ SmoothTurtleManager::~SmoothTurtleManager() {
 void SmoothTurtleManager::process_turtle_engines() {
     this->movingProcessingThread = std::thread([this]() {
         while (true) {
-            if (isServerConnected) {
+            if (serverCounter > 0) {
                 if (skippingSteps == 0) {
                     skippingSteps = SPEED_CHANGE_TIME_OUT;
                     update_current_speed_params();
@@ -53,9 +53,8 @@ void SmoothTurtleManager::process_turtle_engines() {
                 ironTurtleAPI->sendSpeedData(leftWheelSpeed, rightWheelSpeed, 300, 5, PROTOCOL_SOM_NOACK);
                 skippingSteps--;
             }
+            serverCounter = (serverCounter == 0) ? 0 : (serverCounter - 1);
             std::this_thread::sleep_for(std::chrono::microseconds(SLEEP_THREAD_TIME_MS));
-            if (leftWheelSpeed == -1000) //stupid if for idea, newer achieve
-                break;                //stupid if for idea
         }
     });
 }
@@ -107,12 +106,12 @@ void SmoothTurtleManager::move_slower_right_wheel() {
 }
 
 void SmoothTurtleManager::say_server_here() {
-    isServerConnected = true;
+    serverCounter = SERVER_WAIT_STEPS;
 }
 
 void SmoothTurtleManager::say_server_leave() {
     stop_moving();
-    isServerConnected = false;
+    serverCounter = 2; // TODO. or 0 ?
 }
 
 
