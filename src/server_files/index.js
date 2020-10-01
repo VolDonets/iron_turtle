@@ -220,6 +220,10 @@ function send_control_message(){
     }
 }
 
+function scheduled_sender(){
+    send_control_message();
+}
+
 $(function begin() {
     document.addEventListener('keydown', (e) => {
         if (!e.repeat) {
@@ -253,20 +257,15 @@ $(function begin() {
 
     ws.onopen = function () {
         console.log('onopen');
-        //ws.send("GIVE_MQTT_STATUS")
     };
 
     ws.onclose = function () {
         console.log('onclose');
     };
 
-    //ws.onmessage = function (message) {
-    //
-    //};
-
     ws.onerror = function (error) {
-        //  add("ERROR: " + error);
     };
 
     playStream(vidstream, config, function (errmsg) { console.error(errmsg); });
+    let messageSender = setInterval(send_control_message, 100);
 });
