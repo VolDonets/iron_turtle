@@ -221,7 +221,7 @@ function send_control_message(){
 }
 
 function scheduled_sender(){
-    send_control_message();
+    ws.send("{\"comm\":[\"OK\"]}");
 }
 
 $(function begin() {
@@ -267,5 +267,5 @@ $(function begin() {
     };
 
     playStream(vidstream, config, function (errmsg) { console.error(errmsg); });
-    let messageSender = setInterval(send_control_message, 100);
+    let messageSender = setInterval(scheduled_sender, 100);
 });
