@@ -412,14 +412,18 @@ static gchar * get_string_from_json_object (JsonObject * object) {
     return text;
 }
 
-#ifdef G_OS_UNIX
+// TODO. Fix a bug when the program freezes instead of the stopping when customer is trying to stop (quit) the program using the '^C' command
+// I should to fix it in the move beautiful way (now I just comment the freezes code blocks)
+/* #ifdef G_OS_UNIX
 gboolean exit_sighandler (gpointer user_data) {
     g_print ("Caught signal, stopping mainloop\n");
     GMainLoop *mainloop = (GMainLoop *) user_data;
     g_main_loop_quit (mainloop);
     return TRUE;
 }
-#endif
+#endif */
+// ***< Fix a bug when the program freezes instead of the stopping when customer is trying to stop (quit) the program using the '^C' command
+// I should to fix it in the move beautiful way (now I just comment the freezes code blocks)
 
 int webrtc_gst_loop(seasocks::WebSocket *connection) {
     setlocale(LC_ALL, "");
@@ -428,17 +432,35 @@ int webrtc_gst_loop(seasocks::WebSocket *connection) {
     mainloop = g_main_loop_new(NULL, FALSE);
     g_assert (mainloop != NULL);
 
-#ifdef G_OS_UNIX
+// TODO. Fix a bug when the program freezes instead of the stopping when customer is trying to stop (quit) the program using the '^C' command
+// I should to fix it in the move beautiful way (now I just comment the freezes code blocks)
+/*#ifdef G_OS_UNIX
     g_unix_signal_add(SIGINT, exit_sighandler, mainloop);
     g_unix_signal_add(SIGTERM, exit_sighandler, mainloop);
-#endif
+#endif */
+// ***< Fix a bug when the program freezes instead of the stopping when customer is trying to stop (quit) the program using the '^C' command
+// I should to fix it in the move beautiful way (now I just comment the freezes code blocks)
 
     my_receiver_entry = create_receiver_entry(connection);
-
+#ifdef MY_DEBUG
+    g_print("The mainloop is starting\n");
+#endif //MY_DEBUG
     g_main_loop_run(mainloop);
-
+#ifdef MY_DEBUG
+    g_print("The mainloop is stopping\n");
+#endif //MY_DEBUG
     g_main_loop_unref(mainloop);
-    gst_deinit();
+#ifdef MY_DEBUG
+    g_print("Gst is deiniting\n");
+#endif //MY_DEBUG
+    // TODO. Fix a bug when the program freezes instead of the stopping when customer is trying to stop (quit) the program using the '^C' command
+    // I should to fix it in the move beautiful way (now I just comment the freezes code blocks)
+    //gst_deinit();
+    // ***< Fix a bug when the program freezes instead of the stopping when customer is trying to stop (quit) the program using the '^C' command
+    // I should to fix it in the move beautiful way (now I just comment the freezes code blocks)
+#ifdef  MY_DEBUG
+    g_print("Gst stopped successfully\n");
+#endif //MY_DEBUG
     return 0;
 }
 
