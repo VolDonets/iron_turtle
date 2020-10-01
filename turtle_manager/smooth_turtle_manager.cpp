@@ -2,6 +2,7 @@
 // Created by biba_bo on 2020-09-29.
 //
 
+#include <tgmath.h>
 #include "smooth_turtle_manager.h"
 
 SmoothTurtleManager::SmoothTurtleManager() {
@@ -50,8 +51,14 @@ void SmoothTurtleManager::process_turtle_engines() {
                     skippingSteps = SPEED_CHANGE_TIME_OUT;
                     update_current_speed_params();
                 }
-                ironTurtleAPI->sendSpeedData(leftWheelSpeed, rightWheelSpeed, 300, 5, PROTOCOL_SOM_NOACK);
+                if (fabs(leftWheelSpeed) > MIN_SPEED_PERCENT || fabs(rightWheelSpeed) > MIN_SPEED_PERCENT) {
+                    ironTurtleAPI->sendSpeedData(leftWheelSpeed, rightWheelSpeed, 300, 5, PROTOCOL_SOM_NOACK);
+                }
+                std::cout << "Wheels: " << leftWheelSpeed << " " << rightWheelSpeed << "\n";
                 skippingSteps--;
+            } else {
+                leftWheelSpeed = 0.0;
+                rightWheelSpeed = 0.0;
             }
             serverCounter = (serverCounter == 0) ? 0 : (serverCounter - 1);
             std::this_thread::sleep_for(std::chrono::microseconds(SLEEP_THREAD_TIME_MS));
