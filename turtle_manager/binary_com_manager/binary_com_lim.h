@@ -19,7 +19,7 @@
 /// Cause we want smoothly change a current speed, so we need in a small speed changing
 #define SPEED_CHANGE_STEP_PERCENT                0.05
 /// Speed will change each *?* steps
-#define SPEED_CHANGE_TIME_OUT                    20
+#define SPEED_CHANGE_TIME_OUT                    4
 /// Cause we want to stop immediately our iron turtle it's so huge
 #define SPEED_STOP_STEP_PERCENT                0.2
 /// Speed will stop each *?* steps
