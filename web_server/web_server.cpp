@@ -94,6 +94,10 @@ void MyHandler::sendValuesJSON(std::string values) {
 }
 
 void MyHandler::doEventHandling(const char *data) {
+    if (strcmp(data, COMMAND_CLIENT_IS_STILL_HERE) == 0){
+        _delegate->doEvent(eventClientConnected);
+        return;
+    }
     if (strcmp(data, COMMAND_MOVE_FORWARD) == 0) {
         _delegate->doEvent(eventMoveForward);
         return;

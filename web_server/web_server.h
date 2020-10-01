@@ -30,22 +30,22 @@
 #include <thread>
 #include <mutex>
 
-#define EVENT_MOVE_FORWARD          1
-#define EVENT_MOVE_BACK             2
-#define EVENT_MOVE_RIGHTER          3
-#define EVENT_MOVE_LEFTER           4
+constexpr int EVENT_MOVE_FORWARD = 1;
+constexpr int EVENT_MOVE_BACK = 2;
+constexpr int EVENT_MOVE_RIGHTER = 3;
+constexpr int EVENT_MOVE_LEFTER = 4;
 
 #define COMMAND_MOVE_FORWARD        "MTU"
 #define COMMAND_MOVE_BACK           "MTD"
 #define COMMAND_MOVE_RIGHTER        "MTR"
 #define COMMAND_MOVE_LEFTER         "MTL"
 
-#define EVENT_CAM_ZP                5
-#define EVENT_CAM_ZM                6
-#define EVENT_CAM_UP                7
-#define EVENT_CAM_DOWN              8
-#define EVENT_CAM_RIGHT             9
-#define EVENT_CAM_LEFT              10
+constexpr int EVENT_CAM_ZP = 5;
+constexpr int EVENT_CAM_ZM = 6;
+constexpr int EVENT_CAM_UP = 7;
+constexpr int EVENT_CAM_DOWN = 8;
+constexpr int EVENT_CAM_RIGHT = 9;
+constexpr int EVENT_CAM_LEFT = 10;
 
 #define COMMAND_CAM_ZP              "ZCP"
 #define COMMAND_CAM_ZM              "ZCM"
@@ -54,8 +54,10 @@
 #define COMMAND_CAM_RIGHT           "MCR"
 #define COMMAND_CAM_LEFT            "MCL"
 
-#define EVENT_CLIENT_CONNECTED      11
-#define EVENT_CLIENT_DISCONNECTED   12
+constexpr int EVENT_CLIENT_CONNECTED = 11;
+constexpr int EVENT_CLIENT_DISCONNECTED = 12;
+
+#define COMMAND_CLIENT_IS_STILL_HERE    "OK"
 
 #define MESSAGE_FOR_EXCESS_CLIENT   "YOU_ARE_EXCESS"
 
