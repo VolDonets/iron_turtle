@@ -18,7 +18,7 @@ SerialManager::SerialManager() {
 }
 
 int SerialManager::activate_serial_port() {
-    serialPort = open(DRIVE_FILE_PATH, O_RDWR);
+    serialPort = open(DRIVE_FILE_PATH.c_str(), O_RDWR);
     if (!serialPort) {
         if (errno == 2) {
             #ifdef MY_DEBUG
