@@ -12,6 +12,7 @@ MyHandler::MyHandler(MyServer* server) : _server(server){
     this->eventMoveBack = std::make_shared<EventWS>(EVENT_MOVE_BACK);
     this->eventMoveRighter = std::make_shared<EventWS>(EVENT_MOVE_RIGHTER);
     this->eventMoveLefter = std::make_shared<EventWS>(EVENT_MOVE_LEFTER);
+    this->eventStopMoving = std::make_shared<EventWS>(EVENT_STOP_MOVING);
 
     this->eventCamZM = std::make_shared<EventWS>(EVENT_CAM_ZM);
     this->eventCamZP = std::make_shared<EventWS>(EVENT_CAM_ZP);
@@ -96,6 +97,10 @@ void MyHandler::sendValuesJSON(std::string values) {
 void MyHandler::doEventHandling(const char *data) {
     if (strcmp(data, COMMAND_CLIENT_IS_STILL_HERE) == 0){
         _delegate->doEvent(eventClientConnected);
+        return;
+    }
+    if (strcmp(data, COMMAND_STOP_MOVING) == 0) {
+        _delegate->doEvent(eventStopMoving);
         return;
     }
     if (strcmp(data, COMMAND_MOVE_FORWARD) == 0) {

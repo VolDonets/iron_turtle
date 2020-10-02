@@ -61,6 +61,9 @@ void WebServerWorker::handleEventWS(std::shared_ptr<EventWS> event) {
         case EVENT_MOVE_RIGHTER:
             turtle_manager->move_righter();
             break;
+        case EVENT_STOP_MOVING:
+            turtle_manager->stop_moving();
+            break;
         case EVENT_CAM_ZM:
             on_zoom_minus_processor();
             break;
