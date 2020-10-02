@@ -15,7 +15,7 @@ constexpr int SLEEP_THREAD_TIME_MS = 40000;
 constexpr double MAX_SPEED_PERCENT = 1.0;
 /// Cause we use a speed control, and speed controls in percents so mim speed defined as float value
 /// this value received experimentally
-constexpr double MIN_SPEED_PERCENT = 0.15;
+constexpr double MIN_SPEED_PERCENT = 0.05;
 /// Cause we want smoothly change a current speed, so we need in a small speed changing
 constexpr double SPEED_CHANGE_STEP_PERCENT = 0.05;
 /// Speed will change each *?* steps
@@ -24,7 +24,10 @@ constexpr int SPEED_CHANGE_TIME_OUT = 4;
 constexpr double SPEED_STOP_STEP_PERCENT = 0.2;
 /// Speed will stop each *?* steps
 constexpr int SPEED_STOP_TIME_OUT = 5;
-
+/// Maximum power value for the iron turtle engines controller (in pwr points)
+constexpr double MAX_WHEELS_POWER_VALUE = 200;
+/// Minimum start speed for the iron turtle engine controller (in mm/s)
+constexpr int MIN_WHEELS_START_SPEED_VALUE = 5;
 
 
 
