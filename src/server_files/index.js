@@ -82,6 +82,7 @@ var isUP_ButtonPushed = false;
 var isDOWN_ButtonPushed = false;
 var isRIGHT_ButtonPushed = false;
 var isLEFT_ButtonPushed = false;
+var isZERO_ButtonPushed = false;
 
 var isANY_ButtonPushed = false;
 
@@ -107,10 +108,13 @@ function set_keydown(key_code) {
         isA_ButtonPushed = true;
     else if (key_code === 'd' || key_code === 'D')
         isD_ButtonPushed = true;
+    else if (key_code === '0')
+        isZERO_ButtonPushed = true;
 
     if (isQ_ButtonPushed || isW_ButtonPushed || isE_ButtonPushed
         || isA_ButtonPushed || isS_ButtonPushed || isD_ButtonPushed
-        || isUP_ButtonPushed || isDOWN_ButtonPushed || isLEFT_ButtonPushed || isRIGHT_ButtonPushed)
+        || isUP_ButtonPushed || isDOWN_ButtonPushed || isLEFT_ButtonPushed
+        || isRIGHT_ButtonPushed || isZERO_ButtonPushed)
         isANY_ButtonPushed = true;
 }
 
@@ -135,10 +139,13 @@ function set_keyup(key_code) {
         isA_ButtonPushed = false;
     else if (key_code === 'd' || key_code === 'D')
         isD_ButtonPushed = false;
+    else if (key_code === '0')
+        isZERO_ButtonPushed = false;
 
     if (!(isQ_ButtonPushed || isW_ButtonPushed || isE_ButtonPushed
         || isA_ButtonPushed || isS_ButtonPushed || isD_ButtonPushed
-        || isUP_ButtonPushed || isDOWN_ButtonPushed || isLEFT_ButtonPushed || isRIGHT_ButtonPushed))
+        || isUP_ButtonPushed || isDOWN_ButtonPushed || isLEFT_ButtonPushed
+        || isRIGHT_ButtonPushed || isZERO_ButtonPushed))
         isANY_ButtonPushed = false;
 }
 
@@ -214,6 +221,12 @@ function send_control_message(){
                 json_str += "\"MTL\"";
             else
                 json_str += ",\"MTL\"";
+        }
+        if(isZERO_ButtonPushed) {
+            if (isFirst)
+                json_str += "\"MTS\"";
+            else
+                json_str += ",\"MTS\"";
         }
         json_str += "]}";
         ws.send(json_str);
