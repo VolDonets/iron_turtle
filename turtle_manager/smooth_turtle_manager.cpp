@@ -52,9 +52,8 @@ void SmoothTurtleManager::process_turtle_engines() {
                     update_current_speed_params();
                 }
                 if (fabs(leftWheelSpeed) > MIN_SPEED_PERCENT || fabs(rightWheelSpeed) > MIN_SPEED_PERCENT) {
-                    ironTurtleAPI->sendSpeedData(leftWheelSpeed, rightWheelSpeed, 300, 5, PROTOCOL_SOM_NOACK);
+                    ironTurtleAPI->sendSpeedData(leftWheelSpeed, rightWheelSpeed, 50, 5, PROTOCOL_SOM_NOACK);
                 }
-                std::cout << "Wheels: " << leftWheelSpeed << " " << rightWheelSpeed << "\n";
                 skippingSteps--;
             } else {
                 leftWheelSpeed = 0.0;
@@ -67,15 +66,17 @@ void SmoothTurtleManager::process_turtle_engines() {
 }
 
 void SmoothTurtleManager::update_current_speed_params() {
-    if(wantedLeftWheelSpeed > leftWheelSpeed) {
+    // this was a bug with double value if worked when it shouldn't,
+    // cause double has a problems with small values after point.
+    if(wantedLeftWheelSpeed > leftWheelSpeed + 0.0001) {
         leftWheelSpeed = leftWheelSpeed + SPEED_CHANGE_STEP_PERCENT;
-    } else if (wantedLeftWheelSpeed < leftWheelSpeed) {
+    } else if (wantedLeftWheelSpeed < leftWheelSpeed - 0.0001) {
         leftWheelSpeed = leftWheelSpeed - SPEED_CHANGE_STEP_PERCENT;
     }
 
-    if(wantedRightWheelSpeed > rightWheelSpeed) {
+    if(wantedRightWheelSpeed > rightWheelSpeed + 0.0001) {
         rightWheelSpeed = rightWheelSpeed + SPEED_CHANGE_STEP_PERCENT;
-    } else if (wantedRightWheelSpeed  < rightWheelSpeed) {
+    } else if (wantedRightWheelSpeed  < rightWheelSpeed - 0.0001) {
         rightWheelSpeed = rightWheelSpeed - SPEED_CHANGE_STEP_PERCENT;
     }
 }
