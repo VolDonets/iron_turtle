@@ -98,16 +98,21 @@ public:
      *         called when client send command to STOP moving*/
     void stop_moving();
 
-    /// @brief this function returns current speed
+    /** @brief this function returns current speed
+     *  @return returns current speed */
     int get_speed();
-    /// @brief this function returns current battery voltage
+    /** @brief this function returns current battery voltage
+     * @return returns current battery voltage of the iron turtle battery*/
     int get_battery_voltage();
 
-    /** @brief This function returns code of operation for the STOPPING thread and it trying if possible to stop the processing thread.*/
+    /** @brief This function returns code of operation for the STOPPING thread and it trying if possible to stop the processing thread.
+     *  @return an operation result code */
     int stop_processing_thread();
-    /** @brief This function returns code of operation for the RESTARTING thread and it trying if possible to stop the processing thread.*/
+    /** @brief This function returns code of operation for the RESTARTING thread and it trying if possible to stop the processing thread.
+     *  @return an operation result code */
     int restart_processing_thread();
-    /** @brief This function returns status of the processing thread. If a thread works - the function returns 'true', otherwise it returns - 'false'. */
+    /** @brief This function returns status of the processing thread. If a thread works - the function returns 'true', otherwise it returns - 'false'.
+     *  @return an operation result code */
     bool is_process_moving();
 };
 

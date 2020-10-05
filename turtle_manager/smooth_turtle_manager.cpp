@@ -74,6 +74,7 @@ void SmoothTurtleManager::process_turtle_engines() {
                     currentPower = (currentPower < MAX_WHEELS_POWER_VALUE) ? (currentPower + 50) : MAX_WHEELS_POWER_VALUE;
                     ironTurtleAPI->sendSpeedData(leftWheelSpeed, rightWheelSpeed, currentPower, MIN_WHEELS_START_SPEED_VALUE, PROTOCOL_SOM_NOACK);
                 } else {
+                    ironTurtleAPI->sendCounterReset(PROTOCOL_SOM_NOACK);
                     currentPower = 0;
                 }
                 skippingSteps--;
@@ -81,6 +82,7 @@ void SmoothTurtleManager::process_turtle_engines() {
                 currentPower = 0;
                 leftWheelSpeed = 0.0;
                 rightWheelSpeed = 0.0;
+                ironTurtleAPI->sendCounterReset(PROTOCOL_SOM_NOACK);
             }
             serverCounter = (serverCounter == 0) ? 0 : (serverCounter - 1);
             std::this_thread::sleep_for(std::chrono::microseconds(SLEEP_THREAD_TIME_MS));
