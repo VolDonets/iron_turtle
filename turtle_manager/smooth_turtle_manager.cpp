@@ -23,20 +23,38 @@ SmoothTurtleManager::SmoothTurtleManager() {
     // now we haven't connected clients, so we shouldn't send control commands
     serverCounter = 0;
 
-    // if the serial wrapper are activated program can starts new thread and
-    // it makes sense to activate the bipropellant API wrapper
-    if (serialManager->isSerialOK()) {
-        ironTurtleAPI = std::make_shared<HoverboardAPI>(write_serial_wrapper);
-        process_turtle_engines();
-#ifdef MY_DEBUG
-        std::cout << "Activated serial port\n";
-#endif //MY_DEBUG
-    }
-#ifdef MY_DEBUG
-    else {
-        std::cout << "Has a PROBLEM with serial device.\nSo processing DIDN'T STARTED\n";
-    }
-#endif //MY_DEBUG
+    // now create an object for HoverboardAPI for the communication with
+    // a serial device (here connected the iron engines controller.
+    ironTurtleAPI = std::make_shared<HoverboardAPI>(write_serial_wrapper);
+
+    // disable processing
+    isProcessThread = false;
+}
+
+SmoothTurtleManager::SmoothTurtleManager(std::shared_ptr<SerialManager> serialManager) {
+    // set current wheels speed
+    rightWheelSpeed = 0.0;
+    leftWheelSpeed = 0.0;
+
+    // set started wanted speed values
+    wantedRightWheelSpeed = 0.0;
+    wantedLeftWheelSpeed = 0.0;
+
+    // set how much steps program should skip before update speed value
+    skippingSteps = SPEED_CHANGE_TIME_OUT;
+
+    // activate the serial device wrapper and read/write wrapping functions
+    this->serialManager = serialManager;
+
+    // now we haven't connected clients, so we shouldn't send control commands
+    serverCounter = 0;
+
+    // now create an object for HoverboardAPI for the communication with
+    // a serial device (here connected the iron engines controller.
+    ironTurtleAPI = std::make_shared<HoverboardAPI>(write_serial_wrapper);
+
+    // disable processing
+    isProcessThread = false;
 }
 
 SmoothTurtleManager::~SmoothTurtleManager() {
@@ -46,7 +64,7 @@ SmoothTurtleManager::~SmoothTurtleManager() {
 void SmoothTurtleManager::process_turtle_engines() {
     this->movingProcessingThread = std::thread([this]() {
         int currentPower = 0;
-        while (true) {
+        while (isProcessThread) {
             if (serverCounter > 0) {
                 if (skippingSteps == 0) {
                     skippingSteps = SPEED_CHANGE_TIME_OUT;
@@ -161,5 +179,32 @@ int SmoothTurtleManager::get_speed() {
 
 int SmoothTurtleManager::get_battery_voltage() {
     return 0;
+}
+
+int SmoothTurtleManager::stop_processing_thread() {
+    if (isProcessThread) {
+        isProcessThread = false;
+        stop_processing_thread();
+        std::this_thread::sleep_for(std::chrono::microseconds(SLEEP_THREAD_TIME_MS));
+        ironTurtleAPI->sendSpeedData(0.0, 0.0, 0, 0, PROTOCOL_SOM_NOACK);
+    }
+    return SUCCESSFUL_OP;
+}
+
+int SmoothTurtleManager::restart_processing_thread() {
+    if (isProcessThread) {
+        return SUCCESSFUL_OP;
+    }
+    if (serialManager->isSerialOK()) {
+        isProcessThread = true;
+        process_turtle_engines();
+        return SUCCESSFUL_OP;
+    } else {
+        return SERIAL_MANAGER_PROBLEM;
+    }
+}
+
+bool SmoothTurtleManager::is_process_moving() {
+    return isProcessThread;
 }
 
