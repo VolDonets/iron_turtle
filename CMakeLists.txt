@@ -43,6 +43,9 @@ add_executable(iron_turtle
         turtle_manager/smooth_turtle_manager.h
         turtle_manager/smooth_turtle_manager.cpp
 
+        pursuit_processor/pursuit_processor.h
+        pursuit_processor/pursuit_processor.cpp
+
 ###      this is the source code for the image processing in the gst pipeline
         process_camera/rear_sight_processor/image_processing.h
         process_camera/rear_sight_processor/rear_sight_processor.h
