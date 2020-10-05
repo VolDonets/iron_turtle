@@ -15,9 +15,9 @@ constexpr int SLEEP_THREAD_TIME_MS = 40000;
 constexpr double MAX_SPEED_PERCENT = 1.0;
 /// Cause we use a speed control, and speed controls in percents so mim speed defined as float value
 /// this value received experimentally
-constexpr double MIN_SPEED_PERCENT = 0.05;
+constexpr double MIN_SPEED_PERCENT = 0.01;
 /// Cause we want smoothly change a current speed, so we need in a small speed changing
-constexpr double SPEED_CHANGE_STEP_PERCENT = 0.05;
+constexpr double SPEED_CHANGE_STEP_PERCENT = 0.02;
 /// Speed will change each *?* steps
 constexpr int SPEED_CHANGE_TIME_OUT = 4;
 /// Cause we want to stop immediately our iron turtle it's so huge
