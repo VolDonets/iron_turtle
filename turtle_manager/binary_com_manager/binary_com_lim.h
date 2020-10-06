@@ -9,7 +9,7 @@
 const std::string DRIVE_FILE_PATH = "/dev/ttyUSB0";
 
 /// how my time should wait a thread before send a next command
-constexpr int SLEEP_THREAD_TIME_MS = 40000;
+constexpr int SLEEP_THREAD_TIME_MS = 30000;
 
 /// Cause we use a speed control, and speed controls in percents so max speed defined as float value
 constexpr double MAX_SPEED_PERCENT = 1.0;
@@ -17,9 +17,9 @@ constexpr double MAX_SPEED_PERCENT = 1.0;
 /// this value received experimentally
 constexpr double MIN_SPEED_PERCENT = 0.01;
 /// Cause we want smoothly change a current speed, so we need in a small speed changing
-constexpr double SPEED_CHANGE_STEP_PERCENT = 0.02;
+constexpr double SPEED_CHANGE_STEP_PERCENT = 0.01;
 /// Speed will change each *?* steps
-constexpr int SPEED_CHANGE_TIME_OUT = 4;
+constexpr int SPEED_CHANGE_TIME_OUT = 1;
 /// Cause we want to stop immediately our iron turtle it's so huge
 constexpr double SPEED_STOP_STEP_PERCENT = 0.2;
 /// Speed will stop each *?* steps

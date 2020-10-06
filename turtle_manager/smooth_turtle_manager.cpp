@@ -64,6 +64,8 @@ SmoothTurtleManager::~SmoothTurtleManager() {
 void SmoothTurtleManager::process_turtle_engines() {
     this->movingProcessingThread = std::thread([this]() {
         int currentPower = 0;
+        int sendZeroSpeedTimes = 0;
+        constexpr int MAX_ZERO_SPEED_SEND_TIMES = 5;
         while (isProcessThread) {
             if (serverCounter > 0) {
                 if (skippingSteps == 0) {
@@ -71,18 +73,26 @@ void SmoothTurtleManager::process_turtle_engines() {
                     update_current_speed_params();
                 }
                 if (fabs(leftWheelSpeed) > MIN_SPEED_PERCENT || fabs(rightWheelSpeed) > MIN_SPEED_PERCENT) {
+                    sendZeroSpeedTimes = 0;
                     currentPower = (currentPower < MAX_WHEELS_POWER_VALUE) ? (currentPower + 50) : MAX_WHEELS_POWER_VALUE;
                     ironTurtleAPI->sendSpeedData(leftWheelSpeed, rightWheelSpeed, currentPower, MIN_WHEELS_START_SPEED_VALUE, PROTOCOL_SOM_NOACK);
                 } else {
-                    ironTurtleAPI->sendCounterReset(PROTOCOL_SOM_NOACK);
-                    currentPower = 0;
+                    if (sendZeroSpeedTimes < MAX_ZERO_SPEED_SEND_TIMES) {
+                        currentPower = 0;
+                        ironTurtleAPI->sendSpeedData(0, 0, currentPower, MIN_WHEELS_START_SPEED_VALUE,
+                                                     PROTOCOL_SOM_NOACK);
+                        sendZeroSpeedTimes++;
+                    }
                 }
                 skippingSteps--;
             } else {
-                currentPower = 0;
-                leftWheelSpeed = 0.0;
-                rightWheelSpeed = 0.0;
-                ironTurtleAPI->sendCounterReset(PROTOCOL_SOM_NOACK);
+                if (sendZeroSpeedTimes < MAX_ZERO_SPEED_SEND_TIMES) {
+                    currentPower = 0;
+                    leftWheelSpeed = 0.0;
+                    rightWheelSpeed = 0.0;
+                    ironTurtleAPI->sendSpeedData(0, 0, currentPower, MIN_WHEELS_START_SPEED_VALUE, PROTOCOL_SOM_NOACK);
+                    sendZeroSpeedTimes++;
+                }
             }
             serverCounter = (serverCounter == 0) ? 0 : (serverCounter - 1);
             std::this_thread::sleep_for(std::chrono::microseconds(SLEEP_THREAD_TIME_MS));
@@ -144,7 +154,7 @@ void SmoothTurtleManager::say_server_here() {
 
 void SmoothTurtleManager::say_server_leave() {
     stop_moving();
-    serverCounter = 2; // TODO. or 0 ?
+    serverCounter = 20;
 }
 
 
