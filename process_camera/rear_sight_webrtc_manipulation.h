@@ -15,10 +15,13 @@
 #include <gst/sdp/sdp.h>
 
 #ifdef G_OS_UNIX
+
 #include <glib-unix.h>
+
 #endif
 
 #define GST_USE_UNSTABLE_API
+
 #include <gst/webrtc/webrtc.h>
 
 #include <json-glib/json-glib.h>
@@ -38,10 +41,50 @@
 /// Struct which contains pipeline and other GstElements, for comfortable work with connection.
 typedef struct _ReceiverEntry ReceiverEntry;
 
+#ifdef MY_PURSUIT_TESTING
+/// this constant contains a basic X coord for the start pursuit rectangle
+constexpr int START_PURSUIT_X = 240;
+/// this constant contains a basic Y coord for the start pursuit rectangle
+constexpr int START_PURSUIT_Y = 180;
+/// this constant contains a basic width for the start pursuit rectangle
+constexpr int START_PURSUIT_WIDTH = 160;
+/// this constant contains a basic height for the start pursuit rectangle
+constexpr int START_PURSUIT_HEIGHT = 120;
+/// this is a step for the X axis for the pursuit rectangle moving
+constexpr int PURSUIT_STEP_X = 5;
+/// this is a step for the changing a pursuit area
+constexpr double PURSUIT_SCALE_STEP = 0.02;
+
+/// this variable contains scale for the pursuit rectangle
+static double scalePursuit = 0.25;
+/// this variable contains current position by 'x' the pursuit rectangle
+static int xPursuitRect = START_PURSUIT_X;
+/// this variable contains current position by 'y' the pursuit rectangle
+static int yPursuitRect = START_PURSUIT_Y;
+/// this variable contains current width of the pursuit rectangle
+static int widthPursuitRect = START_PURSUIT_WIDTH;
+/// this variable contains current height of the pursuit rectangle
+static int heightPursuitRect = START_PURSUIT_HEIGHT;
+
+/// this function increase a pursuit current area
+void increase_object_rectangle();
+
+/// this function decrease a pursuit current area
+void decrease_object_rectangle();
+
+/// this function moves lefter an interested object
+void move_lefter_object_rectangle();
+
+/// this fucntion moves righter an interested object
+void move_righter_object_rectangle();
+#endif //MY_PURSUIT_TESTING
+
+
 /// Creating a ReceiverEntry structure. Usually it uses when happens a new connection.
-ReceiverEntry *create_receiver_entry (seasocks::WebSocket * connection);
+ReceiverEntry *create_receiver_entry(seasocks::WebSocket *connection);
+
 /// Destructing a ReceiverEntry structure. Last one is used often, when we often change a connection.
-void destroy_receiver_entry (gpointer receiver_entry_ptr);
+void destroy_receiver_entry(gpointer receiver_entry_ptr);
 
 /** This .h file created in the C++ class style, but, cause some functions are called in other places, I cannot use a class structure,
  * so this one just initialize variables for processing a frame, and an object recognition object (here is also the thread for this processing).*/
@@ -49,21 +92,24 @@ void init_rear_sight_processor();
 
 /** This function is one of the three steps of the WebRTC connection processing.
  * This one are called when the offer created and the realtime stream can be started.*/
-void on_offer_created_cb (GstPromise * promise, gpointer user_data);
+void on_offer_created_cb(GstPromise *promise, gpointer user_data);
+
 /** This function is one of the three steps of the WebRTC connection processing.
  * This one are called when the GST pipeline are prepared.*/
-void on_negotiation_needed_cb (GstElement * webrtcbin, gpointer user_data);
+void on_negotiation_needed_cb(GstElement *webrtcbin, gpointer user_data);
+
 /** This function is one of the three steps of the WebRTC connection processing.
  * This one are called when new user want to get a real time media stream.*/
-void on_ice_candidate_cb (GstElement * webrtcbin, guint mline_index,
-                          gchar * candidate, gpointer user_data);
+void on_ice_candidate_cb(GstElement *webrtcbin, guint mline_index,
+                         gchar *candidate, gpointer user_data);
 
 /** This function handle webrtc session, and dependently from the client message it calls functions:
  * 'on_offer_created_cb', 'on_negotiation_needed_cb', 'on_ice_candidate_cb', or throw an exception.*/
-void webrtc_session_handle (const char * message);
+void webrtc_session_handle(const char *message);
 
 /** This function create a new ReceiverEntry */
 void webrtc_pipeline_restart(seasocks::WebSocket *connection);
+
 /** This function doing disconnection of the connected client, and breaks an pipeline*/
 void webrtc_pipeline_deactivate(seasocks::WebSocket *connection);
 
@@ -71,19 +117,23 @@ void webrtc_pipeline_deactivate(seasocks::WebSocket *connection);
 int webrtc_gst_loop(seasocks::WebSocket *connection);
 
 /** This function is converts a JsonObjet to the string*/
-static gchar *get_string_from_json_object (JsonObject * object);
+static gchar *get_string_from_json_object(JsonObject *object);
 
 /// This function is manage a cropping process, and this one DECREASE a cropped image size
 void on_zoom_plus_processor();
+
 /// This function is manage a cropping process, and this one INCREASE a cropped image size
 void on_zoom_minus_processor();
 
 /// This function is manage a cropping process, and this one MOVE a cropped window to the LEFT side
 void on_move_left_processor();
+
 /// This function is manage a cropping process, and this one MOVE a cropped window to the RIGHT side
 void on_move_right_processor();
+
 /// This function is manage a cropping process, and this one MOVE a cropped window to the TOP side
 void on_move_up_processor();
+
 /// This function is manage a cropping process, and this one MOVE a cropped window to the BOTTOM side
 void on_move_down_processor();
 
@@ -95,8 +145,7 @@ void set_speed_values_gst_pipeline_info(double currentLeftSpeed, double currentR
  * GstElement *ocvvideosrc - this is a Gst element, used for modification a pipeline
  * GstElement *pipeline - this is a Gst element, used for controlling whole pipeline
  * GstElement *webrtcbin - this is a Gst element, used for establishing WebRTC connection*/
-struct _ReceiverEntry
-{
+struct _ReceiverEntry {
     seasocks::WebSocket *connection;
 
     GstElement *ocvvideosrc;
