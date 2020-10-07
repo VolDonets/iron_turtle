@@ -84,6 +84,11 @@ var isRIGHT_ButtonPushed = false;
 var isLEFT_ButtonPushed = false;
 var isZERO_ButtonPushed = false;
 
+var isJ_ButtonPushed = false;
+var isK_ButtonPushed = false;
+var isL_ButtonPushed = false;
+var isI_ButtonPushed = false;
+
 var isANY_ButtonPushed = false;
 
 
