@@ -210,23 +210,35 @@ function send_control_message(){
                 json_str += ",\"MTD\"";
         }
         if(isRIGHT_ButtonPushed) {
+            // here inverse button behavior, so if push the right button the iron turtle moves left,
+            // so we should send here the 'left' command
             if (isFirst) {
-                json_str += "\"MTR\"";
+                // json_str += "\"MTR\"";
+                json_str += "\"MTL\"";
                 isFirst = false;
-            } else
-                json_str += ",\"MTR\"";
+            } else {
+                // json_str += ",\"MTR\"";
+                json_str += ",\"MTL\"";
+            }
         }
         if(isLEFT_ButtonPushed) {
-            if (isFirst)
-                json_str += "\"MTL\"";
-            else
-                json_str += ",\"MTL\"";
+            // here inverse button behavior, so if push the left button the iron turtle moves right,
+            // so we should send here the 'right' command
+            if (isFirst) {
+                //json_str += "\"MTL\"";
+                json_str += "\"MTR\"";
+                isFirst = false;
+            } else {
+                //json_str += ",\"MTL\"";
+                json_str += ",\"MTR\"";
+            }
         }
         if(isZERO_ButtonPushed) {
-            if (isFirst)
+            if (isFirst) {
                 json_str += "\"MTS\"";
-            else
+            } else {
                 json_str += ",\"MTS\"";
+            }
         }
         json_str += "]}";
         ws.send(json_str);
