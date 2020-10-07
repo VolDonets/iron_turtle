@@ -39,7 +39,7 @@ function onIceCandidate(event) {
 function onServerMessage(event) {
     console.log(event.data);
     if (event.data === "YOU_ARE_EXCESS")
-        alert("You canNOT connect to the serever, you are an excess client.\nPlease wait till you be able to connect!");
+        alert("You canNOT connect to the server, you are an excess client.\nPlease wait till you be able to connect!");
 
     var msg;
 
