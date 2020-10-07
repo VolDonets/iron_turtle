@@ -69,6 +69,9 @@ target_compile_definitions(iron_turtle PRIVATE UBUNTU_PC)
 ###       this is a target compile definitions for the DEBUG development steps
 target_compile_definitions(iron_turtle PRIVATE MY_DEBUG)
 
+###       this is a target compile definitions for the TESTING the pursuit module
+target_compile_definitions(iron_turtle PRIVATE MY_PURSUIT_TESTING)
+
 ###       This is compile definitions for the different haarcasades for the object detection
 ###       !!!WARNING!!! it works only with 'process_camera/form_detector_ocv/form_detection_processor_haarcascade.cpp'
 #target_compile_definitions(iron_turtle PRIVATE HAARCASCADE FRONTAL_FACE)
