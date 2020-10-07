@@ -11,12 +11,13 @@
 
 #include "binary_com_manager/serial_manager.h"                  //this .h-file contains my wrapper for the serial device
 #include "binary_com_manager/bipropellant-api/HoverboardAPI.h"  //this .h-file contains C++ class - wrapper for the C bipropellant API
+#include "../process_camera/rear_sight_webrtc_manipulation.h"   //this .h-file contains the function for updating a current speed value on the frame
 
 /** @brief this constant means how many steps should to wait a server thread before it decides, that client leave a connection
  *         that means we should to stop sending a commands.*/
 constexpr int SERVER_WAIT_STEPS = 10;
 /// @brief this constant is a code of the successful operation
-constexpr int SUCCESSFUL_OPERATION   = 0;
+constexpr int SUCCESSFUL_OPERATION = 0;
 /// @brief this constant is s code of the unsuccessful operation - the reason is problems with connection to the serial devise.
 constexpr int SERIAL_MANAGER_PROBLEM = -1;
 
@@ -54,14 +55,19 @@ private:
 
     /// @brief this function recalculate the current speed values for the right and the left wheels as wanted to achieve in the wanted values
     void update_current_speed_params();
+
     /// @brief this function sets a new value for the field wantedLeftWheelSpeed (INCREASE if possible)
     void move_faster_left_wheel();
+
     /// @brief this function sets a new value for the field wantedLeftWheelSpeed (DECREASE if possible)
     void move_slower_left_wheel();
+
     /// @brief this function sets a new value for the field wantedRightWheelSpeed (INCREASE if possible)
     void move_fasted_right_wheel();
+
     /// @brief this function sets a new value for the field wantedRightWheelSpeed (DECREASE if possible)
     void move_slower_right_wheel();
+
     /// @brief this function starts new thread for the wheel's speed processing and for the sending control commands to the turtle engine controller
     void process_turtle_engines();
 
@@ -69,27 +75,33 @@ public:
     /** @brief this is default constructor, here inits class fields
      *  @warning this doesn't start a new thread for the processing (a bit changed logic).*/
     SmoothTurtleManager();
+
     /** @brief this is constructor with parameters
      *  @param std::shared_ptr<SerialManager> serialManager - a driver wrapper for the working with a serial  device throw simple interface.
      *  @warning this doesn't start a new thread for the processing (a bit changed logic).*/
     SmoothTurtleManager(std::shared_ptr<SerialManager> serialManager);
+
     /// this is a default object destructor
     ~SmoothTurtleManager();
 
     /// @brief a server call this function, when it has active connection with an active client
     void say_server_here();
+
     /// @brief a server call this function, when it lost an active client
     void say_server_leave();
 
     /** @brief this function sets new value for the field wantedLeftWheelSpeed (INCREASE if possible) and for the field wantedRightWheelSpeed (INCREASE if possible)
      *         called when client send command to move forward*/
     void move_forward();
+
     /** @brief this function sets new value for the field wantedLeftWheelSpeed (DECREASE if possible) and for the field wantedRightWheelSpeed (DECREASE if possible)
      *         called when client send command to move backward*/
     void move_backward();
+
     /** @brief this function sets new value for the field wantedLeftWheelSpeed (INCREASE if possible) and for the field wantedRightWheelSpeed (DECREASE if possible)
      *         called when client send command to move righter*/
     void move_righter();
+
     /** @brief this function sets new value for the field wantedLeftWheelSpeed (DECREASE if possible) and for the field wantedRightWheelSpeed (INCREASE if possible)
      *         called when client send command to move lefter*/
     void move_lefter();
@@ -101,6 +113,7 @@ public:
     /** @brief this function returns current speed
      *  @return returns current speed */
     int get_speed();
+
     /** @brief this function returns current battery voltage
      * @return returns current battery voltage of the iron turtle battery*/
     int get_battery_voltage();
@@ -108,9 +121,11 @@ public:
     /** @brief This function returns code of operation for the STOPPING thread and it trying if possible to stop the processing thread.
      *  @return an operation result code */
     int stop_processing_thread();
+
     /** @brief This function returns code of operation for the RESTARTING thread and it trying if possible to stop the processing thread.
      *  @return an operation result code */
     int restart_processing_thread();
+
     /** @brief This function returns status of the processing thread. If a thread works - the function returns 'true', otherwise it returns - 'false'.
      *  @return an operation result code */
     bool is_process_moving();

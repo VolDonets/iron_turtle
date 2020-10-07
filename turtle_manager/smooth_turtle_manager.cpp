@@ -76,11 +76,13 @@ void SmoothTurtleManager::process_turtle_engines() {
                     sendZeroSpeedTimes = 0;
                     currentPower = (currentPower < MAX_WHEELS_POWER_VALUE) ? (currentPower + 50) : MAX_WHEELS_POWER_VALUE;
                     ironTurtleAPI->sendSpeedData(leftWheelSpeed, rightWheelSpeed, currentPower, MIN_WHEELS_START_SPEED_VALUE, PROTOCOL_SOM_NOACK);
+                    set_speed_values_gst_pipeline_info(leftWheelSpeed, rightWheelSpeed);
                 } else {
                     if (sendZeroSpeedTimes < MAX_ZERO_SPEED_SEND_TIMES) {
                         currentPower = 0;
                         ironTurtleAPI->sendSpeedData(0, 0, currentPower, MIN_WHEELS_START_SPEED_VALUE,
                                                      PROTOCOL_SOM_NOACK);
+                        set_speed_values_gst_pipeline_info(leftWheelSpeed, rightWheelSpeed);
                         sendZeroSpeedTimes++;
                     }
                 }
@@ -91,6 +93,7 @@ void SmoothTurtleManager::process_turtle_engines() {
                     leftWheelSpeed = 0.0;
                     rightWheelSpeed = 0.0;
                     ironTurtleAPI->sendSpeedData(0, 0, currentPower, MIN_WHEELS_START_SPEED_VALUE, PROTOCOL_SOM_NOACK);
+                    set_speed_values_gst_pipeline_info(leftWheelSpeed, rightWheelSpeed);
                     sendZeroSpeedTimes++;
                 }
             }
