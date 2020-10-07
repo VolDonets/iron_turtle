@@ -83,6 +83,8 @@ static GstPadProbeReturn cb_have_data (GstPad *pad, GstPadProbeInfo *info, gpoin
         cv::line(main_image, cv::Point(DRAW_LINE_3B_X, DRAW_LINE_3B_Y), cv::Point(DRAW_LINE_3E_X, DRAW_LINE_3E_Y), cv::Scalar(0, 0, 255), 2, cv::LINE_8);
         cv::line(main_image, cv::Point(DRAW_LINE_4B_X, DRAW_LINE_4B_Y), cv::Point(DRAW_LINE_4E_X, DRAW_LINE_4E_Y), cv::Scalar(0, 0, 255), 2, cv::LINE_8);
 
+        // printing a speed value (here is a commands for the left and the right wheels)
+        cv::putText(main_image, current_speed, cv::Point(5, 15), cv::FONT_HERSHEY_COMPLEX_SMALL, 1.0, cv::Scalar(0, 255, 0), 1, cv::LINE_AA);
         gst_buffer_unmap (buffer, &map);
     }
 
@@ -92,7 +94,7 @@ static GstPadProbeReturn cb_have_data (GstPad *pad, GstPadProbeInfo *info, gpoin
 }
 
 //a function fro filling a ReceiverEntry structure
-//Here creates a pipeline, and addes a callback function for stream modifications
+//Here creates a pipeline, and adds a callback function for stream modifications
 ReceiverEntry* create_receiver_entry (seasocks::WebSocket * connection) {
     std::cout << "receiver entry created" << "\n";
     GError *error;
@@ -503,4 +505,9 @@ void on_move_up_processor() {
 void on_move_down_processor() {
     rear_sight_processor->on_move_down_processor();
     rear_sight_processor->set_new_frame_param();
+}
+
+void set_speed_values_gst_pipeline_info(double currentLeftSpeed, double currentRightSpeed) {
+    current_speed = "Speed LW=" + std::to_string((int)(currentLeftSpeed * 1000))
+            + ", RW=" + std::to_string((int)(currentRightSpeed * 1000));
 }

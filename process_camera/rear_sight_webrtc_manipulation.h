@@ -87,6 +87,9 @@ void on_move_up_processor();
 /// This function is manage a cropping process, and this one MOVE a cropped window to the BOTTOM side
 void on_move_down_processor();
 
+/// This function is sets a speed values for printing into pipeline
+void set_speed_values_gst_pipeline_info(double currentLeftSpeed, double currentRightSpeed);
+
 /** This is a realization of the ReceiverEntry and this one contains
  * seasocks::WebSocket connection - this is a current connection and it used for establishing WebRTC connection
  * GstElement *ocvvideosrc - this is a Gst element, used for modification a pipeline
@@ -115,5 +118,8 @@ static int count_frames;
 static std::shared_ptr<FormDetectionProcessor> form_detection_processor;
 /// This is old detected ROI - used for smoothing an behavior of the detection rectangle on the frame
 static cv::Rect old_rectangle(0, 0, 0, 0);
+
+/// this is an object with a speed value (here is not an actual speed, this is values for creating speed commands)
+static std::string current_speed = "Speed LW=0, RW=0";
 
 #endif //IRON_TURTLE_REAR_SIGHT_WEBRTC_MANIPULATION_H
