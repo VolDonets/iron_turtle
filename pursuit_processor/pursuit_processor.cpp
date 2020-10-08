@@ -5,18 +5,27 @@
 #include "pursuit_processor.h"
 
 PursuitProcessor::PursuitProcessor() {
-
+    // creates a new serial wrapper for connecting to the iron turtle engines controller
+    serialManager = std::make_shared<SerialManager>();
+    // creates a new object for the speaking with the iron turtle engines controller
+    ironTurtleAPI = std::make_shared<HoverboardAPI>(write_serial_wrapper);
+    // set a processing server stata (now it doesn't work).
+    isProcessThread = false;
 }
 
 PursuitProcessor::PursuitProcessor(std::shared_ptr<SerialManager> serialManager) {
-
+    serialManager = serialManager;
+    // creates a new object for the speaking with the iron turtle engines controller
+    ironTurtleAPI = std::make_shared<HoverboardAPI>(write_serial_wrapper);
+    // set a processing server stata (now it doesn't work).
+    isProcessThread = false;
 }
 
 PursuitProcessor::~PursuitProcessor() {
-
+    // now here nothing to do.
 }
 
-int PursuitProcessor::x_offset(const cv::Rect& newPosition) {
+double PursuitProcessor::x_offset(const cv::Rect& newPosition) {
     // here we take a new position by x and plus a half of the object width (this means
     // we calculate an object position, as absolute value), than from it we minus
     // old position by x and minus a half of the old object width
@@ -33,28 +42,13 @@ double PursuitProcessor::y_delta_moving(const cv::Rect& newPosition) {
     return START_DISTANCE_TO_AN_OBJECT * ((Sroi_1 / Sroi_0) - 1);
 }
 
-void PursuitProcessor::update_current_speed_params() {
-
-}
-
-void PursuitProcessor::move_faster_left_wheel() {
-
-}
-
-void PursuitProcessor::move_slower_left_wheel() {
-
-}
-
-void PursuitProcessor::move_fasted_right_wheel() {
-
-}
-
-void PursuitProcessor::move_slower_right_wheel() {
-
-}
-
 void PursuitProcessor::process_pursuit() {
+    this->movingProcessingThread = std::thread([this]() {
 
+        while (isProcessThread) {
+
+        }
+    });
 }
 
 int PursuitProcessor::get_speed() {
@@ -66,15 +60,30 @@ int PursuitProcessor::get_battery_voltage() {
 }
 
 int PursuitProcessor::stop_processing_thread() {
-    return 0;
+    if (isProcessThread) {
+        isProcessThread = false;
+        stop_processing_thread();
+        std::this_thread::sleep_for(std::chrono::microseconds(SLEEP_THREAD_TIME_MS));
+        ironTurtleAPI->sendSpeedData(0.0, 0.0, 0, 0, PROTOCOL_SOM_NOACK);
+    }
+    return SUCCESSFUL_OP;
 }
 
 int PursuitProcessor::restart_processing_thread(cv::Rect fixedRectangleCoord) {
-    return 0;
+    if (isProcessThread) {
+        return SUCCESSFUL_OP;
+    }
+    if (serialManager->isSerialOK()) {
+        isProcessThread = true;
+        process_pursuit();
+        return SUCCESSFUL_OP;
+    } else {
+        return SERIAL_MANAGER_PROBLEM;
+    }
 }
 
 bool PursuitProcessor::is_process_moving() {
-    return false;
+    return isProcessThread;
 }
 
 void PursuitProcessor::stop_moving() {
@@ -82,9 +91,10 @@ void PursuitProcessor::stop_moving() {
 }
 
 void PursuitProcessor::say_server_here() {
-
+    serverCounter = SERVER_WAIT_STEPS;
 }
 
 void PursuitProcessor::say_server_leave() {
-
+    stop_moving();
+    serverCounter = 20;
 }

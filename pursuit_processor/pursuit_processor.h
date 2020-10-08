@@ -8,9 +8,11 @@
 #include <list>
 #include <memory>
 #include <opencv2/core/types.hpp>
-
+#include <atomic>
+#include <thread>
 
 #include "../turtle_manager/binary_com_manager/serial_manager.h"
+#include "../turtle_manager/binary_com_manager/bipropellant-api/HoverboardAPI.h"
 
 /** @brief this constant means how many steps should to wait a server thread before it decides, that client leave a connection
  *         that means we should to stop sending a commands.*/
@@ -33,21 +35,20 @@ private:
     cv::Rect fixedRectangleCoord;
     /// @brief this a queue of the detected object coordinates
     std::list<cv::Rect> newRectangleCoordsList;
-
-    /// @brief this function recalculate the current speed values for the right and the left wheels as wanted to achieve in the wanted values
-    void update_current_speed_params();
-
-    /// @brief this function sets a new value for the field wantedLeftWheelSpeed (INCREASE if possible)
-    void move_faster_left_wheel();
-
-    /// @brief this function sets a new value for the field wantedLeftWheelSpeed (DECREASE if possible)
-    void move_slower_left_wheel();
-
-    /// @brief this function sets a new value for the field wantedRightWheelSpeed (INCREASE if possible)
-    void move_fasted_right_wheel();
-
-    /// @brief this function sets a new value for the field wantedRightWheelSpeed (DECREASE if possible)
-    void move_slower_right_wheel();
+    /** @brief this variable shows should server process new position for the iron turtle
+     *         also it means should works a rotation thread (is it works now?)*/
+    std::atomic<bool> isProcessThread;
+    /// @brief this is a smart pointer to the wrapper for the serial device driver
+    std::shared_ptr<SerialManager> serialManager;
+    /// @brief this is a smart pointer to the bipropellant API (C++ class wrapper of the C API).
+    std::shared_ptr<HoverboardAPI> ironTurtleAPI;
+    /// @brief this thread used for processing new speed values for the right and the left wheels, and send it to the turtle engine controller
+    std::thread movingProcessingThread;
+    /** @brief this variable contains a server connection status (connection with client), if we have a client which is able to
+     *         manage the iron turtle, so we can to send commands to the iron turtle controller.
+     *         This variable decrease to 0, in the tread loop, and if a client says 'I'm here it will updates to SERVER_WAIT_STEPS,
+     *         otherwise the processor won't able to send a control command and the iron turtle just stop moving.*/
+    std::atomic<int> serverCounter;
 
     /// @brief this function starts new thread for the wheel's speed processing and for the sending control commands to the turtle engine controller
     void process_pursuit();
@@ -57,7 +58,7 @@ private:
      * @param newPosition - a cv rectangle with a new object position
      * @return current object bias (if haven't image it returns 0)
      */
-    int x_offset(const cv::Rect &newPosition);
+    double x_offset(const cv::Rect &newPosition);
 
     /**
      * @brief this function calculate an distance between an original object position and a new one.
