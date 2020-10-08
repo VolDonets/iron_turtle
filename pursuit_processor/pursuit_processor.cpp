@@ -44,9 +44,29 @@ double PursuitProcessor::y_delta_moving(const cv::Rect& newPosition) {
 
 void PursuitProcessor::process_pursuit() {
     this->movingProcessingThread = std::thread([this]() {
+        double omegaRotation = 0.0;
+        double deltaMoving = 0.0;
+
+        int currentPower = 0;
+        int sendZeroSpeedTimes = 0;
+        constexpr int MAX_ZERO_SPEED_SEND_TIMES = 5;
 
         while (isProcessThread) {
+            if (serverCounter > 0) {
+                if (!newRectangleCoordsList.empty()) {
+                    cv::Rect newRectPos = newRectangleCoordsList.front();
+                    newRectangleCoordsList.pop_front();
+                    omegaRotation = x_offset(newRectPos);
+                    deltaMoving = y_delta_moving(newRectPos);
+                }
 
+            } else {
+                if (sendZeroSpeedTimes < MAX_ZERO_SPEED_SEND_TIMES) {
+                    ironTurtleAPI->sendSpeedData(0.0, 0.0, 0, 0, PROTOCOL_SOM_NOACK);
+                    sendZeroSpeedTimes++;
+                }
+            }
+            std::this_thread::sleep_for(std::chrono::microseconds(SLEEP_THREAD_TIME_MS));
         }
     });
 }
