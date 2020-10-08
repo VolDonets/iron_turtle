@@ -115,11 +115,20 @@ function set_keydown(key_code) {
         isD_ButtonPushed = true;
     else if (key_code === '0')
         isZERO_ButtonPushed = true;
+    else if (key_code === 'i' || key_code === 'I')
+        isI_ButtonPushed = true;
+    else if (key_code === 'k' || key_code === 'K')
+        isK_ButtonPushed = true;
+    else if (key_code === 'j' || key_code === 'J')
+        isJ_ButtonPushed = true;
+    else if (key_code === 'l' || key_code === 'L')
+        isL_ButtonPushed = true;
 
     if (isQ_ButtonPushed || isW_ButtonPushed || isE_ButtonPushed
         || isA_ButtonPushed || isS_ButtonPushed || isD_ButtonPushed
         || isUP_ButtonPushed || isDOWN_ButtonPushed || isLEFT_ButtonPushed
-        || isRIGHT_ButtonPushed || isZERO_ButtonPushed)
+        || isRIGHT_ButtonPushed || isZERO_ButtonPushed
+        || isI_ButtonPushed || isK_ButtonPushed || isJ_ButtonPushed || isL_ButtonPushed)
         isANY_ButtonPushed = true;
 }
 
@@ -146,11 +155,20 @@ function set_keyup(key_code) {
         isD_ButtonPushed = false;
     else if (key_code === '0')
         isZERO_ButtonPushed = false;
+    else if (key_code === 'i' || key_code === 'I')
+        isI_ButtonPushed = false;
+    else if (key_code === 'k' || key_code === 'K')
+        isK_ButtonPushed = false;
+    else if (key_code === 'j' || key_code === 'J')
+        isJ_ButtonPushed = false;
+    else if (key_code === 'l' || key_code === 'L')
+        isL_ButtonPushed = false;
 
     if (!(isQ_ButtonPushed || isW_ButtonPushed || isE_ButtonPushed
         || isA_ButtonPushed || isS_ButtonPushed || isD_ButtonPushed
         || isUP_ButtonPushed || isDOWN_ButtonPushed || isLEFT_ButtonPushed
-        || isRIGHT_ButtonPushed || isZERO_ButtonPushed))
+        || isRIGHT_ButtonPushed || isZERO_ButtonPushed
+        || isI_ButtonPushed || isK_ButtonPushed || isJ_ButtonPushed || isL_ButtonPushed))
         isANY_ButtonPushed = false;
 }
 
@@ -241,8 +259,40 @@ function send_control_message(){
         if(isZERO_ButtonPushed) {
             if (isFirst) {
                 json_str += "\"MTS\"";
+                isFirst = false;
             } else {
                 json_str += ",\"MTS\"";
+            }
+        }
+        if(isI_ButtonPushed) {
+            if (isFirst) {
+                json_str += "\"ZPP\"";
+                isFirst = false;
+            } else {
+                json_str = ",\"ZPP\"";
+            }
+        }
+        if(isK_ButtonPushed) {
+            if (isFirst) {
+                json_str += "\"ZMP\"";
+                isFirst = false;
+            } else {
+                json_str = ",\"ZMP\"";
+            }
+        }
+        if(isJ_ButtonPushed) {
+            if (isFirst) {
+                json_str += "\"MLP\"";
+                isFirst = false;
+            } else {
+                json_str = ",\"MLP\"";
+            }
+        }
+        if(isL_ButtonPushed) {
+            if (isFirst) {
+                json_str += "\"MRP\"";
+            } else {
+                json_str = ",\"MRP\"";
             }
         }
         json_str += "]}";
