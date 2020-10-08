@@ -541,6 +541,7 @@ void increase_object_rectangle() {
     if (!((xPursuitRect - (step_x / 2) < 0) || ((xPursuitRect + widthPursuitRect - (step_x / 2)) > WIDTH))) {
         xPursuitRect = xPursuitRect - (step_x / 2);
     }
+    scalePursuit = newScale;
 }
 
 void decrease_object_rectangle() {
