@@ -25,6 +25,13 @@ MyHandler::MyHandler(MyServer* server) : _server(server){
     this->eventClientConnected = std::make_shared<EventWS>(EVENT_CLIENT_CONNECTED);
     this->eventClientDisconnected = std::make_shared<EventWS>(EVENT_CLIENT_DISCONNECTED);
 
+#ifdef MY_PURSUIT_TESTING
+    this->eventIncreasePursuitRect = std::make_shared<EventWS>(EVENT_PURSUIT_ZOOM_PLUS);
+    this->eventDecreasePursuitRect = std::make_shared<EventWS>(EVENT_PURSUIT_ZOOM_MINUS);
+    this->eventMovePursuitRectRighter = std::make_shared<EventWS>(EVENT_PURSUIT_RIGHTER);
+    this->eventMovePursuitRectLefter = std::make_shared<EventWS>(EVENT_PURSUIT_LEFTER);
+#endif //MY_PURSUIT_TESTING
+
     _isFirstWebRTC_Connection = true;
 }
 
@@ -145,4 +152,22 @@ void MyHandler::doEventHandling(const char *data) {
         _delegate->doEvent(eventCamLeft);
         return;
     }
+#ifdef MY_PURSUIT_TESTING
+    if (strcmp(data, COMMAND_PURSUIT_ZOOM_MINUS) == 0) {
+        _delegate->doEvent(eventDecreasePursuitRect);
+        return;
+    }
+    if (strcmp(data, COMMAND_PURSUIT_ZOOM_PLUS) == 0) {
+        _delegate->doEvent(eventIncreasePursuitRect);
+        return;
+    }
+    if (strcmp(data, COMMAND_PURSUIT_MOVE_LEFTER) == 0) {
+        _delegate->doEvent(eventMovePursuitRectLefter);
+        return;
+    }
+    if (strcmp(data, COMMAND_PURSUIT_MOVE_RIGHTER) == 0) {
+        _delegate->doEvent(eventMovePursuitRectRighter);
+        return;
+    }
+#endif //MY_PURSUIT_TESTING
 }

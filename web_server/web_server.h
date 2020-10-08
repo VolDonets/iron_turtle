@@ -89,6 +89,26 @@ constexpr int EVENT_CLIENT_DISCONNECTED = 12;
 /// This command gets from a client, if the client wants
 #define MESSAGE_FOR_EXCESS_CLIENT   "YOU_ARE_EXCESS"
 
+#ifdef MY_PURSUIT_TESTING
+/// this is a code for the event on increasing the pursuit rectangle
+constexpr int EVENT_PURSUIT_ZOOM_PLUS = 1013;
+/// this is a code for the event on decreasing the pursuit rectangle
+constexpr int EVENT_PURSUIT_ZOOM_MINUS = 1014;
+/// this is a code for the event on moving the pursuit rectangle lefter
+constexpr int EVENT_PURSUIT_LEFTER = 1015;
+/// this is a code for the event on moving the pursuit rectangle righter
+constexpr int EVENT_PURSUIT_RIGHTER = 1016;
+
+/// this command the server gets from a client, when the client wants to increase size of the pursuit rectangle
+#define COMMAND_PURSUIT_ZOOM_PLUS       "ZPP"
+/// this command the server gets from a client, when the client wants to decrease size of the pursuit rectangle
+#define COMMAND_PURSUIT_ZOOM_MINUS      "ZMP"
+/// this command the server gets from a client, when the client wants to move righter the pursuit rectangle
+#define COMMAND_PURSUIT_MOVE_RIGHTER    "MRP"
+/// this command the server gets from a client, when the client wants to move lefter the pursuit rectangle
+#define COMMAND_PURSUIT_MOVE_LEFTER     "MLP"
+#endif //MY_PURSUIT_TESTING
+
 using namespace std::chrono;
 using namespace seasocks;
 using namespace std;
@@ -161,6 +181,17 @@ private:
     std::shared_ptr<EventWS> eventClientConnected;
     /// smart pointer to my own event "lose an active client's connection"
     std::shared_ptr<EventWS> eventClientDisconnected;
+
+#ifdef MY_PURSUIT_TESTING
+    ///smart pointer to my own event "increasing the pursuit rectangle"
+    std::shared_ptr<EventWS> eventIncreasePursuitRect;
+    ///smart pointer to my own event "decreasing the pursuit rectangle"
+    std::shared_ptr<EventWS> eventDecreasePursuitRect;
+    ///smart pointer to my own event "moving lefter the pursuit rectangle"
+    std::shared_ptr<EventWS> eventMovePursuitRectLefter;
+    ///smart pointer to my own event "moving righter the pursuit rectangle"
+    std::shared_ptr<EventWS> eventMovePursuitRectRighter;
+#endif //MY_PURSUIT_TESTING
 
     /// a private function for handling a vector commands from a client
     void doEventHandling(const char *command);
