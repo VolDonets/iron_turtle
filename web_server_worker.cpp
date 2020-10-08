@@ -90,5 +90,19 @@ void WebServerWorker::handleEventWS(std::shared_ptr<EventWS> event) {
         case EVENT_CLIENT_DISCONNECTED:
             turtle_manager->say_server_leave();
             break;
+#ifdef MY_PURSUIT_TESTING
+        case EVENT_PURSUIT_ZOOM_PLUS:
+            increase_object_rectangle();
+            break;
+        case EVENT_PURSUIT_ZOOM_MINUS:
+            decrease_object_rectangle();
+            break;
+        case EVENT_PURSUIT_LEFTER:
+            move_lefter_object_rectangle();
+            break;
+        case EVENT_PURSUIT_RIGHTER:
+            move_righter_object_rectangle();
+            break;
+#endif //MY_PURSUIT_TESTING
     }
 }
