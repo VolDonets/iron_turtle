@@ -65,35 +65,54 @@ void SmoothTurtleManager::process_turtle_engines() {
     this->movingProcessingThread = std::thread([this]() {
         int currentPower = 0;
         int sendZeroSpeedTimes = 0;
+        // this constant show how much times we should to send command for the zero speed
+        // If this value became bigger, more times the iron turtle engines controller will try to
+        // save 0.0 speed (and it spends battery energy).
         constexpr int MAX_ZERO_SPEED_SEND_TIMES = 5;
         while (isProcessThread) {
             if (serverCounter > 0) {
                 if (skippingSteps == 0) {
                     skippingSteps = SPEED_CHANGE_TIME_OUT;
+                    // recalculate speed parameters for both wheels, with relation with wanted speeds
                     update_current_speed_params();
                 }
                 if (fabs(leftWheelSpeed) > MIN_SPEED_PERCENT || fabs(rightWheelSpeed) > MIN_SPEED_PERCENT) {
                     sendZeroSpeedTimes = 0;
                     currentPower = (currentPower < MAX_WHEELS_POWER_VALUE) ? (currentPower + 50) : MAX_WHEELS_POWER_VALUE;
                     ironTurtleAPI->sendSpeedData(leftWheelSpeed, rightWheelSpeed, currentPower, MIN_WHEELS_START_SPEED_VALUE, PROTOCOL_SOM_NOACK);
+                    // !!!WARNING!!! this code line set speed parameters for the gst pipeline sending and it's no good solution
+                    // TODO. I should firstly send speed which getted from the iron turtle engine controllers
+                    // TODO. I should send speed in more beautiful way than it actually is
                     set_speed_values_gst_pipeline_info(leftWheelSpeed, rightWheelSpeed);
                 } else {
+                    // if we achieved this code block it means that client set speed for the both wheels as zero.
                     if (sendZeroSpeedTimes < MAX_ZERO_SPEED_SEND_TIMES) {
+                        // set a power for 0
                         currentPower = 0;
                         ironTurtleAPI->sendSpeedData(0, 0, currentPower, MIN_WHEELS_START_SPEED_VALUE,
                                                      PROTOCOL_SOM_NOACK);
+                        // !!!WARNING!!! this code line set speed parameters for the gst pipeline sending and it's no good solution
+                        // TODO. I should firstly send speed which getted from the iron turtle engine controllers
+                        // TODO. I should send speed in more beautiful way than it actually is
                         set_speed_values_gst_pipeline_info(leftWheelSpeed, rightWheelSpeed);
+                        // now we send a zero speed, so we should update a zero speed commands counter.
                         sendZeroSpeedTimes++;
                     }
                 }
                 skippingSteps--;
             } else {
+                // if we achieved this code block it means we temporarily lost a connection with a client
                 if (sendZeroSpeedTimes < MAX_ZERO_SPEED_SEND_TIMES) {
+                    // set a power and current speed values as zero
                     currentPower = 0;
                     leftWheelSpeed = 0.0;
                     rightWheelSpeed = 0.0;
                     ironTurtleAPI->sendSpeedData(0, 0, currentPower, MIN_WHEELS_START_SPEED_VALUE, PROTOCOL_SOM_NOACK);
+                    // !!!WARNING!!! this code line set speed parameters for the gst pipeline sending and it's no good solution
+                    // TODO. I should firstly send speed which getted from the iron turtle engine controllers
+                    // TODO. I should send speed in more beautiful way than it actually is
                     set_speed_values_gst_pipeline_info(leftWheelSpeed, rightWheelSpeed);
+                    // now we send a zero speed, so we should update a zero speed commands counter.
                     sendZeroSpeedTimes++;
                 }
             }
