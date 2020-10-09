@@ -97,6 +97,9 @@ static GstPadProbeReturn cb_have_data(GstPad *pad, GstPadProbeInfo *info, gpoint
                       cv::Scalar(180, 180, 0), 3, 0, 0);
         cv::rectangle(main_image, cv::Rect(xPursuitRect, yPursuitRect, widthPursuitRect, heightPursuitRect),
                       cv::Scalar(255, 0, 0), 1, 0, 0);
+        cv::putText(main_image, mDebugDataMessage, cv::Point(5, 460), cv::FONT_HERSHEY_COMPLEX_SMALL, 1.0,
+                    cv::Scalar(0,255, 0), 1, cv::LINE_AA);
+        pursuitProcessor->add_coord_to_queue(cv::Rect(xPursuitRect, yPursuitRect, widthPursuitRect, heightPursuitRect));
 #endif //MY_PURSUIT_TESTING
 
         gst_buffer_unmap(buffer, &map);
@@ -538,7 +541,7 @@ void increase_object_rectangle() {
     yPursuitRect = yPursuitRect - (step_y / 2);
     heightPursuitRect = heightPursuitRect + step_y;
     widthPursuitRect = widthPursuitRect + step_x;
-    if (!((xPursuitRect - (step_x / 2) < 0) || ((xPursuitRect + widthPursuitRect - (step_x / 2)) > WIDTH))) {
+    if ((xPursuitRect - (step_x / 2)) >= 0) {
         xPursuitRect = xPursuitRect - (step_x / 2);
     }
     scalePursuit = newScale;
@@ -564,6 +567,18 @@ void move_lefter_object_rectangle() {
 
 void move_righter_object_rectangle() {
     xPursuitRect = ((xPursuitRect + widthPursuitRect + PURSUIT_STEP_X) <= WIDTH) ? (xPursuitRect + PURSUIT_STEP_X) : xPursuitRect;
+}
+
+void set_debug_data_message(std::string debugDataMessage) {
+    mDebugDataMessage = debugDataMessage;
+}
+
+void init_pursuit() {
+    pursuitProcessor = std::make_shared<PursuitProcessor>();
+}
+
+std::shared_ptr<PursuitProcessor> get_pursuit_processor() {
+    return  pursuitProcessor;
 }
 
 #endif //MY_PURSUIT_TESTING

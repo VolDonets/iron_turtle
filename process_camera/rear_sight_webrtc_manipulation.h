@@ -8,6 +8,7 @@
 #include "rear_sight_processor/image_processing.h"
 #include "rear_sight_processor/rear_sight_processor.h"
 #include "form_detector_ocv/form_detection_processor.h"
+#include "../pursuit_processor/pursuit_processor.h"
 
 #include <locale.h>
 #include <glib.h>
@@ -65,6 +66,9 @@ static int yPursuitRect = START_PURSUIT_Y;
 static int widthPursuitRect = START_PURSUIT_WIDTH;
 /// this variable contains current height of the pursuit rectangle
 static int heightPursuitRect = START_PURSUIT_HEIGHT;
+/// this variable will contains info about different parameters when doing pursuit processing, and it will prints onto a current frame
+static std::string mDebugDataMessage = "";
+static std::shared_ptr<PursuitProcessor> pursuitProcessor;
 
 /// this function increase a pursuit current area
 void increase_object_rectangle();
@@ -75,8 +79,15 @@ void decrease_object_rectangle();
 /// this function moves lefter an interested object
 void move_lefter_object_rectangle();
 
-/// this fucntion moves righter an interested object
+/// this function moves righter an interested object
 void move_righter_object_rectangle();
+
+/// this function sets a debug message for printing onto a current frame into the gst pipeline
+void set_debug_data_message(std::string debugDataMessage);
+/// this function initializes the pursuit processor
+void init_pursuit();
+/// this function returns an object of the pursuit processor
+std::shared_ptr<PursuitProcessor> get_pursuit_processor();
 #endif //MY_PURSUIT_TESTING
 
 
