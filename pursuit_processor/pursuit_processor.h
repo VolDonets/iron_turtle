@@ -16,14 +16,37 @@
 
 /** @brief this constant means how many steps should to wait a server thread before it decides, that client leave a connection
  *         that means we should to stop sending a commands.*/
-constexpr int SERVER_WAIT_STEPS = 10;
+constexpr int P_SERVER_WAIT_STEPS = 10;
 /// @brief this constant is a code of the successful operation
-constexpr int SUCCESSFUL_OPERATION = 0;
+constexpr int P_SUCCESSFUL_OPERATION = 0;
 /// @brief this constant is s code of the unsuccessful operation - the reason is problems with connection to the serial devise.
-constexpr int SERIAL_MANAGER_PROBLEM = -1;
+constexpr int P_SERIAL_MANAGER_PROBLEM = -1;
 
-/// @brief this is constant is a distance in mm from camera to the object
-constexpr double START_DISTANCE_TO_AN_OBJECT = 1000;  // TODO. I should measure it soon.
+/// @brief this is constant is a distance in 'mm' from camera to the object
+constexpr double START_DISTANCE_TO_AN_OBJECT = 700;
+
+/// @brief this constant is a how many pixels takes a RPI camera v2 on each angle in radian
+constexpr double PIXELS_PER_ANGLE_RPI_CAM_V2 = 627.450980392;
+
+/// @brief this constant is a small rotation radius (here means the rotation processes both wheels) in 'mm'
+constexpr double SMALL_ROTATION_RADIUS = 150;
+
+/// @brief this constant is a maximum acceleration (in mm per s^2) with which can move the iron turtle
+constexpr double MAX_ACHIEVED_ACCELERATION_MM = 340;
+/// @brief this constant is a maximum speed (in mm per s) with which can move the iron turtle
+constexpr double MAX_ACHIEVED_SPEED_MM = 61;
+/** @brief this constant is a distance which achieve the iron turtle if will move with maximum acceleration till achieves
+ *         the maximum speed. This value given in mm*/
+constexpr double MAX_ACCELERATION_DISTANCE_MM = 5.47205;
+/// @brief this constant is a maximum time for the doing one iteration in the iron turtle engine controller (in seconds)
+constexpr double TIME_INTERVAL_BETWEEN_SENDING_COMMANDS = 0.03;
+
+/// @brief this constant is a maximum acceleration (in percent from max value) with which can move the iron turtle
+constexpr double MAX_ACHIEVED_ACCELERATION_PERCENT = 0.005;
+/// @brief this constant is a maximum speed (in percent from max value) with which can move the iron turtle
+constexpr double MAX_ACHIEVED_SPEED_PERCENT = 0.03;
+
+
 
 /** @brief This is class for the processing auto moving of the iron turtle.
  *  This has a start rectangle size and place and recalculate moving direction and speed by a new object rectangle and position.
@@ -112,6 +135,9 @@ public:
 
     /// @brief a server call this function, when it lost an active client
     void say_server_leave();
+
+    /// @brief this function just add a new Rect object with coordinates
+    void add_coord_to_queue(cv::Rect newCoord);
 };
 
 

@@ -3,6 +3,7 @@
 //
 
 #include "pursuit_processor.h"
+#include "../process_camera/rear_sight_webrtc_manipulation.h"
 
 PursuitProcessor::PursuitProcessor() {
     // creates a new serial wrapper for connecting to the iron turtle engines controller
@@ -39,15 +40,18 @@ double PursuitProcessor::y_delta_moving(const cv::Rect& newPosition) {
     double Sroi_0, Sroi_1;
     Sroi_0 = fixedRectangleCoord.width * fixedRectangleCoord.height;
     Sroi_1 = newPosition.width * newPosition.height;
-    return START_DISTANCE_TO_AN_OBJECT * ((Sroi_1 / Sroi_0) - 1);
+    return START_DISTANCE_TO_AN_OBJECT * sqrt(Sroi_0 / Sroi_1);
 }
 
 void PursuitProcessor::process_pursuit() {
     this->movingProcessingThread = std::thread([this]() {
-        double omegaRotation = 0.0;
-        double deltaMoving = 0.0;
+        double xOffset = 0.0;
+        double yOffset = 0.0;
+        double phiOffset = 0.0;
 
         int currentPower = 0;
+        double leftWheelSpeed = 0.0;
+        double rightWheelSpeed = 0.0;
         int sendZeroSpeedTimes = 0;
         constexpr int MAX_ZERO_SPEED_SEND_TIMES = 5;
 
@@ -56,17 +60,62 @@ void PursuitProcessor::process_pursuit() {
                 if (!newRectangleCoordsList.empty()) {
                     cv::Rect newRectPos = newRectangleCoordsList.front();
                     newRectangleCoordsList.pop_front();
-                    omegaRotation = x_offset(newRectPos);
-                    deltaMoving = y_delta_moving(newRectPos);
+                    xOffset = x_offset(newRectPos);
+                    yOffset = y_delta_moving(newRectPos);
+                    phiOffset = xOffset / PIXELS_PER_ANGLE_RPI_CAM_V2;
                 }
+                if (abs(xOffset) >= 0) {
+                    double lRotation = abs(phiOffset) * SMALL_ROTATION_RADIUS;
 
+                    int accelerationSteps = 0;
+                    int continuingSteps = 0;
+                    if (MAX_ACCELERATION_DISTANCE_MM > (lRotation / 2)) {
+                        accelerationSteps = (sqrt(lRotation / MAX_ACHIEVED_ACCELERATION_MM) / TIME_INTERVAL_BETWEEN_SENDING_COMMANDS);
+                    } else {
+                        accelerationSteps = (sqrt(MAX_ACCELERATION_DISTANCE_MM / MAX_ACHIEVED_ACCELERATION_MM) / TIME_INTERVAL_BETWEEN_SENDING_COMMANDS);
+                        continuingSteps = ((lRotation - (2 * MAX_ACCELERATION_DISTANCE_MM)) / MAX_ACHIEVED_SPEED_MM) / TIME_INTERVAL_BETWEEN_SENDING_COMMANDS;
+                    }
+
+                    for (int inx = 0; inx < 2; inx++) {
+                        ironTurtleAPI->sendSpeedData(0.0, 0.0, 0, 0, PROTOCOL_SOM_NOACK);
+                        std::this_thread::sleep_for(std::chrono::microseconds(SLEEP_THREAD_TIME_MS));
+                    }
+
+                    for (int inx = 0; inx < accelerationSteps; inx++) {
+                        leftWheelSpeed += MAX_ACHIEVED_ACCELERATION_PERCENT;
+                        rightWheelSpeed += MAX_ACHIEVED_ACCELERATION_PERCENT;
+                        currentPower = (currentPower < 200) ? (currentPower + 50) : 200;
+                        ironTurtleAPI->sendSpeedData(leftWheelSpeed, rightWheelSpeed, currentPower, 5, PROTOCOL_SOM_NOACK);
+                        std::this_thread::sleep_for(std::chrono::microseconds(SLEEP_THREAD_TIME_MS));
+                    }
+                    for (int inx = 0; inx < continuingSteps; inx++) {
+                        ironTurtleAPI->sendSpeedData(MAX_ACHIEVED_SPEED_PERCENT, MAX_ACHIEVED_SPEED_PERCENT, 200, 5, PROTOCOL_SOM_NOACK);
+                        std::this_thread::sleep_for(std::chrono::microseconds(SLEEP_THREAD_TIME_MS));
+                    }
+                    for (int inx = 0; inx < accelerationSteps; inx++) {
+                        leftWheelSpeed -= MAX_ACHIEVED_ACCELERATION_PERCENT;
+                        rightWheelSpeed -= MAX_ACHIEVED_ACCELERATION_PERCENT;
+                        currentPower = (currentPower < 200) ? (currentPower + 50) : 200;
+                        ironTurtleAPI->sendSpeedData(leftWheelSpeed, rightWheelSpeed, currentPower, 5, PROTOCOL_SOM_NOACK);
+                        std::this_thread::sleep_for(std::chrono::microseconds(SLEEP_THREAD_TIME_MS));
+                    }
+
+#ifdef MY_PURSUIT_TESTING
+                    std::string message = "Dx: " + std::to_string((int)xOffset)
+                            + ", accSt: " + std::to_string(accelerationSteps)
+                            + ", contSt: " + std::to_string(continuingSteps);
+
+                    set_debug_data_message(message);
+#endif //MY_PURSUIT_TESTING
+                }
             } else {
                 if (sendZeroSpeedTimes < MAX_ZERO_SPEED_SEND_TIMES) {
                     ironTurtleAPI->sendSpeedData(0.0, 0.0, 0, 0, PROTOCOL_SOM_NOACK);
                     sendZeroSpeedTimes++;
                 }
             }
-            std::this_thread::sleep_for(std::chrono::microseconds(SLEEP_THREAD_TIME_MS));
+            serverCounter = (serverCounter > 0) ? (serverCounter + 1) : 0;
+            std::this_thread::sleep_for(std::chrono::microseconds(SLEEP_THREAD_TIME_FOR_FRAME_MS));
         }
     });
 }
@@ -95,10 +144,11 @@ int PursuitProcessor::restart_processing_thread(cv::Rect fixedRectangleCoord) {
     }
     if (serialManager->isSerialOK()) {
         isProcessThread = true;
+        this->fixedRectangleCoord = fixedRectangleCoord;
         process_pursuit();
         return SUCCESSFUL_OP;
     } else {
-        return SERIAL_MANAGER_PROBLEM;
+        return P_SERIAL_MANAGER_PROBLEM;
     }
 }
 
@@ -111,10 +161,14 @@ void PursuitProcessor::stop_moving() {
 }
 
 void PursuitProcessor::say_server_here() {
-    serverCounter = SERVER_WAIT_STEPS;
+    serverCounter = P_SERVER_WAIT_STEPS;
 }
 
 void PursuitProcessor::say_server_leave() {
     stop_moving();
     serverCounter = 20;
+}
+
+void PursuitProcessor::add_coord_to_queue(cv::Rect newCoord) {
+    newRectangleCoordsList.push_back(newCoord);
 }
