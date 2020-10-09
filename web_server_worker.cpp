@@ -12,6 +12,11 @@ WebServerWorker::WebServerWorker() {
     turtle_manager = make_shared<SmoothTurtleManager>();
     // starting the iron turtle moving processing thread
     turtle_manager->restart_processing_thread();
+#ifdef MY_PURSUIT_TESTING
+    init_pursuit();
+    pursuit_processor = get_pursuit_processor();
+    pursuit_processor->restart_processing_thread(cv::Rect(START_PURSUIT_X, START_PURSUIT_Y, START_PURSUIT_WIDTH, START_PURSUIT_HEIGHT));
+#endif //MY_PURSUIT_TESTING
     // starting web-server
     this->startServer();
     // this thread sleeps for 1 seconds for avoiding bugs and errors
@@ -86,6 +91,9 @@ void WebServerWorker::handleEventWS(std::shared_ptr<EventWS> event) {
             break;
         case EVENT_CLIENT_CONNECTED:
             turtle_manager->say_server_here();
+#ifdef MY_PURSUIT_TESTING
+            pursuit_processor->say_server_here();
+#endif //MY_PURSUIT_TESTING
             break;
         case EVENT_CLIENT_DISCONNECTED:
             turtle_manager->say_server_leave();

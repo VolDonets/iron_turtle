@@ -51,6 +51,11 @@ private:
     /** The field with TurtleManager. This one are manager of the iron turtle driver. It just gets commands from this class
      * and them process it if possible*/
     shared_ptr<SmoothTurtleManager> turtle_manager;
+
+    /** @brief this field contains a smart pointer to the PursuitProcessor class. This one are manager of the iron turtle driver.
+     *         it gets an object coordinates from current frame processing class and try to pursuit the aim (here is an detected
+     *         object, and them an tracked object).*/
+    shared_ptr<PursuitProcessor> pursuit_processor;
 };
 
 
