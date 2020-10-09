@@ -11,6 +11,9 @@ const std::string DRIVE_FILE_PATH = "/dev/ttyUSB0";
 /// how my time should wait a thread before send a next command
 constexpr int SLEEP_THREAD_TIME_MS = 30000;
 
+/// how much time we should wait for the next frame
+constexpr int SLEEP_THREAD_TIME_FOR_FRAME_MS = 66000;
+
 /// Cause we use a speed control, and speed controls in percents so max speed defined as float value
 constexpr double MAX_SPEED_PERCENT = 1.0;
 /// Cause we use a speed control, and speed controls in percents so mim speed defined as float value
