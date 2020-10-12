@@ -11,7 +11,7 @@ WebServerWorker::WebServerWorker() {
     // creating an object of TurtleManager with connecting throw COM-port
     turtle_manager = make_shared<SmoothTurtleManager>();
     // starting the iron turtle moving processing thread
-    turtle_manager->restart_processing_thread();
+    //*> turtle_manager->restart_processing_thread();
 #ifdef MY_PURSUIT_TESTING
     init_pursuit();
     pursuit_processor = get_pursuit_processor();

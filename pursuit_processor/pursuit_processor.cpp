@@ -98,6 +98,7 @@ void PursuitProcessor::process_pursuit() {
                         currentPower = (currentPower < 200) ? (currentPower + 50) : 200;
                         ironTurtleAPI->sendSpeedData(leftWheelSpeed, rightWheelSpeed, currentPower, 5, PROTOCOL_SOM_NOACK);
                         std::this_thread::sleep_for(std::chrono::microseconds(SLEEP_THREAD_TIME_MS));
+                        sendZeroSpeedTimes = 0;
                     }
 
 #ifdef MY_PURSUIT_TESTING
@@ -109,12 +110,13 @@ void PursuitProcessor::process_pursuit() {
 #endif //MY_PURSUIT_TESTING
                 }
             } else {
-                if (sendZeroSpeedTimes < MAX_ZERO_SPEED_SEND_TIMES) {
+                while (sendZeroSpeedTimes < MAX_ZERO_SPEED_SEND_TIMES) {
                     ironTurtleAPI->sendSpeedData(0.0, 0.0, 0, 0, PROTOCOL_SOM_NOACK);
+                    std::this_thread::sleep_for(std::chrono::microseconds(SLEEP_THREAD_TIME_MS));
                     sendZeroSpeedTimes++;
                 }
             }
-            serverCounter = (serverCounter > 0) ? (serverCounter + 1) : 0;
+            serverCounter = (serverCounter > 0) ? (serverCounter - 1) : 0;
             std::this_thread::sleep_for(std::chrono::microseconds(SLEEP_THREAD_TIME_FOR_FRAME_MS));
         }
     });
