@@ -196,41 +196,35 @@ function send_control_message(){
         }
 
         if(isUP_ButtonPushed) {
-            if (isFirst) {
-                json_str += "\"MTU\"";
-                isFirst = false;
-            } else
-                json_str += ",\"MTU\"";
-        }
-        if(isDOWN_ButtonPushed) {
+            // now if we push the UP button the iron turtle will move in the backward direction, so I change command
             if (isFirst) {
                 json_str += "\"MTD\"";
                 isFirst = false;
             } else
                 json_str += ",\"MTD\"";
         }
-        if(isRIGHT_ButtonPushed) {
-            // here inverse button behavior, so if push the right button the iron turtle moves left,
-            // so we should send here the 'left' command
+        if(isDOWN_ButtonPushed) {
+            // now if we push the DOWN button the iron turtle will move in the forward direction, so I change command
             if (isFirst) {
-                // json_str += "\"MTR\"";
-                json_str += "\"MTL\"";
+                json_str += "\"MTU\"";
                 isFirst = false;
-            } else {
-                // json_str += ",\"MTR\"";
-                json_str += ",\"MTL\"";
-            }
+            } else
+                json_str += ",\"MTU\"";
         }
-        if(isLEFT_ButtonPushed) {
-            // here inverse button behavior, so if push the left button the iron turtle moves right,
-            // so we should send here the 'right' command
+        if(isRIGHT_ButtonPushed) {
             if (isFirst) {
-                //json_str += "\"MTL\"";
                 json_str += "\"MTR\"";
                 isFirst = false;
             } else {
-                //json_str += ",\"MTL\"";
                 json_str += ",\"MTR\"";
+            }
+        }
+        if(isLEFT_ButtonPushed) {
+            if (isFirst) {
+                json_str += "\"MTL\"";
+                isFirst = false;
+            } else {
+                json_str += ",\"MTL\"";
             }
         }
         if(isZERO_ButtonPushed) {
