@@ -8,7 +8,7 @@ void init_rear_sight_processor() {
     frame_param = std::make_shared<FrameParameters>();
     rear_sight_processor = std::make_shared<RearSightProcessor>(frame_param);
     count_frames = 0;
-    form_detection_processor = std::make_shared<FormDetectionProcessor>();
+    //form_detection_processor = std::make_shared<FormDetectionProcessor>();
 }
 
 /// a GstPad callback function, it is used for modification a pipeline stream
@@ -32,17 +32,17 @@ static GstPadProbeReturn cb_have_data (GstPad *pad, GstPadProbeInfo *info, gpoin
 
         cv::Mat main_image = cv::Mat(frame_size, CV_8UC4, (char*)(map.data), cv::Mat::AUTO_STEP);
 
-        if (count_frames == CHECK_PER_FRAMES) {
-            cv::Mat checking_mat = main_image.clone();
-            form_detection_processor->add_frame(checking_mat);
-            count_frames = 0;
-        }
-        count_frames++;
-        std::vector<cv::Rect> *faces_coord = form_detection_processor->getLastDetectedFaces();
-        if (faces_coord != nullptr) {
-            // this line draw all detected ROIs, WITHOUT interpolation
-            for(int i = 0; i < faces_coord->size(); i++)
-                cv::rectangle(main_image, faces_coord->operator[](i), cv::Scalar(0, 255, 0), 2, 0, 0);
+//        if (count_frames == CHECK_PER_FRAMES) {
+//            cv::Mat checking_mat = main_image.clone();
+//            form_detection_processor->add_frame(checking_mat);
+//            count_frames = 0;
+//        }
+//        count_frames++;
+//        std::vector<cv::Rect> *faces_coord = form_detection_processor->getLastDetectedFaces();
+//        if (faces_coord != nullptr) {
+//            // this line draw all detected ROIs, WITHOUT interpolation
+//            for(int i = 0; i < faces_coord->size(); i++)
+//                cv::rectangle(main_image, faces_coord->operator[](i), cv::Scalar(0, 255, 0), 2, 0, 0);
 
             // this lines draw only one ROI with detected object, but with interpolation.
             /* std::cout << "Size::: " << faces_coord->size() << "\n";
@@ -58,7 +58,7 @@ static GstPadProbeReturn cb_have_data (GstPad *pad, GstPadProbeInfo *info, gpoin
             } else
                 old_rectangle.width = 0;
                 */
-        }
+//        }
 
 
         cv::Mat copy_main_image = main_image.clone();

@@ -114,8 +114,10 @@ static ReceiverEntry *my_receiver_entry;
 static GMainLoop *mainloop;
 /// This is frame counter - this one is says us how many frames we should skip, before send a frame to the FormDetectionProcessor
 static int count_frames;
-/// This is a smart pointer to the FormDetectionProcessor object - it used for the object detection (recognition) and (if it provided by the implementation) tracking
-static std::shared_ptr<FormDetectionProcessor> form_detection_processor;
+
+// /// This is a smart pointer to the FormDetectionProcessor object - it used for the object detection (recognition) and (if it provided by the implementation) tracking
+// static std::shared_ptr<FormDetectionProcessor> form_detection_processor;
+
 /// This is old detected ROI - used for smoothing an behavior of the detection rectangle on the frame
 static cv::Rect old_rectangle(0, 0, 0, 0);
 
