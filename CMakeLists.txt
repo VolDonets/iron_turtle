@@ -57,8 +57,9 @@ add_executable(iron_turtle
 #        process_camera/form_detector_ocv/form_detection_processor_haarcascade.cpp
 #        process_camera/form_detector_ocv/form_detection_processor_dnn_caffe.cpp
 #        process_camera/form_detector_ocv/form_detection_processor_yolov3_tiny.cpp
-        process_camera/form_detector_ocv/form_det_track_svm.cpp
-        process_camera/form_detector_ocv/form_detection_processor.h)
+#        process_camera/form_detector_ocv/form_det_track_svm.cpp
+#        process_camera/form_detector_ocv/form_detection_processor.h
+        )
 
 ###       this is a target compile definitions for the different platfroms (both linux - the first one is my work PC under
 ###       Ubutnu 20.04 and the second one is Raspberry Pi3 under Rasbian)
@@ -94,7 +95,7 @@ target_compile_definitions(iron_turtle PRIVATE MY_DEBUG)
 #target_compile_definitions(iron_turtle PRIVATE SVM_HOG V10_C10)
 #target_compile_definitions(iron_turtle PRIVATE SVM_HOG V11_C15_SUPER)
 #target_compile_definitions(iron_turtle PRIVATE SVM_HOG V12_C15_SUPER)
-target_compile_definitions(iron_turtle PRIVATE SVM_HOG V14_C15_SUPER)
+#target_compile_definitions(iron_turtle PRIVATE SVM_HOG V14_C15_SUPER)
 
 ###       This target libraries used under Raspberry Pi3
 #target_link_libraries(iron_turtle /usr/lib/arm-linux-gnueabihf/libgsl.so.23)
@@ -102,9 +103,9 @@ target_compile_definitions(iron_turtle PRIVATE SVM_HOG V14_C15_SUPER)
 #target_link_libraries(iron_turtle /usr/lib/arm-linux-gnueabihf/liblapack.so)
 
 ###       This target libraries used under my Ubuntu PC
-target_link_libraries(iron_turtle /lib/x86_64-linux-gnu/libgsl.so.23)
-target_link_libraries(iron_turtle /lib/x86_64-linux-gnu/libgslcblas.so.0)
-target_link_libraries(iron_turtle /lib/x86_64-linux-gnu/liblapack.so)
+#target_link_libraries(iron_turtle /lib/x86_64-linux-gnu/libgsl.so.23)
+#target_link_libraries(iron_turtle /lib/x86_64-linux-gnu/libgslcblas.so.0)
+#target_link_libraries(iron_turtle /lib/x86_64-linux-gnu/liblapack.so)
 
 ###       Adding to the project the 'seasocks' library for the WebServer which works as WebSocket server
 target_link_libraries(iron_turtle seasocks "${ZLIB_LIBRARIES}")
