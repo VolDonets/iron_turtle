@@ -88,7 +88,7 @@ private:
      * @param newPosition - a cv rectangle with a new object position
      * @return distance between an original object position and a new one.
      */
-    double y_delta_moving(const cv::Rect &newPosition);
+    double y_distance(const cv::Rect &newPosition);
 
 public:
     /** @brief this is a default constructor, here inits all needed fields

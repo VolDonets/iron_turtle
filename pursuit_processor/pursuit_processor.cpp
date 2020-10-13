@@ -33,7 +33,7 @@ double PursuitProcessor::x_offset(const cv::Rect& newPosition) {
     return newPosition.x + (newPosition.width / 2) - fixedRectangleCoord.x - (fixedRectangleCoord.width / 2);
 }
 
-double PursuitProcessor::y_delta_moving(const cv::Rect& newPosition) {
+double PursuitProcessor::y_distance(const cv::Rect& newPosition) {
     // Here we calculate a new object area and we calculate an old object area,
     // than using a ration between area and roi's areas we can get a distance between
     // the old object and the new object
@@ -74,7 +74,7 @@ void PursuitProcessor::process_pursuit() {
                     cv::Rect newRectPos = newRectangleCoordsList.front();
                     newRectangleCoordsList.pop_front();
                     xOffset = x_offset(newRectPos);
-                    yOffset = y_delta_moving(newRectPos) - START_DISTANCE_TO_AN_OBJECT;
+                    yOffset = y_distance(newRectPos) - START_DISTANCE_TO_AN_OBJECT;
                     phiOffset = xOffset / PIXELS_PER_ANGLE_RPI_CAM_V2;
                 }
                 if (abs(xOffset) > 0) {
