@@ -23,7 +23,7 @@ constexpr int P_SUCCESSFUL_OPERATION = 0;
 constexpr int P_SERIAL_MANAGER_PROBLEM = -1;
 
 /// @brief this is constant is a distance in 'mm' from camera to the object
-constexpr double START_DISTANCE_TO_AN_OBJECT = 700;
+constexpr double START_DISTANCE_TO_AN_OBJECT = 700.0;
 
 /// @brief this constant is a how many pixels takes a RPI camera v2 on each angle in radian
 constexpr double PIXELS_PER_ANGLE_RPI_CAM_V2 = 627.450980392;

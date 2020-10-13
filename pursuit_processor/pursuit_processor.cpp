@@ -86,6 +86,7 @@ void PursuitProcessor::process_pursuit() {
                     // and continuing steps (when speed has the same value whole time)
                     if (MAX_ACCELERATION_DISTANCE_MM > (lRotation / 2)) {
                         accelerationSteps = (sqrt(lRotation / MAX_ACHIEVED_ACCELERATION_MM) / TIME_INTERVAL_BETWEEN_SENDING_COMMANDS);
+                        continuingSteps = 0;
                     } else {
                         accelerationSteps = (sqrt(MAX_ACCELERATION_DISTANCE_MM / MAX_ACHIEVED_ACCELERATION_MM) / TIME_INTERVAL_BETWEEN_SENDING_COMMANDS);
                         continuingSteps = ((lRotation - (2 * MAX_ACCELERATION_DISTANCE_MM)) / MAX_ACHIEVED_SPEED_MM) / TIME_INTERVAL_BETWEEN_SENDING_COMMANDS;
@@ -128,7 +129,7 @@ void PursuitProcessor::process_pursuit() {
 
                     // this code block calculates acceleration steps (when speed increase and decrease),
                     // and continuing steps (when speed has the same value whole time)
-                    if (MAX_ACCELERATION_DISTANCE_MM > (lRotation / 2)) {
+                    if (MAX_ACCELERATION_DISTANCE_MM > abs(yOffset) / 2) {
                         accelerationSteps = (sqrt(abs(yOffset) / MAX_ACHIEVED_ACCELERATION_MM) / TIME_INTERVAL_BETWEEN_SENDING_COMMANDS);
                     } else {
                         accelerationSteps = (sqrt(MAX_ACCELERATION_DISTANCE_MM / MAX_ACHIEVED_ACCELERATION_MM) / TIME_INTERVAL_BETWEEN_SENDING_COMMANDS);
