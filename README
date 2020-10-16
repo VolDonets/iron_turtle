@@ -1,2 +1,11 @@
-The Iron Turtle controller.
-Project description.
+The iron turtle contrloler.
+
+This progect contains:
+* source code for processing a program as a server on the Raspberry Pi or other platform,
+* source code for processing a video stream from a Raspberry Camera or any other USB camera aproximatly in real time,
+* source code for processing hyroboard wheels controller behavior in according to user commands
+
+Here is a lot of compile definitions
+* the most important is compiling for Raspberry Pi or for your PC (tested only with Ubuntu)
+* other is compiling with different parameters for object detection (actually in this branch, machine vision is disabled, cause it takes a lot of system resource of RPI).
+
