@@ -56,8 +56,8 @@ add_executable(iron_turtle
 ###       this is the source code for the object detection in a frame and object tracking
 #        process_camera/form_detector_ocv/form_detection_processor_haarcascade.cpp
 #        process_camera/form_detector_ocv/form_detection_processor_dnn_caffe.cpp
-#        process_camera/form_detector_ocv/form_detection_processor_yolov3_tiny.cpp
-        process_camera/form_detector_ocv/form_det_track_svm.cpp
+        process_camera/form_detector_ocv/form_detection_processor_yolov3_tiny.cpp
+#        process_camera/form_detector_ocv/form_det_track_svm.cpp
         process_camera/form_detector_ocv/form_detection_processor.h)
 
 ###       this is a target compile definitions for the different platfroms (both linux - the first one is my work PC under
@@ -82,6 +82,7 @@ target_compile_definitions(iron_turtle PRIVATE MY_PURSUIT_TESTING)
 ###       This is compile definitions for the different yolo pretrained models for the object detection
 ###       !!!WARNING!!! it works only with 'process_camera/form_detector_ocv/form_detection_processor_yolov3_tiny.cpp'
 #target_compile_definitions(iron_turtle PRIVATE YOLO3_TINY YOLO3_TINY_COCO)
+target_compile_definitions(iron_turtle PRIVATE YOLO3_TINY YOLO3_TINY_HAND)
 #target_compile_definitions(iron_turtle PRIVATE YOLO3_TINY CROSS_HANDS)
 #target_compile_definitions(iron_turtle PRIVATE YOLO3_TINY CROSS_HANDS_PRN)
 
