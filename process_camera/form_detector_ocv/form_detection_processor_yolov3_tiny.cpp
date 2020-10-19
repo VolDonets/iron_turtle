@@ -41,13 +41,13 @@ void FormDetectionProcessor::processRecognition() {
         cv::Mat resizedFrame;
         cv::Mat inputBlob;
 
-        double confThreshold = 0.01;
+        double confThreshold = 0.55;
         double nmsThreshold = 0.4;
         double scale = 1.0 / 255.0;
         cv::Scalar mean = cv::Scalar(0, 0, 0);
         bool swapRB = true;
-        int inputWith = 256;//416;
-        int inputHeight = 256;//416;
+        int inputWith = 416;//256;//416;
+        int inputHeight = 416;//256;//416;
         cv::Size newFrameSize(inputWith, inputHeight);
 
         while (true) {

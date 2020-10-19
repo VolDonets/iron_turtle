@@ -24,17 +24,22 @@
     #ifdef YOLO3_TINY_COCO
         #define MODEL_PATH                 "src/dnn/yolov3_tiny/yolov3-tiny.cfg"
         #define WIDTH_PATH                 "src/dnn/yolov3_tiny/yolov3-tiny.weights"
-        #define COCO_NAMES_PATH            "src/dnn/yolov3_tiny/coco.names"
+        #define NAMES_PATH                 "src/dnn/yolov3_tiny/coco.names"
     #endif //YOLO3_TINY_COCO
+    #ifdef YOLO3_TINY_HAND
+        #define MODEL_PATH                 "src/dnn/yolov3_tiny_hand_detection/yolov3-tiny.cfg"
+        #define WIDTH_PATH                 "src/dnn/yolov3_tiny_hand_detection/yolov3-tiny-hand-detection.weights"
+        #define NAMES_PATH                 "src/dnn/yolov3_tiny_hand_detection/hand.names"
+    #endif //YOLO3_TINY_HAND
     #ifdef CROSS_HANDS
         #define MODEL_PATH                 "src/dnn/yolov3_tiny_cross_hands/cross-hands-tiny.cfg"
         #define WIDTH_PATH                 "src/dnn/yolov3_tiny_cross_hands/cross-hands-tiny.weights"
-        #define COCO_NAMES_PATH            "src/dnn/yolov3_tiny/coco.names"
+        #define NAMES_PATH                 "src/dnn/yolov3_tiny/coco.names"
     #endif //CROSS_HANDS
     #ifdef CROSS_HANDS_PRN
         #define MODEL_PATH                 "src/dnn/yolov3_tiny_cross_hands_prn/cross-hands-tiny-prn.cfg"
         #define WIDTH_PATH                 "src/dnn/yolov3_tiny_cross_hands_prn/cross-hands-tiny-prn.weights"
-        #define COCO_NAMES_PATH            "src/dnn/yolov3_tiny/coco.names"
+        #define NAMES_PATH                 "src/dnn/yolov3_tiny/coco.names"
     #endif //CROSS_HANDS_PRN
 #endif //YOLO3_TINY
 
