@@ -46,6 +46,10 @@ add_executable(iron_turtle
         pursuit_processor/pursuit_processor.h
         pursuit_processor/pursuit_processor.cpp
 
+###      this is a class for connecting to realsense camera and the depth processing
+        process_camera/intel_realsense_camera/realsense_camera_processor.h
+        process_camera/intel_realsense_camera/realsense_camera_processor.cpp
+
 ###      this is the source code for the image processing in the gst pipeline
         process_camera/rear_sight_processor/image_processing.h
         process_camera/rear_sight_processor/rear_sight_processor.h
@@ -66,11 +70,14 @@ target_compile_definitions(iron_turtle PRIVATE UBUNTU_PC)
 #target_compile_definitions(iron_turtle PRIVATE RASPBERRY_PI)
 #set(CMAKE_CXX_LINK_FLAGS "${CMAKE_CXX_LINK_FLAGS} -latomic")
 
+###       here is used for other camera, here is used an inter realsense camera
+#target_compile_definitions(iron_turtle PRIVATE INTEL_REALSENSE)
+
 ###       this is a target compile definitions for the DEBUG development steps
 target_compile_definitions(iron_turtle PRIVATE MY_DEBUG)
 
 ###       this is a target compile definitions for the TESTING the pursuit module
-target_compile_definitions(iron_turtle PRIVATE MY_PURSUIT_TESTING)
+#target_compile_definitions(iron_turtle PRIVATE MY_PURSUIT_TESTING)
 
 ###       This is compile definitions for the different haarcasades for the object detection
 ###       !!!WARNING!!! it works only with 'process_camera/form_detector_ocv/form_detection_processor_haarcascade.cpp'
@@ -81,8 +88,8 @@ target_compile_definitions(iron_turtle PRIVATE MY_PURSUIT_TESTING)
 
 ###       This is compile definitions for the different yolo pretrained models for the object detection
 ###       !!!WARNING!!! it works only with 'process_camera/form_detector_ocv/form_detection_processor_yolov3_tiny.cpp'
-#target_compile_definitions(iron_turtle PRIVATE YOLO3_TINY YOLO3_TINY_COCO)
-target_compile_definitions(iron_turtle PRIVATE YOLO3_TINY YOLO3_TINY_HAND)
+target_compile_definitions(iron_turtle PRIVATE YOLO3_TINY YOLO3_TINY_COCO)
+#target_compile_definitions(iron_turtle PRIVATE YOLO3_TINY YOLO3_TINY_HAND)
 #target_compile_definitions(iron_turtle PRIVATE YOLO3_TINY CROSS_HANDS)
 #target_compile_definitions(iron_turtle PRIVATE YOLO3_TINY CROSS_HANDS_PRN)
 
@@ -98,7 +105,7 @@ target_compile_definitions(iron_turtle PRIVATE YOLO3_TINY YOLO3_TINY_HAND)
 #target_compile_definitions(iron_turtle PRIVATE SVM_HOG V10_C10)
 #target_compile_definitions(iron_turtle PRIVATE SVM_HOG V11_C15_SUPER)
 #target_compile_definitions(iron_turtle PRIVATE SVM_HOG V12_C15_SUPER)
-target_compile_definitions(iron_turtle PRIVATE SVM_HOG V14_C15_SUPER)
+#target_compile_definitions(iron_turtle PRIVATE SVM_HOG V14_C15_SUPER)
 
 ###       This target libraries used under Raspberry Pi3
 #target_link_libraries(iron_turtle /usr/lib/arm-linux-gnueabihf/libgsl.so.23)
@@ -119,6 +126,10 @@ target_link_libraries(iron_turtle pthread z)
 find_package(OpenCV REQUIRED)
 include_directories(${OpenCV_INCLUDE_DIRS})
 target_link_libraries(iron_turtle ${OpenCV_LIBS})
+
+###       For possibility to use an intel realsense camera we need to use an intel api for the RealSense cameras
+###       here is a camera model: D415
+target_link_libraries(iron_turtle realsense2)
 
 ###       Adding to the project the 'dlib' library it used as object detector (works with the SVM HOG)
 find_package(PkgConfig)
