@@ -82,6 +82,8 @@ void FormDetectionProcessor::processRecognition() {
                         cv::Point classIdPoint;
                         double confidence;
                         minMaxLoc(scores, 0, &confidence, 0, &classIdPoint);
+                        if (classIdPoint.x != 0)
+                            continue;
                         if (confidence > confThreshold) {
                             int centerX = (int) (data[0] * currentFrame.cols);
                             int centerY = (int) (data[1] * currentFrame.rows);
