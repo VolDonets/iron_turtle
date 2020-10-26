@@ -88,10 +88,12 @@
 #include <opencv2/core/utils/trace.hpp>
 #include <opencv2/tracking.hpp>
 
+#ifdef SVM_HOG
 #include <dlib/image_processing.h>
 #include <dlib/image_keypoint.h>
 #include <dlib/svm_threaded.h>
 #include <dlib/opencv.h>
+#endif //SVM_HOG
 
 /**class FormDetectionProcessor - is a class which realize functionality for an image detection and an image tracking,
  * (depending from the realization). The constructor initialize needed mutex, and start detection thread*/
