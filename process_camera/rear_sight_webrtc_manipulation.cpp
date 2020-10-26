@@ -124,8 +124,23 @@ ReceiverEntry *create_receiver_entry(seasocks::WebSocket *connection) {
 
     //g_object_ref (G_OBJECT (connection));
 
-#ifdef RASPBERRY_PI
     error = NULL;
+#ifdef RASPBERRY_PI
+    #ifdef INTEL_REALSENSE
+    receiver_entry->pipeline =
+                gst_parse_launch ("webrtcbin name=webrtcbin  stun-server=stun://" STUN_SERVER " "
+                                  "v4l2src device=/dev/video4 "
+                                  "! video/x-raw,width=" STR_WIDTH ",height=" STR_HEIGHT ",framerate=" STR_FRAMERATE " "
+                                  "! videoconvert name=ocvvideosrc "
+                                  "! video/x-raw,format=BGRA "
+                                  "! videoconvert "
+                                  "! queue max-size-buffers=1 "
+                                  "! omxh264enc "
+                                  "! queue max-size-time=100000000 "
+                                  "! rtph264pay config-interval=10 name=payloader pt=96 "
+                                  "! capssetter caps=\"application/x-rtp,profile-level-id=(string)42c01f,media=(string)video,encoding-name=(string)H264,payload=(int)96\" "
+                                  "! webrtcbin. ", &error);
+    #else
     receiver_entry->pipeline =
                 gst_parse_launch ("webrtcbin name=webrtcbin  stun-server=stun://" STUN_SERVER " "
                                   "v4l2src device=/dev/video0 "
@@ -139,10 +154,27 @@ ReceiverEntry *create_receiver_entry(seasocks::WebSocket *connection) {
                                   "! rtph264pay config-interval=10 name=payloader pt=96 "
                                   "! capssetter caps=\"application/x-rtp,profile-level-id=(string)42c01f,media=(string)video,encoding-name=(string)H264,payload=(int)96\" "
                                   "! webrtcbin. ", &error);
+    #endif //INTEL_REALSENSE
 #endif //RASPBERRY_PI
 
 #ifdef UBUNTU_PC
-    error = NULL;
+    #ifdef INTEL_REALSENSE
+    receiver_entry->pipeline =
+            gst_parse_launch("webrtcbin name=webrtcbin  stun-server=stun://" STUN_SERVER " "
+                             "v4l2src device=/dev/video4 "
+                             "! video/x-raw,width=" STR_WIDTH ",height=" STR_HEIGHT ",framerate=" STR_FRAMERATE " "
+                             "! videoconvert name=ocvvideosrc "
+                             "! video/x-raw,format=BGRA "
+                             "! videoconvert "
+                             "! queue max-size-buffers=1 "
+                             "! x264enc speed-preset=ultrafast tune=zerolatency key-int-max=15 "
+                             "! video/x-h264,profile=constrained-baseline "
+                             "! queue max-size-time=0 "
+                             "! h264parse "
+                             "! rtph264pay config-interval=-1 name=payloader "
+                             "! application/x-rtp,media=video,encoding-name=H264,payload=" RTP_PAYLOAD_TYPE " "
+                             "! webrtcbin. ", &error);
+    #else
     receiver_entry->pipeline =
             gst_parse_launch("webrtcbin name=webrtcbin  stun-server=stun://" STUN_SERVER " "
                              "v4l2src device=/dev/video0 "
@@ -158,6 +190,7 @@ ReceiverEntry *create_receiver_entry(seasocks::WebSocket *connection) {
                              "! rtph264pay config-interval=-1 name=payloader "
                              "! application/x-rtp,media=video,encoding-name=H264,payload=" RTP_PAYLOAD_TYPE " "
                              "! webrtcbin. ", &error);
+    #endif //INTEL_REALSENSE
 #endif //UBUNTU_PC
 
 
