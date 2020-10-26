@@ -41,7 +41,7 @@ void FormDetectionProcessor::processRecognition() {
         cv::Mat resizedFrame;
         cv::Mat inputBlob;
 
-        double confThreshold = 0.55;
+        double confThreshold = 0.3;
         double nmsThreshold = 0.4;
         double scale = 1.0 / 255.0;
         cv::Scalar mean = cv::Scalar(0, 0, 0);
