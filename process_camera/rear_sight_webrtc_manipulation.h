@@ -10,6 +10,11 @@
 #include "form_detector_ocv/form_detection_processor.h"
 #include "../pursuit_processor/pursuit_processor.h"
 
+#ifdef INTEL_REALSENSE
+#include "intel_realsense_camera/realsense_camera_processor.h"
+#endif //INTEL_REALSENSE
+
+
 #include <locale.h>
 #include <glib.h>
 #include <gst/gst.h>
@@ -178,6 +183,11 @@ static int count_frames;
 static std::shared_ptr<FormDetectionProcessor> form_detection_processor;
 /// This is old detected ROI - used for smoothing an behavior of the detection rectangle on the frame
 static cv::Rect old_rectangle(0, 0, 0, 0);
+
+#ifdef INTEL_REALSENSE
+/// This is a smart pointer to the RealsenseCameraProcessor object - it used for depth frame scan, and detecting a human body profile
+static std::shared_ptr<RealsenseCameraProcessor> realsenseCameraProcessor;
+#endif //INTEL_REALSENSE
 
 /// this is an object with a speed value (here is not an actual speed, this is values for creating speed commands)
 static std::string current_speed = "Speed LW=0, RW=0";

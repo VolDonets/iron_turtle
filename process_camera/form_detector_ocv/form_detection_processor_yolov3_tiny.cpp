@@ -33,7 +33,7 @@ void FormDetectionProcessor::processRecognition() {
         cv::dnn::Net dnn_model = cv::dnn::readNetFromDarknet(MODEL_PATH, WIDTH_PATH);
         if (dnn_model.empty()) {
             std::cerr << "Can't load network by using this files \n";
-            return ;
+            return;
         }
         dnn_model.setPreferableBackend(cv::dnn::DNN_BACKEND_OPENCV);
         dnn_model.setPreferableTarget(cv::dnn::DNN_TARGET_CPU);
@@ -112,13 +112,13 @@ void FormDetectionProcessor::processRecognition() {
                     objectTracker = cv::TrackerKCF::create();
                     objectTracker->init(currentFrame,
                                         cv::Rect2d(tmpFormsCoords->operator[](0).x, tmpFormsCoords->operator[](0).y,
-                                                   tmpFormsCoords->operator[](0).width, tmpFormsCoords->operator[](0).height));
+                                                   tmpFormsCoords->operator[](0).width,
+                                                   tmpFormsCoords->operator[](0).height));
                 }
             } else {
                 cv::Rect2d trackedRect;
                 cv::cvtColor(currentFrame, currentFrame, cv::COLOR_BGRA2BGR);
                 isNotDetectedImage = !objectTracker->update(currentFrame, trackedRect);
-                std::cout <<  "isNotDet: " << isNotDetectedImage << ", coords: " << trackedRect.x << ", " << trackedRect.y << ", " << trackedRect.width << ", " << trackedRect.height << "\n";
                 if (!isNotDetectedImage) {
                     tmpFormsCoords->push_back(cv::Rect(trackedRect.x, trackedRect.y,
                                                        trackedRect.width, trackedRect.height));

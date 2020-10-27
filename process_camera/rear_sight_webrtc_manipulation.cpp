@@ -9,6 +9,9 @@ void init_rear_sight_processor() {
     rear_sight_processor = std::make_shared<RearSightProcessor>(frame_param);
     count_frames = 0;
     form_detection_processor = std::make_shared<FormDetectionProcessor>();
+#ifdef INTEL_REALSENSE
+    realsenseCameraProcessor = std::make_shared<RealsenseCameraProcessor>(WIDTH, HEIGHT);
+#endif //INTEL_REALSENSE
 }
 
 /// a GstPad callback function, it is used for modification a pipeline stream
@@ -43,6 +46,11 @@ static GstPadProbeReturn cb_have_data(GstPad *pad, GstPadProbeInfo *info, gpoint
             // this line draw all detected ROIs, WITHOUT interpolation
             for (int i = 0; i < faces_coord->size(); i++)
                 cv::rectangle(main_image, faces_coord->operator[](i), cv::Scalar(0, 255, 0), 2, 0, 0);
+
+#ifdef INTEL_REALSENSE
+            if (faces_coord->size() > 0)
+                realsenseCameraProcessor->add_detected_rectangle(faces_coord->operator[](0));
+#endif //INTEL_REALSENSE
 
             // this lines draw only one ROI with detected object, but with interpolation.
             /* std::cout << "Size::: " << faces_coord->size() << "\n";
@@ -92,6 +100,16 @@ static GstPadProbeReturn cb_have_data(GstPad *pad, GstPadProbeInfo *info, gpoint
         cv::putText(main_image, current_speed, cv::Point(5, 15), cv::FONT_HERSHEY_COMPLEX_SMALL, 1.0,
                     cv::Scalar(0, 255, 0), 1, cv::LINE_AA);
 
+#ifdef INTEL_REALSENSE
+        cv::Point leftPoint;
+        cv::Point rightPoint;
+        realsenseCameraProcessor->get_reference_points(leftPoint, rightPoint);
+        cv::circle(main_image, leftPoint, 5, cv::Scalar(0, 255, 0), 2,
+                   cv::LINE_8, 0);
+        cv::circle(main_image, rightPoint, 5, cv::Scalar(0, 255, 0), 2,
+                   cv::LINE_8, 0);
+#endif //INTEL_REALSENSE
+
 #ifdef MY_PURSUIT_TESTING
         cv::rectangle(main_image, cv::Rect(START_PURSUIT_X, START_PURSUIT_Y, START_PURSUIT_WIDTH, START_PURSUIT_HEIGHT),
                       cv::Scalar(180, 180, 0), 3, 0, 0);
@@ -126,10 +144,10 @@ ReceiverEntry *create_receiver_entry(seasocks::WebSocket *connection) {
 
     error = NULL;
 #ifdef RASPBERRY_PI
-    #ifdef INTEL_REALSENSE
+#ifdef INTEL_REALSENSE
     receiver_entry->pipeline =
                 gst_parse_launch ("webrtcbin name=webrtcbin  stun-server=stun://" STUN_SERVER " "
-                                  "v4l2src device=/dev/video4 "
+                                  "videotestsrc pattern=ball "
                                   "! video/x-raw,width=" STR_WIDTH ",height=" STR_HEIGHT ",framerate=" STR_FRAMERATE " "
                                   "! videoconvert name=ocvvideosrc "
                                   "! video/x-raw,format=BGRA "
@@ -140,7 +158,7 @@ ReceiverEntry *create_receiver_entry(seasocks::WebSocket *connection) {
                                   "! rtph264pay config-interval=10 name=payloader pt=96 "
                                   "! capssetter caps=\"application/x-rtp,profile-level-id=(string)42c01f,media=(string)video,encoding-name=(string)H264,payload=(int)96\" "
                                   "! webrtcbin. ", &error);
-    #else
+#else
     receiver_entry->pipeline =
                 gst_parse_launch ("webrtcbin name=webrtcbin  stun-server=stun://" STUN_SERVER " "
                                   "v4l2src device=/dev/video0 "
@@ -154,14 +172,14 @@ ReceiverEntry *create_receiver_entry(seasocks::WebSocket *connection) {
                                   "! rtph264pay config-interval=10 name=payloader pt=96 "
                                   "! capssetter caps=\"application/x-rtp,profile-level-id=(string)42c01f,media=(string)video,encoding-name=(string)H264,payload=(int)96\" "
                                   "! webrtcbin. ", &error);
-    #endif //INTEL_REALSENSE
+#endif //INTEL_REALSENSE
 #endif //RASPBERRY_PI
 
 #ifdef UBUNTU_PC
-    #ifdef INTEL_REALSENSE
+#ifdef INTEL_REALSENSE
     receiver_entry->pipeline =
             gst_parse_launch("webrtcbin name=webrtcbin  stun-server=stun://" STUN_SERVER " "
-                             "v4l2src device=/dev/video4 "
+                             "videotestsrc pattern=ball "
                              "! video/x-raw,width=" STR_WIDTH ",height=" STR_HEIGHT ",framerate=" STR_FRAMERATE " "
                              "! videoconvert name=ocvvideosrc "
                              "! video/x-raw,format=BGRA "
@@ -174,7 +192,7 @@ ReceiverEntry *create_receiver_entry(seasocks::WebSocket *connection) {
                              "! rtph264pay config-interval=-1 name=payloader "
                              "! application/x-rtp,media=video,encoding-name=H264,payload=" RTP_PAYLOAD_TYPE " "
                              "! webrtcbin. ", &error);
-    #else
+#else
     receiver_entry->pipeline =
             gst_parse_launch("webrtcbin name=webrtcbin  stun-server=stun://" STUN_SERVER " "
                              "v4l2src device=/dev/video0 "
@@ -190,9 +208,12 @@ ReceiverEntry *create_receiver_entry(seasocks::WebSocket *connection) {
                              "! rtph264pay config-interval=-1 name=payloader "
                              "! application/x-rtp,media=video,encoding-name=H264,payload=" RTP_PAYLOAD_TYPE " "
                              "! webrtcbin. ", &error);
-    #endif //INTEL_REALSENSE
+#endif //INTEL_REALSENSE
 #endif //UBUNTU_PC
 
+#ifdef INTEL_REALSENSE
+    realsenseCameraProcessor->start_processing();
+#endif //INTEL_REALSENSE
 
     if (error != NULL) {
         g_error ("Could not create WebRTC pipeline: %s\n", error->message);
@@ -233,6 +254,9 @@ ReceiverEntry *create_receiver_entry(seasocks::WebSocket *connection) {
 }
 
 void destroy_receiver_entry(gpointer receiver_entry_ptr) {
+#ifdef INTEL_REALSENSE
+    realsenseCameraProcessor->stop_processing();
+#endif //INTEL_REALSENSE
     ReceiverEntry *receiver_entry = (ReceiverEntry *) receiver_entry_ptr;
 
     g_assert (receiver_entry != NULL);

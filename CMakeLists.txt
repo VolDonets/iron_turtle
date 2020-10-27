@@ -71,7 +71,7 @@ target_compile_definitions(iron_turtle PRIVATE UBUNTU_PC)
 #set(CMAKE_CXX_LINK_FLAGS "${CMAKE_CXX_LINK_FLAGS} -latomic")
 
 ###       here is used for other camera, here is used an inter realsense camera
-#target_compile_definitions(iron_turtle PRIVATE INTEL_REALSENSE)
+target_compile_definitions(iron_turtle PRIVATE INTEL_REALSENSE)
 
 ###       this is a target compile definitions for the DEBUG development steps
 target_compile_definitions(iron_turtle PRIVATE MY_DEBUG)
