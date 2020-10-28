@@ -22,6 +22,8 @@ constexpr float MIN_POSSIBLE_DISTANCE = 0.6f;
 constexpr float MAX_POSSIBLE_DISTANCE = 2.0f;
 constexpr float MAX_DIFF_LR_DIST = 0.7f;
 
+constexpr int MAX_FRAMES_QUEUE_LENGTH = 3;
+
 class RealsenseCameraProcessor {
 private:
     std::thread _realsenseCameraThread;
@@ -34,10 +36,12 @@ private:
 
     std::list<std::pair<cv::Point, cv::Point>> _listPointPairs;
     std::list<cv::Rect> _listObjectRectangles;
+    std::list<cv::Mat> _listFrames;
 
 
     bool set_points(cv::Point &leftPoint, cv::Point &rightPoint, const cv::Rect &objectRect, const rs2::depth_frame &depth);
     void process_realsense_camera_stream();
+    void add_colored_frame(cv::Mat colorFrame);
 
 public:
     RealsenseCameraProcessor(int imgWidth, int imgHeight);
@@ -47,6 +51,7 @@ public:
     void get_reference_points(cv::Point &leftPointCoord, cv::Point &rightPointCoord);
     int start_processing();
     int stop_processing();
+    cv::Mat get_last_frame();
 };
 
 

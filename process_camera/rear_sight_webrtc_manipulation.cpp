@@ -35,6 +35,12 @@ static GstPadProbeReturn cb_have_data(GstPad *pad, GstPadProbeInfo *info, gpoint
 
         cv::Mat main_image = cv::Mat(frame_size, CV_8UC4, (char *) (map.data), cv::Mat::AUTO_STEP);
 
+#ifdef INTEL_REALSENSE
+        cv::Mat colored_mat = realsenseCameraProcessor->get_last_frame();
+        if (colored_mat.rows != 0)
+            colored_mat.copyTo(main_image(cv::Rect(0, 0, 640, 480)));
+#endif //INTEL_REALSENSE
+
         if (count_frames == CHECK_PER_FRAMES) {
             cv::Mat checking_mat = main_image.clone();
             form_detection_processor->add_frame(checking_mat);
