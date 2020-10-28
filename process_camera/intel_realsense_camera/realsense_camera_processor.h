@@ -10,21 +10,43 @@
 #include <librealsense2/rs.hpp>
 #include <iostream>
 #include <thread>
+#include <atomic>
+#include <list>
+
+constexpr int DEPTH_FRAME_WIDTH = 1280;
+constexpr int DEPTH_FRAME_HEIGHT = 720;
+
+constexpr int X_STEP_LENGTH = 5;
+
+constexpr float MIN_POSSIBLE_DISTANCE = 0.6f;
+constexpr float MAX_POSSIBLE_DISTANCE = 2.0f;
+constexpr float MAX_DIFF_LR_DIST = 0.7f;
 
 class RealsenseCameraProcessor {
 private:
-    std::thread _realsense_camera_thread;
-    cv::Rect _humanRectangle;
+    std::thread _realsenseCameraThread;
+    std::mutex _mutexProc;
+    std::mutex _mutexRes;
+    std::atomic<bool> _isProcessedCalculation;
+
+    int _imgWidth;
+    int _imgHeight;
+
+    std::list<std::pair<cv::Point, cv::Point>> _listPointPairs;
+    std::list<cv::Rect> _listObjectRectangles;
 
 
+    bool set_points(cv::Point &leftPoint, cv::Point &rightPoint, const cv::Rect &objectRect, const rs2::depth_frame &depth);
     void process_realsense_camera_stream();
 
 public:
-    RealsenseCameraProcessor();
+    RealsenseCameraProcessor(int imgWidth, int imgHeight);
     ~RealsenseCameraProcessor();
 
-    void set_new_position(const cv::Rect &humanRectangle);
-    bool get_reference_points(cv::Point &leftPointCoord, cv::Point &rightPointCoord);
+    void add_detected_rectangle(const cv::Rect &objectRectangle);
+    void get_reference_points(cv::Point &leftPointCoord, cv::Point &rightPointCoord);
+    int start_processing();
+    int stop_processing();
 };
 
 
