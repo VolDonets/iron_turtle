@@ -16,7 +16,7 @@
 constexpr int DEPTH_FRAME_WIDTH = 1280;
 constexpr int DEPTH_FRAME_HEIGHT = 720;
 
-constexpr int X_STEP_LENGTH = 5;
+constexpr int X_STEP_LENGTH = 1;
 
 constexpr float MIN_POSSIBLE_DISTANCE = 0.6f;
 constexpr float MAX_POSSIBLE_DISTANCE = 2.0f;

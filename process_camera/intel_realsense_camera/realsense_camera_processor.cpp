@@ -117,23 +117,27 @@ void RealsenseCameraProcessor::process_realsense_camera_stream() {
             rs2::frameset data = rsPipe.wait_for_frames();
             rs2::video_frame rsColorFrame = data.get_color_frame();
             cv::Mat cvColorFrame = cv::Mat(cv::Size(rsColorFrame.get_width(), rsColorFrame.get_height()), CV_8UC3, (void*) rsColorFrame.get_data());
-            cv::cvtColor(cvColorFrame, cvColorFrame, cv::COLOR_BGR2BGRA);
+            cv::cvtColor(cvColorFrame, cvColorFrame, cv::COLOR_RGB2BGRA);
             add_colored_frame(cvColorFrame);
 
-//            if (!_listObjectRectangles.empty()) {
+            std::cout << "List object rectangles size: " << _listObjectRectangles.size() << "\n";
+
+            if (!_listObjectRectangles.empty()) {
 //                _mutexProc.lock();
 //                _mutexRes.lock();
-//                cv::Rect objectRect = _listObjectRectangles.front();
-//                _listObjectRectangles.pop_front();
+                cv::Rect objectRect = _listObjectRectangles.front();
+                _listObjectRectangles.pop_front();
 //                _mutexRes.unlock();
-//
-//                rs2::depth_frame depthFrame = data.get_depth_frame();
-//
-//                cv::Point leftPoint;
-//                cv::Point rightPoint;
-//                set_points(leftPoint, rightPoint, objectRect, depthFrame);
-//                _listPointPairs.push_back(std::pair(leftPoint, rightPoint));
-//            }
+
+                rs2::depth_frame depthFrame = data.get_depth_frame();
+
+                cv::Point leftPoint;
+                cv::Point rightPoint;
+                set_points(leftPoint, rightPoint, objectRect, depthFrame);
+                if (_listPointPairs.size() > 2)
+                    _listPointPairs.pop_front();
+                _listPointPairs.push_back(std::pair(leftPoint, rightPoint));
+            }
         }
 
         rsPipe.stop();
